@@ -38,7 +38,7 @@ class _OthersPageState extends State<OthersPage> {
     final bool rotated =
         MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: const Color(0xff121212),
+      backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,

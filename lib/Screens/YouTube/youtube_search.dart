@@ -181,10 +181,10 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                         ),
                         Expanded(
                           child: (!fetched)
-                              ? const Center(
+                              ? Center(
                                   child: CircularProgressIndicator(
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      Color(0xFF1ED760),
+                                      Theme.of(context).colorScheme.secondary,
                                     ),
                                     strokeWidth: 5,
                                   ),

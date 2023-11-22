@@ -30,7 +30,7 @@ class _DownloadPageState extends State<DownloadPage> {
     final bool rotated =
         MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: const Color(0xff121212),
+      backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -304,7 +304,7 @@ class _DownloadPageState extends State<DownloadPage> {
                           },
                         ),
                         CheckboxListTile(
-                          activeColor: const Color(0xFF1ED760),
+                          activeColor: Theme.of(context).colorScheme.secondary,
                           title: Text(
                             AppLocalizations.of(context)!.title,
                           ),

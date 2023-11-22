@@ -1,4 +1,4 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole)
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,15 +14,15 @@ class AppTheme {
     required BuildContext context,
   }) {
     return ThemeData(
-      textSelectionTheme: TextSelectionThemeData(
-        selectionHandleColor: currentTheme.currentColor(),
-        cursorColor: currentTheme.currentColor(),
-        selectionColor: currentTheme.currentColor(),
+      textSelectionTheme: const TextSelectionThemeData(
+        selectionHandleColor: Color(0xFF1DB954),
+        cursorColor: Color(0xFF1DB954),
+        selectionColor: Color(0xFF1DB954),
       ),
-      inputDecorationTheme: InputDecorationTheme(
+      inputDecorationTheme: const InputDecorationTheme(
         focusedBorder: UnderlineInputBorder(
           borderSide:
-              BorderSide(width: 1.5, color: currentTheme.currentColor()),
+              BorderSide(width: 1.5, color: Color(0xFF1DB954)),
         ),
       ),
       listTileTheme: ListTileThemeData(
@@ -32,7 +32,7 @@ class AppTheme {
       ),
       visualDensity: VisualDensity.adaptivePlatformDensity,
       appBarTheme: AppBarTheme(
-        backgroundColor: currentTheme.currentColor(),
+        backgroundColor: const Color(0xFF1DB954),
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarIconBrightness: AppTheme.themeMode == ThemeMode.system
               ? MediaQuery.platformBrightnessOf(context) == Brightness.dark
@@ -52,9 +52,9 @@ class AppTheme {
       ),
       disabledColor: Colors.grey[600],
       brightness: Brightness.light,
-      indicatorColor: currentTheme.currentColor(),
+      indicatorColor: const Color(0xFF1DB954),
       progressIndicatorTheme: const ProgressIndicatorThemeData()
-          .copyWith(color: currentTheme.currentColor()),
+          .copyWith(color: const Color(0xFF1DB954)),
       iconTheme: IconThemeData(
         color: Colors.grey[800],
         opacity: 1.0,
@@ -63,7 +63,7 @@ class AppTheme {
       colorScheme: Theme.of(context).colorScheme.copyWith(
             primary: Colors.grey[800],
             brightness: Brightness.light,
-            secondary: currentTheme.currentColor(),
+            secondary: const Color(0xFF1DB954),
           ),
     );
   }
@@ -79,20 +79,30 @@ class AppTheme {
           elevation: 0.0,
         ),
       ),
-      textSelectionTheme: TextSelectionThemeData(
-        selectionHandleColor: currentTheme.currentColor(),
-        cursorColor: currentTheme.currentColor(),
-        selectionColor: currentTheme.currentColor(),
+      textSelectionTheme: const TextSelectionThemeData(
+        selectionHandleColor: Color(0xFF18AC4D),
+        cursorColor: Color(0xFF1ED760),
+        selectionColor: Color(0XFF1A502D),
       ),
-      inputDecorationTheme: InputDecorationTheme(
+      inputDecorationTheme: const InputDecorationTheme(
         focusedBorder: UnderlineInputBorder(
           borderSide:
-              BorderSide(width: 1.5, color: currentTheme.currentColor()),
+              BorderSide(width: 1.5, color: Colors.transparent),
         ),
       ),
       listTileTheme: ListTileThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(7.0),
+        ),
+        titleTextStyle: const TextStyle(
+          color: Color(0xffe7e7e7),
+          fontSize: 16,
+          fontFamily: 'Raleway',
+          fontWeight: FontWeight.w400,
+        ),
+        subtitleTextStyle: const TextStyle(
+          fontSize: 13,
+          color: Color(0xffa7a7a7),
         ),
       ),
       visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -112,16 +122,16 @@ class AppTheme {
       ),
       dialogBackgroundColor: currentTheme.getCardColor(),
       progressIndicatorTheme: const ProgressIndicatorThemeData()
-          .copyWith(color: currentTheme.currentColor()),
+          .copyWith(color: const Color(0xFF1ED760)),
       iconTheme: const IconThemeData(
         color: Colors.white,
         opacity: 1.0,
         size: 24.0,
       ),
-      indicatorColor: currentTheme.currentColor(),
+      indicatorColor: const Color(0xFF1ED760),
       colorScheme: Theme.of(context).colorScheme.copyWith(
-            primary: Colors.white,
-            secondary: currentTheme.currentColor(),
+            primary: const Color(0xff121212),
+            secondary: const Color(0xFF1ED760),
             brightness: Brightness.dark,
           ),
     );

@@ -130,12 +130,12 @@ class _SaavnHomePageState extends State<SaavnHomePage>
       playlistIndex = 0;
     }
     return (data.isEmpty && recentList.isEmpty)
-        ? const Center(
+        ? Center(
             child: Align(
-              alignment: Alignment(0, -0.1),
+              alignment: const Alignment(0, -0.1),
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  Color(0xFF1ED760),
+                  Theme.of(context).colorScheme.secondary,
                 ),
               ),
             ),

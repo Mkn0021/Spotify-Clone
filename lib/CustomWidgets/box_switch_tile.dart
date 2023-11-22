@@ -25,7 +25,7 @@ class BoxSwitchTile extends StatelessWidget {
       valueListenable: Hive.box('settings').listenable(),
       builder: (BuildContext context, Box box, Widget? widget) {
         return SwitchListTile(
-          activeColor: const Color(0xFF1ED760),
+          activeColor: Theme.of(context).colorScheme.secondary,
           title: DefaultTextStyle(
             style: const TextStyle(
               color: Color(0xffe7e7e7),

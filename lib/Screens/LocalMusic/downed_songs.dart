@@ -237,10 +237,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
         Scaffold(
           backgroundColor: Colors.transparent,
           body: !added
-              ? const Center(
+              ?  Center(
                   child: Align(
-                    alignment: Alignment(0, -0.1),
-                    child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>( Color(0xFF1ED760),),),
+                    alignment: const Alignment(0, -0.1),
+                    child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>( Theme.of(context).colorScheme.secondary,),),
                   ),
                 )
               : Padding(

@@ -88,7 +88,7 @@ class _CustomContainerState extends State<CustomContainer> {
       },
       child: Container(
         decoration: BoxDecoration(
-            color: widget.stateCheck?? isClicked ? const Color(0xFF1ED760) : const Color(0xFF2A2A2A),
+            color: widget.stateCheck?? isClicked ? Theme.of(context).colorScheme.secondary : const Color(0xFF2A2A2A),
             borderRadius: const BorderRadius.all(Radius.circular(20)),),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
         margin: const EdgeInsets.only(bottom: 12, right: 10),

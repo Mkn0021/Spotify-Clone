@@ -3,7 +3,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:spotify/CustomWidgets/box_switch_tile.dart';
-import 'package:spotify/CustomWidgets/gradient_containers.dart';
 import 'package:spotify/CustomWidgets/popup.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
 import 'package:spotify/CustomWidgets/textinput_dialog.dart';
@@ -41,7 +40,7 @@ class _ThemePageState extends State<ThemePage> {
       'Custom',
     ];
     return Scaffold(
-      backgroundColor: const Color(0xff121212),
+      backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
@@ -114,6 +113,7 @@ class _ThemePageState extends State<ThemePage> {
               switchToCustomTheme();
             },
           ),
+          /*
           ListTile(
             title: Text(
               AppLocalizations.of(
@@ -257,7 +257,7 @@ class _ThemePageState extends State<ThemePage> {
               );
             },
             dense: true,
-          ),
+          ),*/
           Visibility(
             visible: Theme.of(context).brightness == Brightness.dark,
             child: Column(

@@ -32,7 +32,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
       children: [
         Expanded(
           child: Scaffold(
-            backgroundColor: const Color(0xff121212),
+            backgroundColor: Theme.of(context).colorScheme.primary,
             appBar: AppBar(
               title: const Text(
                 'Recently played',
