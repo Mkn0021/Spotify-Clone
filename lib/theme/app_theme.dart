@@ -72,6 +72,7 @@ class AppTheme {
     required BuildContext context,
   }) {
     return ThemeData(
+      //useMaterial3: true,
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: Colors.white,

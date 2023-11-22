@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 
@@ -24,8 +25,8 @@ class BoxSwitchTile extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: Hive.box('settings').listenable(),
       builder: (BuildContext context, Box box, Widget? widget) {
-        return SwitchListTile(
-          activeColor: Theme.of(context).colorScheme.secondary,
+        return ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
           title: DefaultTextStyle(
             style: const TextStyle(
               color: Color(0xffe7e7e7),
@@ -38,12 +39,16 @@ class BoxSwitchTile extends StatelessWidget {
           subtitle: subtitle,
           isThreeLine: isThreeLine ?? false,
           dense: true,
-          value: box.get(keyName, defaultValue: defaultValue) as bool? ??
-              defaultValue,
-          onChanged: (val) {
-            box.put(keyName, val);
-            onChanged?.call(val: val, box: box);
-          },
+          trailing: CupertinoSwitch(
+            activeColor: const Color(0xFF366930),
+            trackColor: const Color(0xFF313630),
+            value: box.get(keyName, defaultValue: defaultValue) as bool? ??
+                defaultValue,
+            onChanged: (val) {
+              box.put(keyName, val);
+              onChanged?.call(val: val, box: box);
+            },
+          ),
         );
       },
     );
