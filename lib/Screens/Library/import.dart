@@ -1,11 +1,10 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole)
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:spotify/CustomWidgets/gradient_containers.dart';
 import 'package:spotify/CustomWidgets/miniplayer.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
 import 'package:spotify/CustomWidgets/textinput_dialog.dart';
@@ -23,89 +22,87 @@ class ImportPlaylist extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GradientContainer(
-      child: Column(
-        children: [
-          Expanded(
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
-              appBar: AppBar(
-                title: Text(
-                  AppLocalizations.of(context)!.importPlaylist,
-                ),
-                centerTitle: true,
-                backgroundColor: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.transparent
-                    : Theme.of(context).colorScheme.secondary,
-                elevation: 0,
+    return Column(
+      children: [
+        Expanded(
+          child: Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            appBar: AppBar(
+              title: Text(
+                AppLocalizations.of(context)!.importPlaylist,
               ),
-              body: ListView.builder(
-                shrinkWrap: true,
-                physics: const BouncingScrollPhysics(),
-                itemCount: 4,
-                itemBuilder: (cntxt, index) {
-                  return ListTile(
-                    title: Text(
-                      index == 0
-                          ? AppLocalizations.of(context)!.importFile
-                          : index == 1
-                                  ? AppLocalizations.of(context)!.importYt
-                                  : index == 2
-                                      ? AppLocalizations.of(
-                                          context,
-                                        )!
-                                          .importJioSaavn
-                                      : AppLocalizations.of(
-                                          context,
-                                        )!
-                                          .importResso,
-                    ),
-                    leading: SizedBox.square(
-                      dimension: 50,
-                      child: Center(
-                        child: Icon(
-                          index == 0
-                              ? MdiIcons.import
-                              : index == 1
-                                      ? MdiIcons.youtube
-                                      : Icons.music_note_rounded,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
+              centerTitle: true,
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.transparent
+                  : Theme.of(context).colorScheme.secondary,
+              elevation: 0,
+            ),
+            body: ListView.builder(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              itemCount: 4,
+              itemBuilder: (cntxt, index) {
+                return ListTile(
+                  title: Text(
+                    index == 0
+                        ? AppLocalizations.of(context)!.importFile
+                        : index == 1
+                            ? AppLocalizations.of(context)!.importYt
+                            : index == 2
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!
+                                    .importJioSaavn
+                                : AppLocalizations.of(
+                                    context,
+                                  )!
+                                    .importResso,
+                  ),
+                  leading: SizedBox.square(
+                    dimension: 50,
+                    child: Center(
+                      child: Icon(
+                        index == 0
+                            ? MdiIcons.import
+                            : index == 1
+                                ? MdiIcons.youtube
+                                : Icons.music_note_rounded,
+                        color: Theme.of(context).iconTheme.color,
                       ),
                     ),
-                    onTap: () {
-                      index == 0
-                          ? importFile(
-                              cntxt,
-                              playlistNames,
-                              settingsBox,
-                            )
-                          : index == 1
-                                  ? importYt(
-                                      cntxt,
-                                      playlistNames,
-                                      settingsBox,
-                                    )
-                                  : index == 2
-                                      ? importJioSaavn(
-                                          cntxt,
-                                          playlistNames,
-                                          settingsBox,
-                                        )
-                                      : importResso(
-                                          cntxt,
-                                          playlistNames,
-                                          settingsBox,
-                                        );
-                    },
-                  );
-                },
-              ),
+                  ),
+                  onTap: () {
+                    index == 0
+                        ? importFile(
+                            cntxt,
+                            playlistNames,
+                            settingsBox,
+                          )
+                        : index == 1
+                            ? importYt(
+                                cntxt,
+                                playlistNames,
+                                settingsBox,
+                              )
+                            : index == 2
+                                ? importJioSaavn(
+                                    cntxt,
+                                    playlistNames,
+                                    settingsBox,
+                                  )
+                                : importResso(
+                                    cntxt,
+                                    playlistNames,
+                                    settingsBox,
+                                  );
+                  },
+                );
+              },
             ),
           ),
-          MiniPlayer(),
-        ],
-      ),
+        ),
+        MiniPlayer(),
+      ],
     );
   }
 }
@@ -220,7 +217,6 @@ Future<void> importResso(
     },
   );
 }
-
 
 Future<void> importJioSaavn(
   BuildContext context,

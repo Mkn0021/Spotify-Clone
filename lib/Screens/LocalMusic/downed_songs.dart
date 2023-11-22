@@ -231,7 +231,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
   @override
   Widget build(BuildContext context) {
-    final bool rotated = MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool rotated = MediaQuery.of(context).size.height < screenWidth;
     return Stack(
       children: [
         Scaffold(
@@ -261,7 +262,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
         ),
         Positioned(
           bottom: rotated ? 0.0 : 70.0,
-          left: 2.0,
+          left: rotated ? screenWidth / 2 : 2.0,
           right: 2.0,
           child: MiniPlayer(),
         ),

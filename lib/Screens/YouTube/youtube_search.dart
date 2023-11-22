@@ -61,8 +61,8 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bool rotated =
-        MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool rotated = MediaQuery.of(context).size.height < screenWidth;
     double boxSize = !rotated
         ? MediaQuery.of(context).size.width / 2
         : MediaQuery.of(context).size.height / 2.5;
@@ -696,7 +696,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
           ),
           Positioned(
             bottom: 0.0,
-            left: 2.0,
+            left: rotated ? screenWidth / 2 : 2.0,
             right: 2.0,
             child: MiniPlayer(),
           ),

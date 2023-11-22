@@ -384,7 +384,7 @@ class _YouTubeState extends State<YouTube>
             ),
           Positioned(
             bottom: rotated ? 0.0 : 70.0,
-            left: 2.0,
+            left: rotated ? screenWidth / 2 : 2.0,
             right: 2.0,
             child: MiniPlayer(),
           ),
