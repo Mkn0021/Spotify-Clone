@@ -6,9 +6,6 @@ import 'package:audiotagger/audiotagger.dart';
 import 'package:audiotagger/models/tag.dart';
 import 'package:http/http.dart';
 import 'package:logging/logging.dart';
-import 'package:spotify/APIs/spotify_api.dart';
-import 'package:spotify/Helpers/matcher.dart';
-import 'package:spotify/Helpers/spotify_helper.dart';
 
 // ignore: avoid_classes_with_only_static_members
 class Lyrics {
@@ -26,10 +23,6 @@ class Lyrics {
     };
 
     Logger.root.info('Getting Synced Lyrics');
-    final res = await getSpotifyLyrics(title, artist);
-    result['lyrics'] = res['lyrics']!;
-    result['type'] = res['type']!;
-    result['source'] = res['source']!;
     if (result['lyrics'] == '') {
       Logger.root.info('Synced Lyrics, not found. Getting text lyrics');
       if (saavnHas) {
@@ -91,64 +84,6 @@ class Lyrics {
       Logger.root.severe('Error in getSaavnLyrics', e);
       return '';
     }
-  }
-
-  static Future<Map<String, String>> getSpotifyLyrics(
-    String title,
-    String artist,
-  ) async {
-    final Map<String, String> result = {
-      'lyrics': '',
-      'type': 'text',
-      'source': 'Spotify',
-    };
-    await callSpotifyFunction(
-      function: (String accessToken) async {
-        final value = await SpotifyApi().searchTrack(
-          accessToken: accessToken,
-          query: '$title - $artist',
-          limit: 1,
-        );
-        try {
-          // Logger.root.info(jsonEncode(value['tracks']['items'][0]));
-          if (value['tracks']['items'].length == 0) {
-            Logger.root.info('No song found');
-            return result;
-          }
-          String title2 = '';
-          String artist2 = '';
-          try {
-            title2 = value['tracks']['items'][0]['name'].toString();
-            artist2 =
-                value['tracks']['items'][0]['artists'][0]['name'].toString();
-          } catch (e) {
-            Logger.root.severe(
-              'Error in extracting artist/title in getSpotifyLyrics for $title - $artist',
-              e,
-            );
-          }
-          final trackId = value['tracks']['items'][0]['id'].toString();
-          if (matchSongs(
-            title: title,
-            artist: artist,
-            title2: title2,
-            artist2: artist2,
-          )) {
-            final Map<String, String> res =
-                await getSpotifyLyricsFromId(trackId);
-            result['lyrics'] = res['lyrics']!;
-            result['type'] = res['type']!;
-            result['source'] = res['source']!;
-          } else {
-            Logger.root.info('Song not matched');
-          }
-        } catch (e) {
-          Logger.root.severe('Error in getSpotifyLyrics', e);
-        }
-      },
-      forceSign: false,
-    );
-    return result;
   }
 
   static Future<Map<String, String>> getSpotifyLyricsFromId(

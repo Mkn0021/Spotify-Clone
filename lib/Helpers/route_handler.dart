@@ -4,12 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:spotify/APIs/api.dart';
-import 'package:spotify/APIs/spotify_api.dart';
 import 'package:spotify/Helpers/audio_query.dart';
-import 'package:spotify/Helpers/spotify_helper.dart';
 import 'package:spotify/Screens/Common/song_list.dart';
 import 'package:spotify/Screens/Player/audioplayer.dart';
-import 'package:spotify/Screens/Search/search.dart';
 import 'package:spotify/Screens/YouTube/youtube_playlist.dart';
 import 'package:spotify/Services/player_service.dart';
 import 'package:spotify/Services/youtube_services.dart';
@@ -43,20 +40,6 @@ class HandleRoute {
             ),
           );
         }
-      }
-    } else if (url.contains('spotify')) {
-      // TODO: Add support for spotify links
-      Logger.root.info('received spotify link');
-      final RegExpMatch? songResult =
-          RegExp(r'.*spotify.com.*?\/(track)\/(.*?)[/?]').firstMatch('$url/');
-      if (songResult != null) {
-        return PageRouteBuilder(
-          opaque: false,
-          pageBuilder: (_, __, ___) => SpotifyUrlHandler(
-            id: songResult[2]!,
-            type: songResult[1]!,
-          ),
-        );
       }
     } else if (url.contains('youtube') || url.contains('youtu.be')) {
       // TODO: Add support for youtube links
@@ -122,37 +105,6 @@ class SaavnUrlHandler extends StatelessWidget {
         );
       }
     });
-    return Container();
-  }
-}
-
-class SpotifyUrlHandler extends StatelessWidget {
-  final String id;
-  final String type;
-  const SpotifyUrlHandler({super.key, required this.id, required this.type});
-
-  @override
-  Widget build(BuildContext context) {
-    if (type == 'track') {
-      callSpotifyFunction(
-        function: (String accessToken) {
-          SpotifyApi().getTrackDetails(accessToken, id).then((value) {
-            Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                opaque: false,
-                pageBuilder: (_, __, ___) => SearchPage(
-                  query: (value['artists'] != null &&
-                          (value['artists'] as List).isNotEmpty)
-                      ? '${value["name"]} by ${value["artists"][0]["name"]}'
-                      : value['name'].toString(),
-                ),
-              ),
-            );
-          });
-        },
-      );
-    }
     return Container();
   }
 }

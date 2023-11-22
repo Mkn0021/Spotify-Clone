@@ -304,8 +304,7 @@ class _DownloadPageState extends State<DownloadPage> {
                           },
                         ),
                         CheckboxListTile(
-                          activeColor:
-                              Theme.of(context).colorScheme.secondary,
+                          activeColor: const Color(0xFF1ED760),
                           title: Text(
                             AppLocalizations.of(context)!.title,
                           ),

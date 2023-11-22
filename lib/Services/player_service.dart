@@ -38,8 +38,6 @@ class PlayerInvoke {
       } else {
         offline = true;
       }
-    } else {
-      offline = offline;
     }
 
     if (!fromMiniplayer) {

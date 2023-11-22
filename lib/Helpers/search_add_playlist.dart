@@ -7,7 +7,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart';
 import 'package:logging/logging.dart';
 import 'package:spotify/APIs/api.dart';
-import 'package:spotify/APIs/spotify_api.dart';
 import 'package:spotify/CustomWidgets/gradient_containers.dart';
 import 'package:spotify/Helpers/playlist.dart';
 import 'package:spotify/Services/youtube_services.dart';
@@ -40,24 +39,6 @@ class SearchAddPlaylist {
     }
   }
 
-  static Future<Map> addSpotifyPlaylist(
-    String title,
-    String accessToken,
-    String playlistId,
-  ) async {
-    try {
-      final List tracks =
-          await SpotifyApi().getAllTracksOfPlaylist(accessToken, playlistId);
-      return {
-        'title': title,
-        'count': tracks.length,
-        'tracks': tracks,
-      };
-    } catch (e) {
-      Logger.root.severe('Error while adding Spotify playlist: $e');
-      return {};
-    }
-  }
 
   static Future<Map> addRessoPlaylist(String inLink) async {
     try {

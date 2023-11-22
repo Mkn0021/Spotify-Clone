@@ -6,7 +6,6 @@ import 'package:spotify/CustomWidgets/gradient_containers.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
 import 'package:spotify/Helpers/countrycodes.dart';
 import 'package:spotify/Screens/Home/saavn.dart' as home_screen;
-import 'package:spotify/Screens/Top Charts/top.dart' as top_screen;
 
 class MusicPlaybackPage extends StatefulWidget {
   final Function? callback;
@@ -251,40 +250,7 @@ class _MusicPlaybackPageState extends State<MusicPlaybackPage> {
               );
             },
           ),
-          ListTile(
-            title: Text(
-              AppLocalizations.of(
-                context,
-              )!
-                  .chartLocation,
-              style: const TextStyle(
-                color: Color(0xffe7e7e7),
-                fontSize: 16,
-                fontFamily: 'Raleway',
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            subtitle: Text(
-              AppLocalizations.of(
-                context,
-              )!
-                  .chartLocationSub,
-            ),
-            trailing: SizedBox(
-              width: 150,
-              child: Text(
-                region,
-                textAlign: TextAlign.end,
-              ),
-            ),
-            dense: true,
-            onTap: () async {
-              region = await SpotifyCountry().changeCountry(context: context);
-              setState(
-                () {},
-              );
-            },
-          ),
+          const SizedBox(height: 8,),
           ListTile(
             title: Text(
               AppLocalizations.of(
@@ -427,6 +393,9 @@ class _MusicPlaybackPageState extends State<MusicPlaybackPage> {
             ),
             dense: true,
           ),
+          const SizedBox(
+            height: 8,
+          ),
           BoxSwitchTile(
             title: Text(
               AppLocalizations.of(
@@ -443,6 +412,9 @@ class _MusicPlaybackPageState extends State<MusicPlaybackPage> {
             keyName: 'loadStart',
             defaultValue: true,
           ),
+          const SizedBox(
+            height: 8,
+          ),
           BoxSwitchTile(
             title: Text(
               AppLocalizations.of(
@@ -458,6 +430,9 @@ class _MusicPlaybackPageState extends State<MusicPlaybackPage> {
             ),
             keyName: 'resetOnSkip',
             defaultValue: false,
+          ),
+          const SizedBox(
+            height: 8,
           ),
           BoxSwitchTile(
             title: Text(
@@ -560,19 +535,12 @@ class SpotifyCountry {
                     value: countries[idx],
                     groupValue: region,
                     onChanged: (value) {
-                      top_screen.localSongs = [];
-                      region = countries[idx];
-                      top_screen.localFetched = false;
-                      top_screen.localFetchFinished.value = false;
                       Hive.box('settings').put('region', region);
                       Navigator.pop(context);
                     },
                   ),
                   selected: region == countries[idx],
                   onTap: () {
-                    top_screen.localSongs = [];
-                    region = countries[idx];
-                    top_screen.localFetchFinished.value = false;
                     Hive.box('settings').put('region', region);
                     Navigator.pop(context);
                   },
