@@ -25,8 +25,16 @@ class BoxSwitchTile extends StatelessWidget {
       valueListenable: Hive.box('settings').listenable(),
       builder: (BuildContext context, Box box, Widget? widget) {
         return SwitchListTile(
-          activeColor: Theme.of(context).colorScheme.secondary,
-          title: title,
+          activeColor: const Color(0xFF1ED760),
+          title: DefaultTextStyle(
+            style: const TextStyle(
+              color: Color(0xffe7e7e7),
+              fontSize: 16,
+              fontFamily: 'Raleway',
+              fontWeight: FontWeight.w400,
+            ),
+            child: title,
+          ),
           subtitle: subtitle,
           isThreeLine: isThreeLine ?? false,
           dense: true,

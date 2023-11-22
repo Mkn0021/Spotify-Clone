@@ -27,318 +27,359 @@ class _DownloadPageState extends State<DownloadPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GradientContainer(
-      child: Scaffold(
+    final bool rotated =
+        MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
+    return Scaffold(
+      backgroundColor: const Color(0xff121212),
+      appBar: AppBar(
+        elevation: 0,
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          centerTitle: true,
-          title: Text(
-            AppLocalizations.of(
-              context,
-            )!
-                .down,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.secondary,
-            ),
-          ),
-          iconTheme: IconThemeData(
-            color: Theme.of(context).iconTheme.color,
-          ),
+        centerTitle: true,
+        title:rotated
+            ? Text(
+          AppLocalizations.of(
+            context,
+          )!
+              .down,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+                  color: Color(0xffeeeeee),
+                  fontSize: 18,
+                  fontFamily: 'Raleway',
+                  fontWeight: FontWeight.w600,
+                ),
+        )
+            : const SizedBox(),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).iconTheme.color,
         ),
-        body: ListView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(10.0),
-          children: [
-            ListTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .downQuality,
+      ),
+      body: ListView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 15, bottom: 30, left: 10),
+            child: Text(
+              'Download',
+              style: TextStyle(
+                color: Color(0xffeeeeee),
+                fontSize: 40,
               ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .downQualitySub,
-              ),
-              onTap: () {},
-              trailing: DropdownButton(
-                value: downloadQuality,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                ),
-                underline: const SizedBox(),
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    setState(
-                      () {
-                        downloadQuality = newValue;
-                        Hive.box('settings').put('downloadQuality', newValue);
-                      },
-                    );
-                  }
-                },
-                items: <String>['96 kbps', '160 kbps', '320 kbps']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                    ),
-                  );
-                }).toList(),
-              ),
-              dense: true,
             ),
-            ListTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .ytDownQuality,
+          ),
+          ListTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .downQuality,
+              style: const TextStyle(
+                color: Color(0xffe7e7e7),
+                fontSize: 16,
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.w400,
               ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .ytDownQualitySub,
-              ),
-              onTap: () {},
-              trailing: DropdownButton(
-                value: ytDownloadQuality,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                ),
-                underline: const SizedBox(),
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    setState(
-                      () {
-                        ytDownloadQuality = newValue;
-                        Hive.box('settings').put('ytDownloadQuality', newValue);
-                      },
-                    );
-                  }
-                },
-                items: <String>['Low', 'High']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                    ),
-                  );
-                }).toList(),
-              ),
-              dense: true,
             ),
-            ListTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .downLocation,
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .downQualitySub,
+            ),
+            onTap: () {},
+            trailing: DropdownButton(
+              value: downloadQuality,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
               ),
-              subtitle: Text(downloadPath),
-              trailing: TextButton(
-                style: TextButton.styleFrom(
-                  foregroundColor:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.grey[700],
-                ),
-                onPressed: () async {
-                  downloadPath = await ExtStorageProvider.getExtStorage(
-                        dirName: 'Music',
-                        writeAccess: true,
-                      ) ??
-                      '/storage/emulated/0/Music';
-                  Hive.box('settings').put('downloadPath', downloadPath);
+              underline: const SizedBox(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
                   setState(
-                    () {},
-                  );
-                },
-                child: Text(
-                  AppLocalizations.of(
-                    context,
-                  )!
-                      .reset,
-                ),
-              ),
-              onTap: () async {
-                final String temp = await Picker.selectFolder(
-                  context: context,
-                  message: AppLocalizations.of(
-                    context,
-                  )!
-                      .selectDownLocation,
-                );
-                if (temp.trim() != '') {
-                  downloadPath = temp;
-                  Hive.box('settings').put('downloadPath', temp);
-                  setState(
-                    () {},
-                  );
-                } else {
-                  ShowSnackBar().showSnackBar(
-                    context,
-                    AppLocalizations.of(
-                      context,
-                    )!
-                        .noFolderSelected,
+                    () {
+                      downloadQuality = newValue;
+                      Hive.box('settings').put('downloadQuality', newValue);
+                    },
                   );
                 }
               },
-              dense: true,
+              items: <String>['96 kbps', '160 kbps', '320 kbps']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                  ),
+                );
+              }).toList(),
             ),
-            ListTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .downFilename,
+            dense: true,
+          ),
+          ListTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .ytDownQuality,
+              style: const TextStyle(
+                color: Color(0xffe7e7e7),
+                fontSize: 16,
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.w400,
               ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .downFilenameSub,
+            ),
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .ytDownQualitySub,
+            ),
+            onTap: () {},
+            trailing: DropdownButton(
+              value: ytDownloadQuality,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
               ),
-              dense: true,
-              onTap: () {
-                showModalBottomSheet(
-                  isDismissible: true,
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  builder: (BuildContext context) {
-                    return BottomGradientContainer(
-                      borderRadius: BorderRadius.circular(
-                        20.0,
-                      ),
-                      child: ListView(
-                        physics: const BouncingScrollPhysics(),
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.fromLTRB(
-                          0,
-                          10,
-                          0,
-                          10,
-                        ),
-                        children: [
-                          CheckboxListTile(
-                            activeColor:
-                                Theme.of(context).colorScheme.secondary,
-                            title: Text(
-                              '${AppLocalizations.of(context)!.title} - ${AppLocalizations.of(context)!.artist}',
-                            ),
-                            value: downFilename == 0,
-                            selected: downFilename == 0,
-                            onChanged: (bool? val) {
-                              if (val ?? false) {
-                                downFilename = 0;
-                                settingsBox.put('downFilename', 0);
-                                Navigator.pop(context);
-                              }
-                            },
-                          ),
-                          CheckboxListTile(
-                            activeColor:
-                                Theme.of(context).colorScheme.secondary,
-                            title: Text(
-                              '${AppLocalizations.of(context)!.artist} - ${AppLocalizations.of(context)!.title}',
-                            ),
-                            value: downFilename == 1,
-                            selected: downFilename == 1,
-                            onChanged: (val) {
-                              if (val ?? false) {
-                                downFilename = 1;
-                                settingsBox.put('downFilename', 1);
-                                Navigator.pop(context);
-                              }
-                            },
-                          ),
-                          CheckboxListTile(
-                            activeColor:
-                                Theme.of(context).colorScheme.secondary,
-                            title: Text(
-                              AppLocalizations.of(context)!.title,
-                            ),
-                            value: downFilename == 2,
-                            selected: downFilename == 2,
-                            onChanged: (val) {
-                              if (val ?? false) {
-                                downFilename = 2;
-                                settingsBox.put('downFilename', 2);
-                                Navigator.pop(context);
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+              underline: const SizedBox(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(
+                    () {
+                      ytDownloadQuality = newValue;
+                      Hive.box('settings').put('ytDownloadQuality', newValue);
+                    },
+                  );
+                }
+              },
+              items: <String>['Low', 'High']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                  ),
+                );
+              }).toList(),
+            ),
+            dense: true,
+          ),
+          ListTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .downLocation,
+              style: const TextStyle(
+                color: Color(0xffe7e7e7),
+                fontSize: 16,
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            subtitle: Text(downloadPath),
+            trailing: TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.grey[700],
+              ),
+              onPressed: () async {
+                downloadPath = await ExtStorageProvider.getExtStorage(
+                      dirName: 'Music',
+                      writeAccess: true,
+                    ) ??
+                    '/storage/emulated/0/Music';
+                Hive.box('settings').put('downloadPath', downloadPath);
+                setState(
+                  () {},
                 );
               },
+              child: Text(
+                AppLocalizations.of(
+                  context,
+                )!
+                    .reset,
+              ),
             ),
-            BoxSwitchTile(
-              title: Text(
-                AppLocalizations.of(
+            onTap: () async {
+              final String temp = await Picker.selectFolder(
+                context: context,
+                message: AppLocalizations.of(
                   context,
                 )!
-                    .createAlbumFold,
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
+                    .selectDownLocation,
+              );
+              if (temp.trim() != '') {
+                downloadPath = temp;
+                Hive.box('settings').put('downloadPath', temp);
+                setState(
+                  () {},
+                );
+              } else {
+                ShowSnackBar().showSnackBar(
                   context,
-                )!
-                    .createAlbumFoldSub,
+                  AppLocalizations.of(
+                    context,
+                  )!
+                      .noFolderSelected,
+                );
+              }
+            },
+            dense: true,
+          ),
+          ListTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .downFilename,
+              style: const TextStyle(
+                color: Color(0xffe7e7e7),
+                fontSize: 16,
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.w400,
               ),
-              keyName: 'createDownloadFolder',
-              isThreeLine: true,
-              defaultValue: false,
             ),
-            BoxSwitchTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .createYtFold,
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .createYtFoldSub,
-              ),
-              keyName: 'createYoutubeFolder',
-              isThreeLine: true,
-              defaultValue: false,
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .downFilenameSub,
             ),
-            BoxSwitchTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .downLyrics,
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .downLyricsSub,
-              ),
-              keyName: 'downloadLyrics',
-              defaultValue: false,
-              isThreeLine: true,
+            dense: true,
+            onTap: () {
+              showModalBottomSheet(
+                isDismissible: true,
+                backgroundColor: Colors.transparent,
+                context: context,
+                builder: (BuildContext context) {
+                  return BottomGradientContainer(
+                    borderRadius: BorderRadius.circular(
+                      20.0,
+                    ),
+                    child: ListView(
+                      physics: const BouncingScrollPhysics(),
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.fromLTRB(
+                        0,
+                        10,
+                        0,
+                        10,
+                      ),
+                      children: [
+                        CheckboxListTile(
+                          activeColor:
+                              Theme.of(context).colorScheme.secondary,
+                          title: Text(
+                            '${AppLocalizations.of(context)!.title} - ${AppLocalizations.of(context)!.artist}',
+                          ),
+                          value: downFilename == 0,
+                          selected: downFilename == 0,
+                          onChanged: (bool? val) {
+                            if (val ?? false) {
+                              downFilename = 0;
+                              settingsBox.put('downFilename', 0);
+                              Navigator.pop(context);
+                            }
+                          },
+                        ),
+                        CheckboxListTile(
+                          activeColor:
+                              Theme.of(context).colorScheme.secondary,
+                          title: Text(
+                            '${AppLocalizations.of(context)!.artist} - ${AppLocalizations.of(context)!.title}',
+                          ),
+                          value: downFilename == 1,
+                          selected: downFilename == 1,
+                          onChanged: (val) {
+                            if (val ?? false) {
+                              downFilename = 1;
+                              settingsBox.put('downFilename', 1);
+                              Navigator.pop(context);
+                            }
+                          },
+                        ),
+                        CheckboxListTile(
+                          activeColor:
+                              Theme.of(context).colorScheme.secondary,
+                          title: Text(
+                            AppLocalizations.of(context)!.title,
+                          ),
+                          value: downFilename == 2,
+                          selected: downFilename == 2,
+                          onChanged: (val) {
+                            if (val ?? false) {
+                              downFilename = 2;
+                              settingsBox.put('downFilename', 2);
+                              Navigator.pop(context);
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+          BoxSwitchTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .createAlbumFold,
             ),
-          ],
-        ),
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .createAlbumFoldSub,
+            ),
+            keyName: 'createDownloadFolder',
+            isThreeLine: true,
+            defaultValue: false,
+          ),
+          const SizedBox(height: 10,),
+          BoxSwitchTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .createYtFold,
+            ),
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .createYtFoldSub,
+            ),
+            keyName: 'createYoutubeFolder',
+            isThreeLine: true,
+            defaultValue: false,
+          ),
+          const SizedBox(height: 10,),
+          BoxSwitchTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .downLyrics,
+            ),
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .downLyricsSub,
+            ),
+            keyName: 'downloadLyrics',
+            defaultValue: false,
+            isThreeLine: true,
+          ),
+        ],
       ),
     );
   }

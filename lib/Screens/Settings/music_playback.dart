@@ -48,422 +48,467 @@ class _MusicPlaybackPageState extends State<MusicPlaybackPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GradientContainer(
-      child: Scaffold(
+    final bool rotated =
+        MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
+    return Scaffold(
+      backgroundColor: const Color(0xff121212),
+      appBar: AppBar(
+        elevation: 0,
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          centerTitle: true,
-          title: Text(
-            AppLocalizations.of(
-              context,
-            )!
-                .musicPlayback,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.secondary,
+        centerTitle: true,
+        title:rotated
+            ? Text(
+          AppLocalizations.of(
+            context,
+          )!
+              .musicPlayback,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+                  color: Color(0xffeeeeee),
+                  fontSize: 18,
+                  fontFamily: 'Raleway',
+                  fontWeight: FontWeight.w600,
+                ),
+        )
+            : const SizedBox(),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).iconTheme.color,
+        ),
+      ),
+      body: ListView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 15, bottom: 30, left: 10),
+            child: Text(
+              'Music & Playback',
+              style: TextStyle(
+                color: Color(0xffeeeeee),
+                fontSize: 40,
+              ),
             ),
           ),
-          iconTheme: IconThemeData(
-            color: Theme.of(context).iconTheme.color,
-          ),
-        ),
-        body: ListView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(10.0),
-          children: [
-            ListTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .musicLang,
+          ListTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .musicLang,
+              style: const TextStyle(
+                color: Color(0xffe7e7e7),
+                fontSize: 16,
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.w400,
               ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .musicLangSub,
+            ),
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .musicLangSub,
+            ),
+            trailing: SizedBox(
+              width: 150,
+              child: Text(
+                preferredLanguage.isEmpty
+                    ? 'None'
+                    : preferredLanguage.join(', '),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
               ),
-              trailing: SizedBox(
-                width: 150,
-                child: Text(
-                  preferredLanguage.isEmpty
-                      ? 'None'
-                      : preferredLanguage.join(', '),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
-                ),
-              ),
-              dense: true,
-              onTap: () {
-                showModalBottomSheet(
-                  isDismissible: true,
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  builder: (BuildContext context) {
-                    final List checked = List.from(preferredLanguage);
-                    return StatefulBuilder(
-                      builder: (
-                        BuildContext context,
-                        StateSetter setStt,
-                      ) {
-                        return BottomGradientContainer(
-                          borderRadius: BorderRadius.circular(
-                            20.0,
-                          ),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: ListView.builder(
-                                  physics: const BouncingScrollPhysics(),
-                                  shrinkWrap: true,
-                                  padding: const EdgeInsets.fromLTRB(
-                                    0,
-                                    10,
-                                    0,
-                                    10,
+            ),
+            dense: true,
+            onTap: () {
+              showModalBottomSheet(
+                isDismissible: true,
+                backgroundColor: Colors.transparent,
+                context: context,
+                builder: (BuildContext context) {
+                  final List checked = List.from(preferredLanguage);
+                  return StatefulBuilder(
+                    builder: (
+                      BuildContext context,
+                      StateSetter setStt,
+                    ) {
+                      return BottomGradientContainer(
+                        borderRadius: BorderRadius.circular(
+                          20.0,
+                        ),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: ListView.builder(
+                                physics: const BouncingScrollPhysics(),
+                                shrinkWrap: true,
+                                padding: const EdgeInsets.fromLTRB(
+                                  0,
+                                  10,
+                                  0,
+                                  10,
+                                ),
+                                itemCount: languages.length,
+                                itemBuilder: (context, idx) {
+                                  return CheckboxListTile(
+                                    activeColor: Theme.of(context)
+                                        .colorScheme
+                                        .secondary,
+                                    checkColor: Theme.of(context)
+                                                .colorScheme
+                                                .secondary ==
+                                            Colors.white
+                                        ? Colors.black
+                                        : null,
+                                    value: checked.contains(
+                                      languages[idx],
+                                    ),
+                                    title: Text(
+                                      languages[idx],
+                                    ),
+                                    onChanged: (bool? value) {
+                                      value!
+                                          ? checked.add(languages[idx])
+                                          : checked.remove(
+                                              languages[idx],
+                                            );
+                                      setStt(
+                                        () {},
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Theme.of(context)
+                                        .colorScheme
+                                        .secondary,
                                   ),
-                                  itemCount: languages.length,
-                                  itemBuilder: (context, idx) {
-                                    return CheckboxListTile(
-                                      activeColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                      checkColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary ==
-                                              Colors.white
-                                          ? Colors.black
-                                          : null,
-                                      value: checked.contains(
-                                        languages[idx],
-                                      ),
-                                      title: Text(
-                                        languages[idx],
-                                      ),
-                                      onChanged: (bool? value) {
-                                        value!
-                                            ? checked.add(languages[idx])
-                                            : checked.remove(
-                                                languages[idx],
-                                              );
-                                        setStt(
-                                          () {},
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    AppLocalizations.of(
+                                      context,
+                                    )!
+                                        .cancel,
+                                  ),
+                                ),
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Theme.of(context)
+                                        .colorScheme
+                                        .secondary,
+                                  ),
+                                  onPressed: () {
+                                    setState(
+                                      () {
+                                        preferredLanguage = checked;
+                                        Navigator.pop(context);
+                                        Hive.box('settings').put(
+                                          'preferredLanguage',
+                                          checked,
                                         );
+                                        home_screen.fetched = false;
+                                        home_screen.preferredLanguage =
+                                            preferredLanguage;
+                                        widget.callback!();
                                       },
                                     );
-                                  },
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  TextButton(
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text(
-                                      AppLocalizations.of(
+                                    if (preferredLanguage.isEmpty) {
+                                      ShowSnackBar().showSnackBar(
                                         context,
-                                      )!
-                                          .cancel,
-                                    ),
-                                  ),
-                                  TextButton(
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
-                                    onPressed: () {
-                                      setState(
-                                        () {
-                                          preferredLanguage = checked;
-                                          Navigator.pop(context);
-                                          Hive.box('settings').put(
-                                            'preferredLanguage',
-                                            checked,
-                                          );
-                                          home_screen.fetched = false;
-                                          home_screen.preferredLanguage =
-                                              preferredLanguage;
-                                          widget.callback!();
-                                        },
-                                      );
-                                      if (preferredLanguage.isEmpty) {
-                                        ShowSnackBar().showSnackBar(
+                                        AppLocalizations.of(
                                           context,
-                                          AppLocalizations.of(
-                                            context,
-                                          )!
-                                              .noLangSelected,
-                                        );
-                                      }
-                                    },
-                                    child: Text(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!
-                                          .ok,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                        )!
+                                            .noLangSelected,
+                                      );
+                                    }
+                                  },
+                                  child: Text(
+                                    AppLocalizations.of(
+                                      context,
+                                    )!
+                                        .ok,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                );
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          ),
+          ListTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .chartLocation,
+              style: const TextStyle(
+                color: Color(0xffe7e7e7),
+                fontSize: 16,
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .chartLocationSub,
+            ),
+            trailing: SizedBox(
+              width: 150,
+              child: Text(
+                region,
+                textAlign: TextAlign.end,
+              ),
+            ),
+            dense: true,
+            onTap: () async {
+              region = await SpotifyCountry().changeCountry(context: context);
+              setState(
+                () {},
+              );
+            },
+          ),
+          ListTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .streamQuality,
+              style: const TextStyle(
+                color: Color(0xffe7e7e7),
+                fontSize: 16,
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .streamQualitySub,
+            ),
+            onTap: () {},
+            trailing: DropdownButton(
+              value: streamingMobileQuality,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
+              ),
+              underline: const SizedBox(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(
+                    () {
+                      streamingMobileQuality = newValue;
+                      Hive.box('settings').put('streamingQuality', newValue);
+                    },
+                  );
+                }
               },
-            ),
-            ListTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .chartLocation,
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .chartLocationSub,
-              ),
-              trailing: SizedBox(
-                width: 150,
-                child: Text(
-                  region,
-                  textAlign: TextAlign.end,
-                ),
-              ),
-              dense: true,
-              onTap: () async {
-                region = await SpotifyCountry().changeCountry(context: context);
-                setState(
-                  () {},
+              items: <String>['96 kbps', '160 kbps', '320 kbps']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
                 );
+              }).toList(),
+            ),
+            dense: true,
+          ),
+          ListTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .streamWifiQuality,
+              style: const TextStyle(
+                color: Color(0xffe7e7e7),
+                fontSize: 16,
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .streamWifiQualitySub,
+            ),
+            onTap: () {},
+            trailing: DropdownButton(
+              value: streamingWifiQuality,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
+              ),
+              underline: const SizedBox(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(
+                    () {
+                      streamingWifiQuality = newValue;
+                      Hive.box('settings')
+                          .put('streamingWifiQuality', newValue);
+                    },
+                  );
+                }
               },
+              items: <String>['96 kbps', '160 kbps', '320 kbps']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
             ),
-            ListTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .streamQuality,
+            dense: true,
+          ),
+          ListTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .ytStreamQuality,
+              style: const TextStyle(
+                color: Color(0xffe7e7e7),
+                fontSize: 16,
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.w400,
               ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .streamQualitySub,
+            ),
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .ytStreamQualitySub,
+            ),
+            onTap: () {},
+            trailing: DropdownButton(
+              value: ytQuality,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
               ),
-              onTap: () {},
-              trailing: DropdownButton(
-                value: streamingMobileQuality,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                ),
-                underline: const SizedBox(),
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    setState(
-                      () {
-                        streamingMobileQuality = newValue;
-                        Hive.box('settings').put('streamingQuality', newValue);
-                      },
-                    );
-                  }
-                },
-                items: <String>['96 kbps', '160 kbps', '320 kbps']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
+              underline: const SizedBox(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(
+                    () {
+                      ytQuality = newValue;
+                      Hive.box('settings').put('ytQuality', newValue);
+                    },
                   );
-                }).toList(),
-              ),
-              dense: true,
+                }
+              },
+              items: <String>['Low', 'High']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
             ),
-            ListTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .streamWifiQuality,
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .streamWifiQualitySub,
-              ),
-              onTap: () {},
-              trailing: DropdownButton(
-                value: streamingWifiQuality,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                ),
-                underline: const SizedBox(),
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    setState(
-                      () {
-                        streamingWifiQuality = newValue;
-                        Hive.box('settings')
-                            .put('streamingWifiQuality', newValue);
-                      },
-                    );
-                  }
-                },
-                items: <String>['96 kbps', '160 kbps', '320 kbps']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              dense: true,
+            dense: true,
+          ),
+          BoxSwitchTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .loadLast,
             ),
-            ListTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .ytStreamQuality,
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .ytStreamQualitySub,
-              ),
-              onTap: () {},
-              trailing: DropdownButton(
-                value: ytQuality,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                ),
-                underline: const SizedBox(),
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    setState(
-                      () {
-                        ytQuality = newValue;
-                        Hive.box('settings').put('ytQuality', newValue);
-                      },
-                    );
-                  }
-                },
-                items: <String>['Low', 'High']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              dense: true,
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .loadLastSub,
             ),
-            BoxSwitchTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .loadLast,
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .loadLastSub,
-              ),
-              keyName: 'loadStart',
-              defaultValue: true,
+            keyName: 'loadStart',
+            defaultValue: true,
+          ),
+          BoxSwitchTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .resetOnSkip,
             ),
-            BoxSwitchTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .resetOnSkip,
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .resetOnSkipSub,
-              ),
-              keyName: 'resetOnSkip',
-              defaultValue: false,
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .resetOnSkipSub,
             ),
-            BoxSwitchTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .enforceRepeat,
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .enforceRepeatSub,
-              ),
-              keyName: 'enforceRepeat',
-              defaultValue: false,
+            keyName: 'resetOnSkip',
+            defaultValue: false,
+          ),
+          BoxSwitchTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .enforceRepeat,
             ),
-            BoxSwitchTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .autoplay,
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .autoplaySub,
-              ),
-              keyName: 'autoplay',
-              defaultValue: true,
-              isThreeLine: true,
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .enforceRepeatSub,
             ),
-            BoxSwitchTile(
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .cacheSong,
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!
-                    .cacheSongSub,
-              ),
-              keyName: 'cacheSong',
-              defaultValue: true,
+            keyName: 'enforceRepeat',
+            defaultValue: false,
+          ),
+          BoxSwitchTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .autoplay,
             ),
-          ],
-        ),
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .autoplaySub,
+            ),
+            keyName: 'autoplay',
+            defaultValue: true,
+            isThreeLine: true,
+          ),
+          BoxSwitchTile(
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .cacheSong,
+            ),
+            subtitle: Text(
+              AppLocalizations.of(
+                context,
+              )!
+                  .cacheSongSub,
+            ),
+            keyName: 'cacheSong',
+            defaultValue: true,
+          ),
+        ],
       ),
     );
   }
@@ -504,6 +549,12 @@ class SpotifyCountry {
                 child: ListTile(
                   title: Text(
                     countries[idx],
+                    style: const TextStyle(
+                      color: Color(0xffe7e7e7),
+                      fontSize: 16,
+                      fontFamily: 'Raleway',
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                   leading: Radio(
                     value: countries[idx],
