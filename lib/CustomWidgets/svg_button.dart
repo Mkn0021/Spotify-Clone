@@ -15,8 +15,8 @@ class SvgIconButton extends StatefulWidget {
   const SvgIconButton({
     this.unselectedSVG,
     required this.selectedSVG,
-     this.selectedColor,
-     this.unselectedColor,
+    this.selectedColor,
+    this.unselectedColor,
     this.iconSize,
     this.angle,
     this.onTap,
@@ -42,9 +42,12 @@ class _SvgIconButtonState extends State<SvgIconButton> {
         widget.onTap?.call();
       },
       icon: Transform.rotate(
-        angle: (widget.angle ?? 0) * (3.1416 / 180.0), // Convert degrees to radians 
+        angle: (widget.angle ?? 0) *
+            (3.1416 / 180.0), // Convert degrees to radians
         child: SvgPicture.asset(
-          isToggled ? widget.selectedSVG : widget.unselectedSVG ?? widget.selectedSVG,
+          isToggled
+              ? widget.selectedSVG
+              : widget.unselectedSVG ?? widget.selectedSVG,
           width: widget.iconSize ?? 24,
           height: widget.iconSize ?? 24,
           // ignore: deprecated_member_use
@@ -59,13 +62,16 @@ class _SvgIconButtonState extends State<SvgIconButton> {
 
 class CustomContainer extends StatefulWidget {
   final String text;
-  final VoidCallback? onTap;
+  final Function(bool)? onTap; // Change the onTap signature
   final bool? stateCheck;
+  final bool? selected;
 
-  const CustomContainer({super.key, 
-  required this.text,
-  this.onTap,
-  this.stateCheck,
+  const CustomContainer({
+    super.key,
+    required this.text,
+    this.onTap,
+    this.stateCheck,
+    this.selected,
   });
 
   @override
@@ -73,10 +79,11 @@ class CustomContainer extends StatefulWidget {
 }
 
 class _CustomContainerState extends State<CustomContainer> {
-  bool isClicked = false;
+  
 
   @override
   Widget build(BuildContext context) {
+    bool isClicked = widget.selected ?? false;
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -84,19 +91,23 @@ class _CustomContainerState extends State<CustomContainer> {
         });
 
         // Call the onTap callback if provided
-        widget.onTap?.call();
+        widget.onTap?.call(isClicked);
       },
       child: Container(
         decoration: BoxDecoration(
-            color: widget.stateCheck?? isClicked ? Theme.of(context).colorScheme.secondary : const Color(0xFF2A2A2A),
-            borderRadius: const BorderRadius.all(Radius.circular(20)),),
+          color: widget.stateCheck ?? isClicked
+              ? Theme.of(context).colorScheme.secondary
+              : const Color(0xFF2A2A2A),
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
         margin: const EdgeInsets.only(bottom: 12, right: 10),
         child: Text(
           widget.text,
           style: TextStyle(
-            color:
-                widget.stateCheck??isClicked ? const Color(0xfe000000) : const Color(0xfeffffff),
+            color: widget.stateCheck ?? isClicked
+                ? const Color(0xfe000000)
+                : const Color(0xfeffffff),
             fontWeight: FontWeight.w500,
             fontFamily: 'Raleway',
             fontStyle: FontStyle.normal,

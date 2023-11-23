@@ -294,7 +294,7 @@ class _HomePageState extends State<HomePage> {
                                                       text: 'Music',
                                                       stateCheck:
                                                           showMusicContainer,
-                                                      onTap: () {
+                                                      onTap: (showMusicContainer) {
                                                         setState(() {
                                                           showMusicContainer =
                                                               !showMusicContainer;
@@ -309,7 +309,7 @@ class _HomePageState extends State<HomePage> {
                                                       text: 'Podcasts & Shows',
                                                       stateCheck:
                                                           showPodcastsContainer,
-                                                      onTap: () {
+                                                      onTap: (showPodcastsContainer) {
                                                         setState(() {
                                                           showPodcastsContainer =
                                                               !showPodcastsContainer;

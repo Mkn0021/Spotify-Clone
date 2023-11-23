@@ -107,7 +107,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                               CustomContainer(
                                 text: 'Downloaded',
                                 stateCheck: showDownloadedContentNotifier.value,
-                                onTap: () {
+                                onTap: (showDownloadedContent) { //a random bool passed
                                   setState(() {
                                     showDownloadedContentNotifier.value =
                                         !showDownloadedContentNotifier.value;
