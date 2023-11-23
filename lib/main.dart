@@ -33,7 +33,7 @@ import 'package:spotify/Screens/Login/auth.dart';
 import 'package:spotify/Screens/Login/pref.dart';
 import 'package:spotify/Screens/Player/audioplayer.dart';
 import 'package:spotify/Screens/Search/search_page.dart';
-import 'package:spotify/Screens/Settings/new_settings_page.dart';
+import 'package:spotify/Screens/Settings/settings_page.dart';
 import 'package:spotify/Services/audio_service.dart';
 import 'package:spotify/theme/app_theme.dart';
 

@@ -1,4 +1,4 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole)
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -24,7 +24,7 @@ class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
     'fullMix',
   ];
   final List<String> recommended = [
-    'halfDark',
+    'fullLight',
     'fullDark',
   ];
   final Map<String, String> typeMapping = {
@@ -38,7 +38,7 @@ class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
   final List<Color?> gradientColor = [Colors.lightGreen, Colors.teal];
   final MyTheme currentTheme = GetIt.I<MyTheme>();
   String gradientType = Hive.box('settings')
-      .get('gradientType', defaultValue: 'halfDark')
+      .get('gradientType', defaultValue: 'fullLight')
       .toString();
 
   @override

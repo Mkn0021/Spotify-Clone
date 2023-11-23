@@ -11,7 +11,7 @@ import 'package:spotify/Screens/Library/recent.dart';
 import 'package:spotify/Screens/Library/stats.dart';
 import 'package:spotify/Screens/Login/auth.dart';
 import 'package:spotify/Screens/Login/pref.dart';
-import 'package:spotify/Screens/Settings/new_settings_page.dart';
+import 'package:spotify/Screens/Settings/settings_page.dart';
 
 Widget initialFuntion() {
   return Hive.box('settings').get('userId') != null ? HomePage() : AuthScreen();

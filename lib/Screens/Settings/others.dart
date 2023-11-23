@@ -43,20 +43,20 @@ class _OthersPageState extends State<OthersPage> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         centerTitle: true,
-        title:rotated
+        title: rotated
             ? Text(
-          AppLocalizations.of(
-            context,
-          )!
-              .others,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
+                AppLocalizations.of(
+                  context,
+                )!
+                    .others,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
                   color: Color(0xffeeeeee),
                   fontSize: 18,
                   fontFamily: 'Raleway',
                   fontWeight: FontWeight.w600,
                 ),
-        )
+              )
             : const SizedBox(),
         iconTheme: IconThemeData(
           color: Theme.of(context).iconTheme.color,
@@ -415,6 +415,12 @@ class _OthersPageState extends State<OthersPage> {
                 context,
               )!
                   .liveSearch,
+              style: const TextStyle(
+                color: Color(0xffe7e7e7),
+                fontSize: 16,
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.w400,
+              ),
             ),
             subtitle: Text(
               AppLocalizations.of(
@@ -477,7 +483,9 @@ class _OthersPageState extends State<OthersPage> {
             isThreeLine: true,
             defaultValue: false,
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(
+            height: 10,
+          ),
           BoxSwitchTile(
             title: Text(
               AppLocalizations.of(
@@ -493,7 +501,7 @@ class _OthersPageState extends State<OthersPage> {
             ),
             isThreeLine: true,
             keyName: 'stopForegroundService',
-            defaultValue: true,
+            defaultValue: false,
           ),
           // const BoxSwitchTile(
           //   title: Text('Remove Service from foreground when paused'),
@@ -503,7 +511,7 @@ class _OthersPageState extends State<OthersPage> {
           //   keyName: 'stopServiceOnPause',
           //   defaultValue: true,
           // ),
-          BoxSwitchTile(
+          /*BoxSwitchTile(
             title: Text(
               AppLocalizations.of(
                 context,
@@ -519,8 +527,10 @@ class _OthersPageState extends State<OthersPage> {
             keyName: 'checkUpdate',
             isThreeLine: true,
             defaultValue: false,
+          ),*/
+          const SizedBox(
+            height: 10,
           ),
-          const SizedBox(height: 10,),
           BoxSwitchTile(
             title: Text(
               AppLocalizations.of(
@@ -633,10 +643,10 @@ class _OthersPageState extends State<OthersPage> {
                       actions: [
                         TextButton(
                           style: TextButton.styleFrom(
-                            foregroundColor: Theme.of(context).brightness ==
-                                    Brightness.dark
-                                ? Colors.white
-                                : Colors.grey[700],
+                            foregroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey[700],
                           ),
                           onPressed: () {
                             Navigator.pop(context);

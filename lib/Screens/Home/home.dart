@@ -12,7 +12,7 @@ import 'package:spotify/CustomWidgets/svg_button.dart';
 import 'package:spotify/Screens/Home/saavn.dart';
 import 'package:spotify/Screens/Library/library.dart';
 import 'package:spotify/Screens/Search/search_page.dart';
-import 'package:spotify/Screens/Settings/new_settings_page.dart';
+import 'package:spotify/Screens/Settings/settings_page.dart';
 import 'package:spotify/Screens/YouTube/youtube_home.dart';
 
 class HomePage extends StatefulWidget {

@@ -262,6 +262,7 @@ class _ThemePageState extends State<ThemePage> {
             visible: Theme.of(context).brightness == Brightness.dark,
             child: Column(
               children: [
+                /*
                 ListTile(
                   title: Text(
                     AppLocalizations.of(
@@ -384,7 +385,7 @@ class _ThemePageState extends State<ThemePage> {
                     );
                   },
                   dense: true,
-                ),
+                ),*/
                 ListTile(
                   title: Text(
                     AppLocalizations.of(
@@ -729,6 +730,7 @@ class _ThemePageState extends State<ThemePage> {
               ],
             ),
           ),
+          /*
           ListTile(
             title: Text(
               AppLocalizations.of(
@@ -770,7 +772,7 @@ class _ThemePageState extends State<ThemePage> {
                 colorHue,
               );
             },
-          ),
+          ), */
           ListTile(
             title: Text(
               AppLocalizations.of(
