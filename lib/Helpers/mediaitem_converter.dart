@@ -1,8 +1,25 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
 
 import 'package:audio_service/audio_service.dart';
-import 'package:spotify/Helpers/image_resolution_modifier.dart';
-import 'package:spotify/Helpers/song_item.dart';
+import 'package:spotify/Models/song_item.dart';
+import 'package:spotify/Models/url_image_generator.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 // ignore: avoid_classes_with_only_static_members
@@ -22,8 +39,7 @@ class MediaItemConverter {
       'subtitle': mediaItem.extras?['subtitle'],
       'title': mediaItem.title,
       'url': mediaItem.extras!['url'].toString(),
-      'lowUrl': mediaItem.extras!['lowUrl']?.toString(),
-      'highUrl': mediaItem.extras!['highUrl']?.toString(),
+      'allUrls': mediaItem.extras!['allUrls'],
       'year': mediaItem.extras?['year'].toString(),
       '320kbps': mediaItem.extras?['320kbps'],
       'quality': mediaItem.extras?['quality'],
@@ -53,13 +69,12 @@ class MediaItemConverter {
       ),
       title: song['title'].toString(),
       artUri: Uri.parse(
-        getImageUrl(song['image'].toString()),
+        UrlImageGetter([song['image'].toString()]).highQuality,
       ),
       genre: song['language'].toString(),
       extras: {
         'url': song['url'],
-        'lowUrl': song['lowUrl'],
-        'highUrl': song['highUrl'],
+        'allUrls': song['allUrls'],
         'year': song['year'],
         'language': song['language'],
         '320kbps': song['320kbps'],
@@ -119,12 +134,12 @@ class MediaItemConverter {
       duration: songItem.duration,
       title: songItem.title,
       artUri: Uri.parse(
-        getImageUrl(songItem.image),
+        UrlImageGetter([songItem.image]).highQuality,
       ),
       genre: songItem.genre,
       extras: {
         'url': songItem.url,
-        'allUrl': songItem.allUrls,
+        'allUrls': songItem.allUrls,
         'year': songItem.year,
         'language': songItem.language,
         '320kbps': songItem.kbps320,

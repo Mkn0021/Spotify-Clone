@@ -1,4 +1,21 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
 
 import 'dart:convert';
 
@@ -8,8 +25,10 @@ import 'package:http/http.dart';
 import 'package:logging/logging.dart';
 import 'package:spotify/APIs/api.dart';
 import 'package:spotify/CustomWidgets/gradient_containers.dart';
+import 'package:spotify/Helpers/matcher.dart';
 import 'package:spotify/Helpers/playlist.dart';
 import 'package:spotify/Services/youtube_services.dart';
+import 'package:spotify/Services/yt_music.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 // ignore: avoid_classes_with_only_static_members
@@ -19,18 +38,8 @@ class SearchAddPlaylist {
     try {
       final RegExpMatch? id = RegExp(r'.*list\=(.*?)&').firstMatch(link);
       if (id != null) {
-        final Playlist metadata =
-            await YouTubeServices().getPlaylistDetails(id[1]!);
-        final List<Video> tracks =
-            await YouTubeServices().getPlaylistSongs(id[1]!);
-        return {
-          'title': metadata.title,
-          'image': metadata.thumbnails.standardResUrl,
-          'author': metadata.author,
-          'description': metadata.description,
-          'tracks': tracks,
-          'count': tracks.length,
-        };
+        final Map metadata = await YtMusicService().getPlaylistDetails(id[1]!);
+        return metadata;
       }
       return {};
     } catch (e) {
@@ -95,8 +104,8 @@ class SearchAddPlaylist {
             await SaavnAPI().getSongFromToken(id, 'playlist', n: -1);
         return {
           'title': data['title'],
-          'count': data['list'].length,
-          'tracks': data['list'],
+          'count': data['songs'].length,
+          'tracks': data['songs'],
         };
       }
       return {};
@@ -117,9 +126,33 @@ class SearchAddPlaylist {
         yield {'done': ++done, 'name': ''};
       }
       try {
-        final List result =
-            await SaavnAPI().fetchTopSearchResult(trackName!.split('|')[0]);
-        addMapToPlaylist(playName, result[0] as Map);
+        final Map data = await SaavnAPI().fetchSongSearchResults(
+          searchQuery: trackName!.split('|')[0],
+          count: 3,
+        );
+        final List result = data['songs'] as List;
+        final index = findBestMatch(
+          result,
+          {
+            'title': trackName,
+            'artist': trackName,
+          },
+        );
+        if (index != -1) {
+          addMapToPlaylist(playName, result[index] as Map);
+        } else {
+          YouTubeServices.instance
+              .formatVideo(
+            video: track as Video,
+            getUrl: false,
+            quality: 'low',
+          )
+              .then((songMap) {
+            if (songMap != null) {
+              addMapToPlaylist(playName, songMap);
+            }
+          });
+        }
       } catch (e) {
         Logger.root.severe('Error in $done: $e');
       }
@@ -142,9 +175,21 @@ class SearchAddPlaylist {
         yield {'done': ++done, 'name': ''};
       }
       try {
-        final List result =
-            await SaavnAPI().fetchTopSearchResult('$trackName by $artistName');
-        addMapToPlaylist(playName, result[0] as Map);
+        final Map data = await SaavnAPI().fetchSongSearchResults(
+          searchQuery: '$trackName - $artistName',
+          count: 3,
+        );
+        final List result = data['songs'] as List;
+        final index = findBestMatch(
+          result,
+          {
+            'title': trackName,
+            'artist': artistName,
+          },
+        );
+        if (index != -1) {
+          addMapToPlaylist(playName, result[index] as Map);
+        }
       } catch (e) {
         Logger.root.severe('Error in $done: $e');
       }
@@ -168,9 +213,21 @@ class SearchAddPlaylist {
         yield {'done': ++done, 'name': ''};
       }
       try {
-        final List result =
-            await SaavnAPI().fetchTopSearchResult('$trackName by $artistName');
-        addMapToPlaylist(playName, result[0] as Map);
+        final Map data = await SaavnAPI().fetchSongSearchResults(
+          searchQuery: '$trackName - $artistName',
+          count: 3,
+        );
+        final List result = data['songs'] as List;
+        final index = findBestMatch(
+          result,
+          {
+            'title': trackName,
+            'artist': artistName,
+          },
+        );
+        if (index != -1) {
+          addMapToPlaylist(playName, result[index] as Map);
+        }
       } catch (e) {
         Logger.root.severe('Error in $done: $e');
       }
@@ -213,8 +270,8 @@ class SearchAddPlaylist {
                             ),
                           ),
                           SizedBox(
-                            height: 80,
-                            width: 80,
+                            height: 90,
+                            width: 90,
                             child: Stack(
                               children: [
                                 Center(
@@ -222,8 +279,8 @@ class SearchAddPlaylist {
                                 ),
                                 Center(
                                   child: SizedBox(
-                                    height: 77,
-                                    width: 77,
+                                    height: 85,
+                                    width: 85,
                                     child: CircularProgressIndicator(
                                       valueColor: AlwaysStoppedAnimation<Color>(
                                         Theme.of(ctxt).colorScheme.secondary,
@@ -237,7 +294,9 @@ class SearchAddPlaylist {
                           ),
                           Center(
                             child: Text(
-                              name,
+                              '$name\n',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
                             ),
                           ),

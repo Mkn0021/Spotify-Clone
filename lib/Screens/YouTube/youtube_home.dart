@@ -42,7 +42,7 @@ class _YouTubeState extends State<YouTube>
   @override
   void initState() {
     if (!status) {
-      YouTubeServices().getMusicHome().then((value) {
+      YouTubeServices.instance.getMusicHome().then((value) {
         status = true;
         if (value.isNotEmpty) {
           setState(() {

@@ -99,7 +99,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
           });
         });
       }
-      // YouTubeServices().getPlaylistSongs(widget.playlistId).then((value) {
+      // YouTubeServices.instance.getPlaylistSongs(widget.playlistId).then((value) {
       //   if (value.isNotEmpty) {
       //     setState(() {
       //       searchedList = value;
@@ -152,7 +152,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                       });
 
                       final Map? response =
-                          await YouTubeServices().formatVideoFromId(
+                          await YouTubeServices.instance.formatVideoFromId(
                         id: searchedList.first['id'].toString(),
                         data: searchedList.first,
                       );
@@ -176,7 +176,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                       final List<Map> playList = List.from(searchedList);
                       playList.shuffle();
                       final Map? response =
-                          await YouTubeServices().formatVideoFromId(
+                          await YouTubeServices.instance.formatVideoFromId(
                         id: playList.first['id'].toString(),
                         data: playList.first,
                       );
@@ -277,7 +277,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                       done = false;
                                     });
                                     final Map? response =
-                                        await YouTubeServices()
+                                        await YouTubeServices.instance
                                             .formatVideoFromId(
                                       id: entry['id'].toString(),
                                       data: entry,
@@ -294,7 +294,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                     // for (var i = 0;
                                     //     i < searchedList.length;
                                     //     i++) {
-                                    //   YouTubeServices()
+                                    //   YouTubeServices.instance
                                     //       .formatVideo(
                                     //     video: searchedList[i],
                                     //     quality: Hive.box('settings')

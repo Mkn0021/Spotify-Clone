@@ -167,7 +167,7 @@ class _YouTubeArtistState extends State<YouTubeArtist> {
                                       done = false;
                                     });
                                     final Map? response =
-                                        await YouTubeServices()
+                                        await YouTubeServices.instance
                                             .formatVideoFromId(
                                       id: entry['id'].toString(),
                                       data: entry,
@@ -195,7 +195,7 @@ class _YouTubeArtistState extends State<YouTubeArtist> {
                                     // for (var i = 0;
                                     //     i < searchedList.length;
                                     //     i++) {
-                                    //   YouTubeServices()
+                                    //   YouTubeServices.instance
                                     //       .formatVideo(
                                     //     video: searchedList[i],
                                     //     quality: Hive.box('settings')

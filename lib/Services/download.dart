@@ -1,11 +1,30 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
 
 import 'dart:io';
 
 import 'package:audiotagger/audiotagger.dart';
 import 'package:audiotagger/models/tag.dart';
+// import 'package:ffmpeg_kit_flutter_audio/ffmpeg_kit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
@@ -16,6 +35,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
 import 'package:spotify/Helpers/lyrics.dart';
 import 'package:spotify/Services/ext_storage_provider.dart';
+import 'package:spotify/Services/youtube_services.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class Download with ChangeNotifier {
   static final Map<String, Download> _instances = {};
@@ -352,17 +373,7 @@ class Download with ChangeNotifier {
     }
     String kUrl = data['url'].toString();
 
-    if (data['url'].toString().contains('google')) {
-      Logger.root.info('Fetching youtube download url with preferred quality');
-      // filename = filename.replaceAll('.m4a', '.opus');
-
-      kUrl = preferredYtDownloadQuality == 'High'
-          ? data['highUrl'].toString()
-          : data['lowUrl'].toString();
-      if (kUrl == 'null') {
-        kUrl = data['url'].toString();
-      }
-    } else {
+    if (!data['url'].toString().contains('google')) {
       Logger.root.info('Fetching jiosaavn download url with preferred quality');
       kUrl = kUrl.replaceAll(
         '_96.',
@@ -370,22 +381,36 @@ class Download with ChangeNotifier {
       );
     }
 
-    Logger.root.info('Connecting to Client');
-    final client = Client();
-    final response = await client.send(Request('GET', Uri.parse(kUrl)));
-    final int total = response.contentLength ?? 0;
+    int total = 0;
     int recieved = 0;
+    Client? client;
+    Stream<List<int>> stream;
+    // Download from yt
+    if (data['url'].toString().contains('google')) {
+      // Use preferredYtDownloadQuality to check for quality first
+      final AudioOnlyStreamInfo streamInfo =
+          (await YouTubeServices.instance.getStreamInfo(data['id'].toString()))
+              .last;
+      total = streamInfo.size.totalBytes;
+      // Get the actual stream
+      stream = YouTubeServices.instance.getStreamClient(streamInfo);
+    } else {
+      Logger.root.info('Connecting to Client');
+      client = Client();
+      final response = await client.send(Request('GET', Uri.parse(kUrl)));
+      total = response.contentLength ?? 0;
+      stream = response.stream.asBroadcastStream();
+    }
     Logger.root.info('Client connected, Starting download');
-    response.stream.asBroadcastStream();
-    Logger.root.info('broadcasting download state');
-    response.stream.listen((value) {
+    stream.listen((value) {
       bytes.addAll(value);
       try {
         recieved += value.length;
         progress = recieved / total;
         notifyListeners();
-        if (!download) {
+        if (!download && client != null) {
           client.close();
+          // need to add for yt as well
         }
       } catch (e) {
         Logger.root.severe('Error in download: $e');
@@ -437,7 +462,7 @@ class Download with ChangeNotifier {
         //       'libmp3lame',
         //       '-b:a',
         //       '320k',
-        //       (filepath!.replaceAll('.m4a', '.mp3'))
+        //       filepath!.replaceAll('.m4a', '.mp3'),
         //     ];
         //   }
         //   if (downloadFormat == 'm4a') {
@@ -449,12 +474,16 @@ class Download with ChangeNotifier {
         //       'aac',
         //       '-b:a',
         //       '320k',
-        //       filepath!.replaceAll('.m4a', '.m4a')
+        //       filepath!.replaceAll('.m4a', '.m4a'),
         //     ];
         //   }
-        //   // await FlutterFFmpeg().executeWithArguments(_argsList);
-        //   // await File(filepath!).delete();
-        //   // filepath = filepath!.replaceAll('.m4a', '.$downloadFormat');
+        //   if (argsList != null) {
+        //     Logger.root.info('Converting audio to $downloadFormat');
+        //     await FFmpegKit.executeWithArguments(argsList);
+        //     Logger.root.info('Conversion complete, deleting old file');
+        //     await File(filepath!).delete();
+        //     filepath = filepath!.replaceAll('.m4a', '.$downloadFormat');
+        //   }
         // }
         Logger.root.info('Getting audio tags');
         if (Platform.isAndroid) {

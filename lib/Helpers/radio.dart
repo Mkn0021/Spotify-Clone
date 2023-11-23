@@ -17,17 +17,35 @@
  * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
-import 'package:hive/hive.dart';
+import 'package:logging/logging.dart';
+import 'package:spotify/APIs/api.dart';
+import 'package:spotify/Services/player_service.dart';
 
-void addSongsCount(String playlistName, int len, List images) {
-  final Map playlistDetails =
-      Hive.box('settings').get('playlistDetails', defaultValue: {}) as Map;
-  if (playlistDetails.containsKey(playlistName)) {
-    playlistDetails[playlistName].addAll({'count': len, 'imagesList': images});
-  } else {
-    playlistDetails.addEntries([
-      MapEntry(playlistName, {'count': len, 'imagesList': images}),
-    ]);
-  }
-  Hive.box('settings').put('playlistDetails', playlistDetails);
+Future<void> createRadioItems({
+  required List<String> stationNames,
+  String stationType = 'entity',
+  int count = 20,
+}) async {
+  Logger.root
+      .info('Creating Radio Station of type $stationType with $stationNames');
+  String stationId = '';
+  final String? value = await SaavnAPI()
+      .createRadio(names: stationNames, stationType: stationType);
+
+  if (value == null) return;
+
+  stationId = value;
+  final List songsList = await SaavnAPI().getRadioSongs(
+    stationId: stationId,
+    count: count,
+  );
+
+  if (songsList.isEmpty) return;
+
+  PlayerInvoke.init(
+    songsList: songsList,
+    index: 0,
+    isOffline: false,
+    shuffle: true,
+  );
 }

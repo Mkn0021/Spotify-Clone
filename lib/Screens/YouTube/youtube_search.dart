@@ -84,7 +84,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
           });
         } else {
           Logger.root.info('calling youtube search');
-          YouTubeServices()
+          YouTubeServices.instance
               .fetchSearchResults(query == '' ? widget.query : query)
               .then((value) {
             setState(() {
@@ -115,7 +115,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                     ),
                     hintText: AppLocalizations.of(context)!.searchYt,
                     onQueryChanged: (changedQuery) {
-                      return YouTubeServices()
+                      return YouTubeServices.instance
                           .getSearchSuggestions(query: changedQuery);
                     },
                     onSubmitted: (submittedQuery) async {
@@ -565,7 +565,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                                   });
                                                                   final Map?
                                                                       response =
-                                                                      await YouTubeServices()
+                                                                      await YouTubeServices.instance
                                                                           .formatVideoFromId(
                                                                     id: section['items'][idx]
                                                                             [

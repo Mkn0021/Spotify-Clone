@@ -325,7 +325,7 @@ class _YtSongTileTrailingMenuState extends State<YtSongTileTrailingMenu> {
           );
         }
         if (value == 1 || value == 2 || value == 3) {
-          YouTubeServices()
+          YouTubeServices.instance
               .formatVideoFromId(
             id: widget.data['id'].toString(),
             data: widget.data,

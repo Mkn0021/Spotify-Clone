@@ -1,4 +1,21 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
 
 import 'dart:async';
 import 'dart:convert';
@@ -7,6 +24,7 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio/just_audio.dart';
@@ -42,7 +60,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   late bool cacheSong;
   final _equalizer = AndroidEqualizer();
 
-  Box downloadsBox = Hive.box('downloads');
+  Box? downloadsBox =
+      Hive.isBoxOpen('downloads') ? Hive.box('downloads') : null;
   final List<String> refreshLinks = [];
   bool jobRunning = false;
 
@@ -111,11 +130,14 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   Future<void> _init() async {
     Logger.root.info('starting audio service');
-    preferredCompactNotificationButtons = Hive.box('settings')
-            .get('preferredCompactNotificationButtons', defaultValue: [1, 2, 3])
-        as List<int>;
-    if (preferredCompactNotificationButtons.length > 3) {
-      preferredCompactNotificationButtons = [1, 2, 3];
+    if (Hive.isBoxOpen('settings')) {
+      preferredCompactNotificationButtons = Hive.box('settings').get(
+        'preferredCompactNotificationButtons',
+        defaultValue: [1, 2, 3],
+      ) as List<int>;
+      if (preferredCompactNotificationButtons.length > 3) {
+        preferredCompactNotificationButtons = [1, 2, 3];
+      }
     }
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.music());
@@ -209,8 +231,10 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
                     }
                   }
                 } else {
-                  final res = await YtMusicService()
-                      .getWatchPlaylist(videoId: item.id, limit: 5);
+                  final res = await YtMusicService().getWatchPlaylist(
+                    videoId: item.id,
+                    limit: 15,
+                  );
                   Logger.root.info('Recieved recommendations: $res');
                   refreshLinks.addAll(res);
                   if (!jobRunning) {
@@ -241,7 +265,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     }).whereType<MediaItem>().distinct().listen(mediaItem.add);
 
     // Propagate all events from the audio player to AudioService clients.
-    _player!.playbackEventStream.listen(_broadcastState);
+    _player!.playbackEventStream
+        .listen(_broadcastState, onError: _playbackError);
 
     _player!.shuffleModeEnabledStream
         .listen((enabled) => _broadcastState(_player!.playbackEvent));
@@ -262,6 +287,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
               sequence.map((source) => _mediaItemExpando[source]!).toList(),
         )
         .pipe(queue);
+
     try {
       if (loadStart) {
         final List lastQueueList = await Hive.box('cache')
@@ -279,36 +305,66 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
               .map((e) => MediaItemConverter.mapToMediaItem(e as Map))
               .toList();
           if (lastQueue.isEmpty) {
-            await _player!.setAudioSource(_playlist, preload: false);
+            await _player!
+                .setAudioSource(_playlist, preload: false)
+                .onError((error, stackTrace) {
+              _onError(error, stackTrace, stopService: true);
+              return null;
+            });
           } else {
             await _playlist.addAll(_itemsToSources(lastQueue));
             try {
-              await _player!.setAudioSource(
+              await _player!
+                  .setAudioSource(
                 _playlist,
                 // commented out due to some bug in audio_service which causes app to freeze
                 // instead manually seeking after audiosource initialised
 
                 // initialIndex: lastIndex,
                 // initialPosition: Duration(seconds: lastPos),
-              );
+              )
+                  .onError((error, stackTrace) {
+                _onError(error, stackTrace, stopService: true);
+                return null;
+              });
               if (lastIndex != 0 || lastPos > 0) {
                 await _player!
                     .seek(Duration(seconds: lastPos), index: lastIndex);
               }
             } catch (e) {
               Logger.root.severe('Error while setting last audiosource', e);
-              await _player!.setAudioSource(_playlist, preload: false);
+              await _player!
+                  .setAudioSource(_playlist, preload: false)
+                  .onError((error, stackTrace) {
+                _onError(error, stackTrace, stopService: true);
+                return null;
+              });
             }
           }
         } else {
-          await _player!.setAudioSource(_playlist, preload: false);
+          await _player!
+              .setAudioSource(_playlist, preload: false)
+              .onError((error, stackTrace) {
+            _onError(error, stackTrace, stopService: true);
+            return null;
+          });
         }
       } else {
-        await _player!.setAudioSource(_playlist, preload: false);
+        await _player!
+            .setAudioSource(_playlist, preload: false)
+            .onError((error, stackTrace) {
+          _onError(error, stackTrace, stopService: true);
+          return null;
+        });
       }
     } catch (e) {
       Logger.root.severe('Error while loading last queue', e);
-      await _player!.setAudioSource(_playlist, preload: false);
+      await _player!
+          .setAudioSource(_playlist, preload: false)
+          .onError((error, stackTrace) {
+        _onError(error, stackTrace, stopService: true);
+        return null;
+      });
     }
     if (!jobRunning) {
       refreshJob();
@@ -368,100 +424,126 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   AudioSource? _itemToSource(MediaItem mediaItem) {
     AudioSource? audioSource;
-    if (mediaItem.artUri.toString().startsWith('file:')) {
-      audioSource =
-          AudioSource.uri(Uri.file(mediaItem.extras!['url'].toString()));
-    } else {
-      if (downloadsBox.containsKey(mediaItem.id) && useDown) {
-        audioSource = AudioSource.uri(
-          Uri.file(
-            (downloadsBox.get(mediaItem.id) as Map)['path'].toString(),
-          ),
-          tag: mediaItem.id,
-        );
+    try {
+      if (mediaItem.artUri.toString().startsWith('file:')) {
+        audioSource =
+            AudioSource.uri(Uri.file(mediaItem.extras!['url'].toString()));
       } else {
-        if (mediaItem.genre == 'YouTube') {
-          final int expiredAt =
-              int.parse((mediaItem.extras!['expire_at'] ?? '0').toString());
-          if ((DateTime.now().millisecondsSinceEpoch ~/ 1000) + 350 >
-              expiredAt) {
-            // Logger.root.info(
-            //   'player | youtube link expired for ${mediaItem.title}, searching cache',
-            // );
-            if (Hive.box('ytlinkcache').containsKey(mediaItem.id)) {
-              final Map cachedData =
-                  Hive.box('ytlinkcache').get(mediaItem.id) as Map;
-              final int cachedExpiredAt =
-                  int.parse(cachedData['expire_at'].toString());
-              if ((DateTime.now().millisecondsSinceEpoch ~/ 1000) + 350 >
-                  cachedExpiredAt) {
+        if (downloadsBox != null &&
+            downloadsBox!.containsKey(mediaItem.id) &&
+            useDown) {
+          Logger.root.info('Found ${mediaItem.id} in downloads');
+          audioSource = AudioSource.uri(
+            Uri.file(
+              (downloadsBox!.get(mediaItem.id) as Map)['path'].toString(),
+            ),
+            tag: mediaItem.id,
+          );
+        } else {
+          if (mediaItem.genre == 'YouTube') {
+            final int expiredAt =
+                int.parse((mediaItem.extras!['expire_at'] ?? '0').toString());
+            if ((DateTime.now().millisecondsSinceEpoch ~/ 1000) + 350 >
+                expiredAt) {
+              // Logger.root.info(
+              //   'player | youtube link expired for ${mediaItem.title}, searching cache',
+              // );
+              if (Hive.box('ytlinkcache').containsKey(mediaItem.id)) {
+                final cachedData = Hive.box('ytlinkcache').get(mediaItem.id);
+                if (cachedData is List) {
+                  int minExpiredAt = 0;
+                  for (final e in cachedData) {
+                    final int cachedExpiredAt =
+                        int.parse(e['expireAt'].toString());
+                    if (minExpiredAt == 0 || cachedExpiredAt < minExpiredAt) {
+                      minExpiredAt = cachedExpiredAt;
+                    }
+                  }
+
+                  if ((DateTime.now().millisecondsSinceEpoch ~/ 1000) + 350 >
+                      minExpiredAt) {
+                    Logger.root.info(
+                      'youtube link expired for ${mediaItem.title}, refreshing',
+                    );
+                    refreshLinks.add(mediaItem.id);
+                    if (!jobRunning) {
+                      refreshJob();
+                    }
+                  } else {
+                    Logger.root.info(
+                      'youtube link found in cache for ${mediaItem.title}',
+                    );
+                    if (cacheSong) {
+                      // Change this to handle yt quality
+                      audioSource = LockCachingAudioSource(
+                        Uri.parse(cachedData.last['url'].toString()),
+                      );
+                    } else {
+                      // Change this to handle yt quality
+                      audioSource = AudioSource.uri(
+                        Uri.parse(cachedData.last['url'].toString()),
+                      );
+                    }
+                    mediaItem.extras!['url'] = cachedData.last['url'];
+                    _mediaItemExpando[audioSource] = mediaItem;
+                    return audioSource;
+                  }
+                } else {
+                  Logger.root.info(
+                    'old youtube link cache found for ${mediaItem.title}, refreshing',
+                  );
+                  refreshLinks.add(mediaItem.id);
+                  if (!jobRunning) {
+                    refreshJob();
+                  }
+                }
+              } else {
                 Logger.root.info(
-                  'youtube link expired for ${mediaItem.title}, refreshing',
+                  'youtube link not found in cache for ${mediaItem.title}, refreshing',
                 );
                 refreshLinks.add(mediaItem.id);
                 if (!jobRunning) {
                   refreshJob();
                 }
-              } else {
-                Logger.root.info(
-                  'youtube link found in cache for ${mediaItem.title}',
-                );
-                if (cacheSong) {
-                  audioSource = LockCachingAudioSource(
-                    Uri.parse(cachedData['url'].toString()),
-                  );
-                } else {
-                  audioSource =
-                      AudioSource.uri(Uri.parse(cachedData['url'].toString()));
-                }
-                mediaItem.extras!['url'] = cachedData['url'];
-                _mediaItemExpando[audioSource] = mediaItem;
-                return audioSource;
               }
             } else {
-              Logger.root.info(
-                'youtube link not found in cache for ${mediaItem.title}, refreshing',
-              );
-              refreshLinks.add(mediaItem.id);
-              if (!jobRunning) {
-                refreshJob();
+              if (cacheSong) {
+                audioSource = LockCachingAudioSource(
+                  Uri.parse(mediaItem.extras!['url'].toString()),
+                );
+              } else {
+                audioSource = AudioSource.uri(
+                  Uri.parse(mediaItem.extras!['url'].toString()),
+                );
               }
+              _mediaItemExpando[audioSource] = mediaItem;
+              return audioSource;
             }
           } else {
             if (cacheSong) {
               audioSource = LockCachingAudioSource(
-                Uri.parse(mediaItem.extras!['url'].toString()),
+                Uri.parse(
+                  mediaItem.extras!['url'].toString().replaceAll(
+                        '_96.',
+                        "_${preferredQuality.replaceAll(' kbps', '')}.",
+                      ),
+                ),
               );
             } else {
               audioSource = AudioSource.uri(
-                Uri.parse(mediaItem.extras!['url'].toString()),
+                Uri.parse(
+                  mediaItem.extras!['url'].toString().replaceAll(
+                        '_96.',
+                        "_${preferredQuality.replaceAll(' kbps', '')}.",
+                      ),
+                ),
               );
             }
-            _mediaItemExpando[audioSource] = mediaItem;
-            return audioSource;
-          }
-        } else {
-          if (cacheSong) {
-            audioSource = LockCachingAudioSource(
-              Uri.parse(
-                mediaItem.extras!['url'].toString().replaceAll(
-                      '_96.',
-                      "_${preferredQuality.replaceAll(' kbps', '')}.",
-                    ),
-              ),
-            );
-          } else {
-            audioSource = AudioSource.uri(
-              Uri.parse(
-                mediaItem.extras!['url'].toString().replaceAll(
-                      '_96.',
-                      "_${preferredQuality.replaceAll(' kbps', '')}.",
-                    ),
-              ),
-            );
           }
         }
       }
+    } catch (e) {
+      Logger.root.severe('Error while creating audiosource', e);
     }
     if (audioSource != null) {
       _mediaItemExpando[audioSource] = mediaItem;
@@ -523,8 +605,11 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   Future<void> startService() async {
-    final bool withPipeline =
-        Hive.box('settings').get('supportEq', defaultValue: false) as bool;
+    bool withPipeline = false;
+    if (Hive.isBoxOpen('settings')) {
+      withPipeline =
+          Hive.box('settings').get('supportEq', defaultValue: false) as bool;
+    }
     if (withPipeline && Platform.isAndroid) {
       Logger.root.info('starting with eq pipeline');
       final AudioPipeline pipeline = AudioPipeline(
@@ -608,13 +693,19 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     }
   }
 
-  Future<void> skipToMediaItem(String id) async {
-    final index = queue.value.indexWhere((item) => item.id == id);
-    _player!.seek(
-      Duration.zero,
-      index:
-          _player!.shuffleModeEnabled ? _player!.shuffleIndices![index] : index,
-    );
+  Future<void> skipToMediaItem(String? id, int? idx) async {
+    if (idx == null && id == null) return;
+    final index = idx ?? queue.value.indexWhere((item) => item.id == id);
+    if (index != -1) {
+      _player!.seek(
+        Duration.zero,
+        index: _player!.shuffleModeEnabled
+            ? _player!.shuffleIndices![index]
+            : index,
+      );
+    } else {
+      Logger.root.severe('skipToMediaItem: MediaItem not found');
+    }
   }
 
   @override
@@ -824,7 +915,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     }
 
     if (name == 'skipToMediaItem') {
-      skipToMediaItem(extras!['id'].toString());
+      skipToMediaItem(extras!['id'] as String?, extras['index'] as int?);
     }
     return super.customAction(name, extras);
   }
@@ -888,7 +979,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         break;
       case MediaButton.previous:
         await skipToPrevious();
-        break;
     }
   }
 
@@ -927,6 +1017,19 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     }
   }
 
+  void _playbackError(err) {
+    Logger.root.severe('Error from audioservice: ${err.code}', err);
+    if (err is PlatformException &&
+        err.code == 'abort' &&
+        err.message == 'Connection aborted') return;
+    _onError(err, null);
+  }
+
+  void _onError(err, stacktrace, {bool stopService = false}) {
+    Logger.root.severe('Error from audioservice: ${err.code}', err);
+    if (stopService) stop();
+  }
+
   /// Broadcasts the current state to all clients.
   void _broadcastState(PlaybackEvent event) {
     final playing = _player!.playing;
@@ -942,12 +1045,13 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     playbackState.add(
       playbackState.value.copyWith(
         controls: [
-          if (liked) MediaControl.rewind else MediaControl.fastForward,
+          // workaround to add like button
+          if (!Platform.isIOS)
+            if (liked) MediaControl.rewind else MediaControl.fastForward,
           MediaControl.skipToPrevious,
           if (playing) MediaControl.pause else MediaControl.play,
           MediaControl.skipToNext,
-          // workaround to add like button
-          MediaControl.stop,
+          if (!Platform.isIOS) MediaControl.stop,
         ],
         systemActions: const {
           MediaAction.seek,

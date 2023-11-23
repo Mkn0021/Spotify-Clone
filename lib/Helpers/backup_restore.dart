@@ -1,4 +1,21 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
 
 import 'dart:io';
 
@@ -12,7 +29,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
 import 'package:spotify/Helpers/picker.dart';
 
-Future<void> createBackup(
+Future<String> createBackup(
   BuildContext context,
   List items,
   Map<String, List> boxNameData, {
@@ -20,7 +37,7 @@ Future<void> createBackup(
   String? fileName,
   bool showDialog = true,
 }) async {
-  if (!Platform.isWindows) {
+  if (Platform.isAndroid) {
     PermissionStatus status = await Permission.storage.status;
     if (status.isDenied) {
       await [
@@ -42,6 +59,8 @@ Future<void> createBackup(
   if (savePath.trim() != '') {
     try {
       final saveDir = Directory(savePath);
+      final dirExists = await saveDir.exists();
+      if (!dirExists) saveDir.create(recursive: true);
       final List<File> files = [];
       final List boxNames = [];
 
@@ -85,18 +104,21 @@ Future<void> createBackup(
           AppLocalizations.of(context)!.backupSuccess,
         );
       }
+      return '';
     } catch (e) {
       Logger.root.severe('Error in creating backup', e);
       ShowSnackBar().showSnackBar(
         context,
         '${AppLocalizations.of(context)!.failedCreateBackup}\nError: $e',
       );
+      return e.toString();
     }
   } else {
     ShowSnackBar().showSnackBar(
       context,
       AppLocalizations.of(context)!.noFolderSelected,
     );
+    return 'No Folder Selected';
   }
 }
 

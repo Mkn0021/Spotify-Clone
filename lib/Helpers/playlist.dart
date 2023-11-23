@@ -1,4 +1,21 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
 
 import 'package:audio_service/audio_service.dart';
 import 'package:hive/hive.dart';
@@ -51,6 +68,17 @@ Future<void> addPlaylist(String inputName, List data) async {
   final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
   String name = inputName.replaceAll(avoid, '').replaceAll('  ', ' ');
 
+  final List playlistNames =
+      Hive.box('settings').get('playlistNames', defaultValue: []) as List;
+
+  if (name.trim() == '') {
+    name = 'Playlist ${playlistNames.length}';
+  }
+  while (playlistNames.contains(name)) {
+    // ignore: use_string_buffers
+    name += ' (1)';
+  }
+
   await Hive.openBox(name);
   final Box playlistBox = Hive.box(name);
 
@@ -62,16 +90,6 @@ Future<void> addPlaylist(String inputName, List data) async {
   final Map result = {for (final v in data) v['id'].toString(): v};
   playlistBox.putAll(result);
 
-  final List playlistNames =
-      Hive.box('settings').get('playlistNames', defaultValue: []) as List;
-
-  if (name.trim() == '') {
-    name = 'Playlist ${playlistNames.length}';
-  }
-  while (playlistNames.contains(name)) {
-    // ignore: use_string_buffers
-    name += ' (1)';
-  }
   playlistNames.add(name);
   Hive.box('settings').put('playlistNames', playlistNames);
 }

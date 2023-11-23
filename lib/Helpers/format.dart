@@ -1,4 +1,21 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
 
 import 'dart:convert';
 import 'dart:typed_data';
@@ -21,7 +38,8 @@ class FormatResponse {
     final String decoded = utf8
         .decode(decrypted)
         .replaceAll(RegExp(r'\.mp4.*'), '.mp4')
-        .replaceAll(RegExp(r'\.m4a.*'), '.m4a');
+        .replaceAll(RegExp(r'\.m4a.*'), '.m4a')
+        .replaceAll(RegExp(r'\.mp3.*'), '.mp3');
     return decoded.replaceAll('http:', 'https:');
   }
 
@@ -219,7 +237,6 @@ class FormatResponse {
           break;
         case 'show':
           response = await formatSingleShowResponse(responseList[i] as Map);
-          break;
       }
       if (response!.containsKey('Error')) {
         Logger.root.severe(

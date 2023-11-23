@@ -1,4 +1,21 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
 
 import 'dart:convert';
 import 'dart:io';
@@ -7,6 +24,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:http/http.dart';
 import 'package:logging/logging.dart';
+import 'package:spotify/Services/yt_music.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YouTubeServices {
@@ -22,6 +40,15 @@ class YouTubeServices {
         'Mozilla/5.0 (Windows NT 10.0; rv:96.0) Gecko/20100101 Firefox/96.0',
   };
   final YoutubeExplode yt = YoutubeExplode();
+
+  YouTubeServices._privateConstructor();
+
+  static final YouTubeServices _instance =
+      YouTubeServices._privateConstructor();
+
+  static YouTubeServices get instance {
+    return _instance;
+  }
 
   Future<List<Video>> getPlaylistSongs(String id) async {
     final List<Video> results = await yt.playlists.getVideos(id).toList();
@@ -66,17 +93,24 @@ class YouTubeServices {
     return response;
   }
 
-  Future<Map?> refreshLink(String id) async {
-    final Video? res = await getVideoFromId(id);
-    if (res == null) {
-      return null;
-    }
+  Future<Map?> refreshLink(String id, {bool useYTM = true}) async {
     String quality;
     try {
       quality =
           Hive.box('settings').get('quality', defaultValue: 'Low').toString();
     } catch (e) {
       quality = 'Low';
+    }
+    if (useYTM) {
+      final Map res = await YtMusicService().getSongData(
+        videoId: id,
+        quality: quality,
+      );
+      return res;
+    }
+    final Video? res = await getVideoFromId(id);
+    if (res == null) {
+      return null;
     }
     final Map? data = await formatVideo(video: res, quality: quality);
     return data;
@@ -330,54 +364,17 @@ class YouTubeServices {
     // bool preferM4a = true,
   }) async {
     if (video.duration?.inSeconds == null) return null;
-    List<String> urls = [];
+    List<String> allUrls = [];
+    List<Map> urlsData = [];
     String finalUrl = '';
     String expireAt = '0';
     if (getUrl) {
-      // check cache first
-      if (Hive.box('ytlinkcache').containsKey(video.id.value)) {
-        final Map cachedData =
-            Hive.box('ytlinkcache').get(video.id.value) as Map;
-        final int cachedExpiredAt =
-            int.parse(cachedData['expire_at'].toString());
-        if ((DateTime.now().millisecondsSinceEpoch ~/ 1000) + 350 >
-            cachedExpiredAt) {
-          // cache expired
-          urls = await getUri(video);
-        } else {
-          // giving cache link
-          Logger.root.info('cache found for ${video.id.value}');
-          urls = [cachedData['url'].toString()];
-        }
-      } else {
-        //cache not present
-        urls = await getUri(video);
-      }
-
-      finalUrl = quality == 'High' ? urls.last : urls.first;
-      expireAt = RegExp('expire=(.*?)&').firstMatch(finalUrl)!.group(1) ??
-          (DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600 * 5.5)
-              .toString();
-
-      try {
-        await Hive.box('ytlinkcache').put(
-          video.id.value,
-          {
-            'url': finalUrl,
-            'expire_at': expireAt,
-            'lowUrl': urls.first,
-            'highUrl': urls.last,
-          },
-        ).onError(
-          (error, stackTrace) => Logger.root.severe(
-            'Hive Error in formatVideo, you probably forgot to open box.\nError: $error',
-          ),
-        );
-      } catch (e) {
-        Logger.root.severe(
-          'Hive Error in formatVideo, you probably forgot to open box.\nError: $e',
-        );
-      }
+      urlsData = await getYtStreamUrls(video.id.value);
+      final Map finalUrlData =
+          quality == 'High' ? urlsData.last : urlsData.first;
+      finalUrl = finalUrlData['url'].toString();
+      expireAt = finalUrlData['expireAt'].toString();
+      allUrls = urlsData.map((e) => e['url'].toString()).toList();
     }
     return {
       'id': video.id.value,
@@ -396,8 +393,8 @@ class YouTubeServices {
       'genre': 'YouTube',
       'expire_at': expireAt,
       'url': finalUrl,
-      'lowUrl': urls.isNotEmpty ? urls.first : '',
-      'highUrl': urls.isNotEmpty ? urls.last : '',
+      'allUrls': allUrls,
+      'urlsData': urlsData,
       'year': video.uploadDate?.year.toString(),
       '320kbps': 'false',
       'has_lyrics': 'false',
@@ -463,6 +460,7 @@ class YouTubeServices {
       {
         'title': 'Videos',
         'items': videoResult,
+        'allowViewAll': false,
       }
     ];
     // return searchResults;
@@ -525,29 +523,114 @@ class YouTubeServices {
     // }
   }
 
-  Future<List<String>> getUri(
-    Video video,
+  String getExpireAt(String url) {
+    return RegExp('expire=(.*?)&').firstMatch(url)!.group(1) ??
+        (DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600 * 5.5).toString();
+  }
+
+  Future<List<Map>> getYtStreamUrls(String videoId) async {
+    try {
+      List<Map> urlData = [];
+
+      // check cache first
+      if (Hive.box('ytlinkcache').containsKey(videoId)) {
+        final cachedData = Hive.box('ytlinkcache').get(videoId);
+        if (cachedData is List) {
+          int minExpiredAt = 0;
+          for (final e in cachedData) {
+            final int cachedExpiredAt = int.parse(e['expireAt'].toString());
+            if (minExpiredAt == 0 || cachedExpiredAt < minExpiredAt) {
+              minExpiredAt = cachedExpiredAt;
+            }
+          }
+
+          if ((DateTime.now().millisecondsSinceEpoch ~/ 1000) + 350 >
+              minExpiredAt) {
+            // cache expired
+            urlData = await getUri(videoId);
+          } else {
+            // giving cache link
+            Logger.root.info('cache found for $videoId');
+            urlData = cachedData as List<Map>;
+          }
+        } else {
+          // old version cache is present
+          urlData = await getUri(videoId);
+        }
+      } else {
+        //cache not present
+        urlData = await getUri(videoId);
+      }
+
+      try {
+        await Hive.box('ytlinkcache')
+            .put(
+              videoId,
+              urlData,
+            )
+            .onError(
+              (error, stackTrace) => Logger.root.severe(
+                'Hive Error in formatVideo, you probably forgot to open box.\nError: $error',
+              ),
+            );
+      } catch (e) {
+        Logger.root.severe(
+          'Hive Error in formatVideo, you probably forgot to open box.\nError: $e',
+        );
+      }
+
+      return urlData;
+    } catch (e) {
+      Logger.root.severe('Error in getYtStreamUrls: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map>> getUri(
+    String videoId,
     // {bool preferM4a = true}
   ) async {
-    final StreamManifest manifest =
-        await yt.videos.streamsClient.getManifest(video.id);
     final List<AudioOnlyStreamInfo> sortedStreamInfo =
-        manifest.audioOnly.sortByBitrate();
-    if (Platform.isIOS || Platform.isMacOS) {
+        await getStreamInfo(videoId);
+    return sortedStreamInfo
+        .map(
+          (e) => {
+            'bitrate': e.bitrate.kiloBitsPerSecond.round().toString(),
+            'codec': e.codec.subtype,
+            'qualityLabel': e.qualityLabel,
+            'size': e.size.totalMegaBytes.toStringAsFixed(2),
+            'url': e.url.toString(),
+            'expireAt': getExpireAt(e.url.toString()),
+          },
+        )
+        .toList();
+  }
+
+  Future<List<AudioOnlyStreamInfo>> getStreamInfo(
+    String videoId, {
+    bool onlyMp4 = false,
+  }) async {
+    final StreamManifest manifest =
+        await yt.videos.streamsClient.getManifest(VideoId(videoId));
+    final List<AudioOnlyStreamInfo> sortedStreamInfo = manifest.audioOnly
+        .toList()
+      ..sort((a, b) => a.bitrate.compareTo(b.bitrate));
+    if (onlyMp4 || Platform.isIOS || Platform.isMacOS) {
       final List<AudioOnlyStreamInfo> m4aStreams = sortedStreamInfo
           .where((element) => element.audioCodec.contains('mp4'))
           .toList();
 
       if (m4aStreams.isNotEmpty) {
-        return [
-          m4aStreams.first.url.toString(),
-          m4aStreams.last.url.toString(),
-        ];
+        return m4aStreams;
       }
     }
-    return [
-      sortedStreamInfo.first.url.toString(),
-      sortedStreamInfo.last.url.toString(),
-    ];
+
+    return sortedStreamInfo;
+  }
+
+  Stream<List<int>> getStreamClient(
+    AudioOnlyStreamInfo streamInfo,
+  ) {
+    return yt.videos.streamsClient.get(streamInfo);
   }
 }

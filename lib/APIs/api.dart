@@ -1,11 +1,26 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
 
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
-import 'package:http/io_client.dart';
 import 'package:logging/logging.dart';
 import 'package:spotify/Helpers/format.dart';
 
@@ -40,7 +55,7 @@ class SaavnAPI {
   Future<Response> getResponse(
     String params, {
     bool usev4 = true,
-    bool useProxy = false,
+    bool useProxy = true,
   }) async {
     Uri url;
     if (!usev4) {
@@ -57,16 +72,28 @@ class SaavnAPI {
     headers = {'cookie': languageHeader, 'Accept': '*/*'};
 
     if (useProxy && settingsBox.get('useProxy', defaultValue: false) as bool) {
-      final proxyIP = settingsBox.get('proxyIp');
-      final proxyPort = settingsBox.get('proxyPort');
-      final HttpClient httpClient = HttpClient();
-      httpClient.findProxy = (uri) {
-        return 'PROXY $proxyIP:$proxyPort;';
-      };
-      httpClient.badCertificateCallback =
-          (X509Certificate cert, String host, int port) => Platform.isAndroid;
-      final IOClient myClient = IOClient(httpClient);
-      return myClient.get(url, headers: headers);
+      final String proxyIP =
+          settingsBox.get('proxyIp', defaultValue: '103.47.67.134').toString();
+      // final proxyPort = settingsBox.get('proxyPort');
+      // final HttpClient httpClient = HttpClient();
+      // httpClient.findProxy = (uri) {
+      //   return 'PROXY $proxyIP:$proxyPort;';
+      // };
+      // httpClient.badCertificateCallback =
+      //     (X509Certificate cert, String host, int port) => Platform.isAndroid;
+      // final IOClient myClient = IOClient(httpClient);
+      // return myClient.get(url, headers: headers);
+      final proxyHeaders = headers;
+      proxyHeaders['X-FORWARDED-FOR'] = proxyIP;
+      return get(url, headers: proxyHeaders).onError((error, stackTrace) {
+        return Response(
+          {
+            'status': 'failure',
+            'error': error.toString(),
+          }.toString(),
+          404,
+        );
+      });
     }
     return get(url, headers: headers).onError((error, stackTrace) {
       return Response(
@@ -82,7 +109,7 @@ class SaavnAPI {
   Future<Map> fetchHomePageData() async {
     Map result = {};
     try {
-      final res = await getResponse(endpoints['homeData']!);
+      final res = await getResponse(endpoints['homeData']!, useProxy: false);
       if (res.statusCode == 200) {
         final Map data = json.decode(res.body) as Map;
         result = await FormatResponse.formatHomePageData(data);
@@ -100,6 +127,7 @@ class SaavnAPI {
     int p = 1,
   }) async {
     if (n == -1) {
+      // loop through until all songs are fetch
       final String params =
           "token=$token&type=$type&n=5&p=$p&${endpoints['fromToken']}";
       try {
@@ -112,14 +140,24 @@ class SaavnAPI {
           final res2 = await getResponse(params2);
           if (res2.statusCode == 200) {
             final Map getMain2 = json.decode(res2.body) as Map;
-            if (type == 'album' || type == 'playlist') return getMain2;
-            final List responseList = getMain2['songs'] as List;
-            return {
+            final List responseList = ((type == 'album' || type == 'playlist')
+                ? getMain2['list']
+                : getMain2['songs']) as List;
+            final result = {
               'songs':
                   await FormatResponse.formatSongsResponse(responseList, type),
               'title': getMain2['title'],
             };
+            return result;
+          } else {
+            Logger.root.severe(
+              'getSongFromToken with -1 got res2 with ${res2.statusCode}: ${res2.body}',
+            );
           }
+        } else {
+          Logger.root.severe(
+            'getSongFromToken with -1 got ${res.statusCode}: ${res.body}',
+          );
         }
       } catch (e) {
         Logger.root.severe('Error in getSongFromToken with -1: $e');
@@ -220,6 +258,9 @@ class SaavnAPI {
       if (res.statusCode == 200) {
         final Map getMain = json.decode(res.body) as Map;
         final List responseList = [];
+        if (getMain['error'] != null && getMain['error'] != '') {
+          return [];
+        }
         for (int i = 0; i < count; i++) {
           responseList.add(getMain[i.toString()]['song']);
         }
@@ -232,7 +273,7 @@ class SaavnAPI {
 
   Future<List<String>> getTopSearches() async {
     try {
-      final res = await getResponse(endpoints['topSearches']!, useProxy: true);
+      final res = await getResponse(endpoints['topSearches']!);
       if (res.statusCode == 200) {
         final List getMain = json.decode(res.body) as List;
         return getMain.map((element) {
@@ -251,16 +292,19 @@ class SaavnAPI {
     int page = 1,
   }) async {
     final String params =
-        "p=$page&q=$searchQuery&n=$count&${endpoints['getResults']}";
-
+        'p=$page&q=$searchQuery&n=$count&${endpoints["getResults"]}';
     try {
-      final res = await getResponse(params, useProxy: true);
+      final res = await getResponse(params);
       if (res.statusCode == 200) {
         final Map getMain = json.decode(res.body) as Map;
         final List responseList = getMain['results'] as List;
+        final finalSongs =
+            await FormatResponse.formatSongsResponse(responseList, 'song');
+        if (finalSongs.length > count) {
+          finalSongs.removeRange(count, finalSongs.length);
+        }
         return {
-          'songs':
-              await FormatResponse.formatSongsResponse(responseList, 'song'),
+          'songs': finalSongs,
           'error': '',
         };
       } else {
@@ -278,9 +322,12 @@ class SaavnAPI {
     }
   }
 
-  Future<List<Map>> fetchSearchResults(String searchQuery) async {
+  Future<List<Map<String, dynamic>>> fetchSearchResults(
+    String searchQuery,
+  ) async {
     final Map<String, List> result = {};
     final Map<int, String> position = {};
+    List searchedSongList = [];
     List searchedAlbumList = [];
     List searchedPlaylistList = [];
     List searchedArtistList = [];
@@ -291,7 +338,7 @@ class SaavnAPI {
     final String params =
         '__call=autocomplete.get&cc=in&includeMetaTags=1&query=$searchQuery';
 
-    final res = await getResponse(params, usev4: false, useProxy: true);
+    final res = await getResponse(params, usev4: false);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       final List albumResponseList = getMain['albums']['data'] as List;
@@ -345,6 +392,15 @@ class SaavnAPI {
         result['Artists'] = searchedArtistList;
       }
 
+      searchedSongList = (await SaavnAPI().fetchSongSearchResults(
+            searchQuery: searchQuery,
+            count: 5,
+          ))['songs'] as List? ??
+          [];
+      if (searchedSongList.isNotEmpty) {
+        result['Songs'] = searchedSongList;
+      }
+
       if (topQuery.isNotEmpty &&
           (topQuery[0]['type'] != 'playlist' ||
               topQuery[0]['type'] == 'artist' ||
@@ -379,7 +435,17 @@ class SaavnAPI {
         }
       }
     }
-    return [result, position];
+
+    final sortedKeys = position.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+
+    final List<Map<String, dynamic>> finalList = [];
+    for (final entry in sortedKeys) {
+      if (result.containsKey(entry.value)) {
+        finalList.add({'title': entry.value, 'items': result[entry.value]});
+      }
+    }
+    return finalList;
   }
 
   Future<List<Map>> fetchAlbums({
@@ -562,19 +628,6 @@ class SaavnAPI {
         'error': e,
       };
     }
-  }
-
-  Future<List> fetchTopSearchResult(String searchQuery) async {
-    final String params = 'p=1&q=$searchQuery&n=10&${endpoints["getResults"]}';
-    final res = await getResponse(params, useProxy: true);
-    if (res.statusCode == 200) {
-      final getMain = json.decode(res.body);
-      final List responseList = getMain['results'] as List;
-      return [
-        await FormatResponse.formatSingleSongResponse(responseList[0] as Map),
-      ];
-    }
-    return List.empty();
   }
 
   Future<Map> fetchSongDetails(String songId) async {

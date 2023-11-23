@@ -1,4 +1,21 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -11,7 +28,7 @@ class MyTheme with ChangeNotifier {
       Hive.box('settings').get('useSystemTheme', defaultValue: false) as bool;
 
   String accentColor =
-      Hive.box('settings').get('themeColor', defaultValue: 'Green') as String;
+      Hive.box('settings').get('themeColor', defaultValue: 'Teal') as String;
   String canvasColor =
       Hive.box('settings').get('canvasColor', defaultValue: 'Grey') as String;
   String cardColor =
@@ -22,7 +39,7 @@ class MyTheme with ChangeNotifier {
   int bottomGrad =
       Hive.box('settings').get('bottomGrad', defaultValue: 3) as int;
 
-  int colorHue = Hive.box('settings').get('colorHue', defaultValue: 200) as int;
+  int colorHue = Hive.box('settings').get('colorHue', defaultValue: 400) as int;
   List<Color?>? playGradientColor;
 
   List<List<Color>> get backOpt => _backOpt;
@@ -301,20 +318,23 @@ class MyTheme with ChangeNotifier {
   void saveTheme(String themeName) {
     final userThemes =
         Hive.box('settings').get('userThemes', defaultValue: {}) as Map;
-    Hive.box('settings').put('userThemes', {
-      ...userThemes,
-      themeName: {
-        'isDark': _isDark,
-        'useSystemTheme': _useSystemTheme,
-        'accentColor': accentColor,
-        'canvasColor': canvasColor,
-        'cardColor': cardColor,
-        'backGrad': backGrad,
-        'cardGrad': cardGrad,
-        'bottomGrad': bottomGrad,
-        'colorHue': colorHue,
+    Hive.box('settings').put(
+      'userThemes',
+      {
+        ...userThemes,
+        themeName: {
+          'isDark': _isDark,
+          'useSystemTheme': _useSystemTheme,
+          'accentColor': accentColor,
+          'canvasColor': canvasColor,
+          'cardColor': cardColor,
+          'backGrad': backGrad,
+          'cardGrad': cardGrad,
+          'bottomGrad': bottomGrad,
+          'colorHue': colorHue,
+        },
       },
-    });
+    );
   }
 
   void deleteTheme(String themeName) {
