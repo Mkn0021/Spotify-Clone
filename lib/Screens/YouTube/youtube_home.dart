@@ -6,8 +6,8 @@ import 'package:hive/hive.dart';
 import 'package:spotify/CustomWidgets/miniplayer.dart';
 import 'package:spotify/CustomWidgets/on_hover.dart';
 import 'package:spotify/CustomWidgets/svg_button.dart';
+import 'package:spotify/Screens/Search/search.dart';
 import 'package:spotify/Screens/YouTube/youtube_playlist.dart';
-import 'package:spotify/Screens/YouTube/youtube_search.dart';
 import 'package:spotify/Services/youtube_services.dart';
 
 bool status = false;
@@ -171,8 +171,16 @@ class _YouTubeState extends State<YouTube>
                                             PageRouteBuilder(
                                               opaque: false,
                                               pageBuilder: (_, __, ___) =>
-                                                  YouTubeSearchPage(
+                                                  SearchPage(
                                                 query: item['title'].toString(),
+                                                searchType:
+                                                    Hive.box('settings').get(
+                                                  'searchYtMusic',
+                                                  defaultValue: true,
+                                                ) as bool
+                                                        ? 'ytm'
+                                                        : 'yt',
+                                                fromDirectSearch: true,
                                               ),
                                             ),
                                           )
@@ -435,15 +443,25 @@ class _YouTubeState extends State<YouTube>
                       selectedSVG: 'assets/search_outline.svg',
                       unselectedColor: Colors.white,
                       iconSize: 23,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const YouTubeSearchPage(
-                            query: '',
-                            autofocus: true,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            opaque: false,
+                            pageBuilder: (_, __, ___) => SearchPage(
+                              query: '',
+                              searchType: Hive.box('settings').get(
+                                'searchYtMusic',
+                                defaultValue: true,
+                              ) as bool
+                                  ? 'ytm'
+                                  : 'yt',
+                              fromHome: true,
+                              autofocus: true,
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
                     const SizedBox(
                       width: 15,

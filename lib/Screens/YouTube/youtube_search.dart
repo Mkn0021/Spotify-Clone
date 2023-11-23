@@ -105,7 +105,6 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                   resizeToAvoidBottomInset: false,
                   backgroundColor: Colors.black,
                   body: searchbar.SearchBar(
-                    isYt: true,
                     controller: _controller,
                     liveSearch: true,
                     autofocus: widget.autofocus,
