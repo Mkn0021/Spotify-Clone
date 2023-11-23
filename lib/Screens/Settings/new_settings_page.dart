@@ -32,40 +32,55 @@ class _NewSettingsPageState extends State<NewSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool rotated =
+        MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        title: rotated
+            ? const Text(
+                'Settings',
+                style: TextStyle(
+                  fontSize: 22,
+                ),
+              )
+            : null,
         centerTitle: true,
         iconTheme: IconThemeData(
           color: Theme.of(context).iconTheme.color,
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24 , vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
-              children: [
-                Spacer(),
-                CircleAvatar(
-                  backgroundColor: Colors.white,
-                  radius: 23.5,
-                  backgroundImage: AssetImage('assets/profile_pic.jpg'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12,),
-            const Text(
-              'Settings',
-              style: TextStyle(
-                color: Color(0xffeeeeee),
-                fontSize: 40,
+            if (!rotated)
+              const Row(
+                children: [
+                  Spacer(),
+                  CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 23.5,
+                    backgroundImage: AssetImage('assets/profile_pic.jpg'),
+                  ),
+                ],
               ),
-            ),
+            if (!rotated)
+              const SizedBox(
+                height: 12,
+              ),
+            if (!rotated)
+              const Text(
+                'Settings',
+                style: TextStyle(
+                  color: Color(0xffeeeeee),
+                  fontSize: 40,
+                ),
+              ),
             _searchBar(context),
             Expanded(child: _settingsItem(context)),
           ],
@@ -87,7 +102,7 @@ class _NewSettingsPageState extends State<NewSettingsPage> {
       child: SizedBox(
         height: 55.0,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 3 , horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 16),
           child: ValueListenableBuilder(
             valueListenable: searchQuery,
             builder: (BuildContext context, String query, Widget? child) {
@@ -298,47 +313,50 @@ class _NewSettingsPageState extends State<NewSettingsPage> {
             return ListTile(
               title: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15),
-              child: Row(
-                children: [
-                  Center(
+                child: Row(
+                  children: [
+                    Center(
                       child: Icon(
                         settingsList[index]['icon'] as IconData,
                         color: const Color(0xffe7e7e7),
                         size: 28,
                       ),
                     ),
-                  const SizedBox(
-                      width: 16.0,), // Add some space between the icon and text
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          settingsList[index]['title'].toString(),
-                          style: const TextStyle(
+                    const SizedBox(
+                      width: 16.0,
+                    ), // Add some space between the icon and text
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            settingsList[index]['title'].toString(),
+                            style: const TextStyle(
                               color: Color(0xffeeeeee),
                               fontSize: 18,
                               fontFamily: 'Raleway',
                               fontWeight: FontWeight.w600,
                             ),
-                        ),
-                        const SizedBox(height: 2,),
-                        Text(
-                          (settingsList[index]['items'] as List)
-                              .take(3)
-                              .join(', '),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 14.0,
-                            color: Color(0xffa7a7a7),
                           ),
-                        ),
-                      ],
+                          const SizedBox(
+                            height: 2,
+                          ),
+                          Text(
+                            (settingsList[index]['items'] as List)
+                                .take(3)
+                                .join(', '),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 14.0,
+                              color: Color(0xffa7a7a7),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
               ),
               isThreeLine: settingsList[index]['subtitle'] != null,
               onTap: () {
