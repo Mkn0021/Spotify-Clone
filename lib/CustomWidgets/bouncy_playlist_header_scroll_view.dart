@@ -1,4 +1,4 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole)
 
 import 'dart:io';
 
@@ -19,6 +19,7 @@ class BouncyPlaylistHeaderScrollView extends StatelessWidget {
   final String placeholderImage;
   final Function? onPlayTap;
   final Function? onShuffleTap;
+  final Color? buttonColor;
   BouncyPlaylistHeaderScrollView({
     super.key,
     required this.scrollController,
@@ -33,6 +34,7 @@ class BouncyPlaylistHeaderScrollView extends StatelessWidget {
     this.actions,
     this.onPlayTap,
     this.onShuffleTap,
+    this.buttonColor,
   });
 
   final ValueNotifier<bool> isTransparent = ValueNotifier<bool>(true);
@@ -188,7 +190,7 @@ class BouncyPlaylistHeaderScrollView extends StatelessWidget {
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(100.0),
-                                            color: Theme.of(context)
+                                            color: buttonColor?? Theme.of(context)
                                                 .colorScheme
                                                 .secondary,
                                             // color: Colors.white,
