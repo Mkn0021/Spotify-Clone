@@ -42,6 +42,28 @@ class _MiniPlayerState extends State<MiniPlayer> {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
     final bool rotated = screenHeight < screenWidth;
+
+    Color compareColors(
+      Color color1,
+      Color color2, {
+      double threshold = 0.01,
+    }) {
+      final double luminance1 = color1.computeLuminance();
+      final double luminance2 = color2.computeLuminance();
+
+      if (luminance1 < luminance2 && luminance1 < threshold) {
+        // Color1 is darker and almost black, return color2
+        return color2;
+      } else if (luminance2 < luminance1 && luminance2 < threshold) {
+        // Color2 is darker and almost black, return color1
+        return color1;
+      } else {
+        // Either both colors are not almost black or only one of them is almost black,
+        // return the darkest color
+        return luminance1 < luminance2 ? color1 : color2;
+      }
+    }
+    
     return SafeArea(
       top: false,
       child: StreamBuilder<PlaybackState>(
@@ -63,12 +85,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
               return FutureBuilder<List<Color?>?>(
                 future: getArtworkColors(mediaItem),
                 builder: (context, snapshotColors) {
-                  if (!snapshotColors.hasData) {
-                    // You can return a loading indicator or an empty container while waiting for colors.
-                    return const SizedBox();
-                  }
-                  final List<Color?>? artworkColors = snapshotColors.data;
-                  final List<Color> colors = (artworkColors ??
+                  final List<Color> artworkColors = (snapshotColors.data ??
                           [const Color(0xFF262626), const Color(0xFF202020)])
                       .where((color) => color != null)
                       .cast<Color>()
@@ -161,14 +178,9 @@ class _MiniPlayerState extends State<MiniPlayer> {
                             elevation: 0,
                             child: SizedBox(
                               height: useDense ? 68.0 : 76.0,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: colors,
-                                  ),
-                                ),
+                              child: ColoredBox(
+                                color: compareColors(
+                                    artworkColors[1], artworkColors[0],),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -181,6 +193,11 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                         mediaItem.title,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                       subtitle: Text(
                                         mediaItem.artist ?? '',
