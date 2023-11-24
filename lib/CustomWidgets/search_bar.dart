@@ -111,7 +111,7 @@ class _SearchBarState extends State<SearchBar> {
                                 return Visibility(
                                   visible: !hidden,
                                   child: IconButton(
-                                    icon: const Icon(Icons.close_rounded),
+                                    icon: const Icon(Icons.close_rounded , color: Colors.white70,),
                                     onPressed: () {
                                       widget.controller.text = '';
                                       hide.value = true;

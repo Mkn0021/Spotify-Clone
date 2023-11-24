@@ -320,10 +320,8 @@ class _SearchPageState extends State<SearchPage> {
                                         Text(
                                           AppLocalizations.of(context)!
                                               .trendingSearch,
-                                          style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
+                                          style: const TextStyle(
+                                            color: Color(0xffeeeeee),
                                             fontSize: 20,
                                             fontWeight: FontWeight.w800,
                                           ),
@@ -442,12 +440,9 @@ class _SearchPageState extends State<SearchPage> {
                                                     children: [
                                                       Text(
                                                         title,
-                                                        style: TextStyle(
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .secondary,
-                                                          fontSize: 18,
+                                                        style: const TextStyle(
+                                                          color:Color(0xffeeeeee),
+                                                          fontSize: 20,
                                                           fontWeight:
                                                               FontWeight.w800,
                                                         ),
@@ -883,7 +878,7 @@ class _SearchPageState extends State<SearchPage> {
   ) {
     return choices.map((Map<String, String> element) {
       return Padding(
-        padding: const EdgeInsets.only(left: 2.5, top: 5),
+        padding: const EdgeInsets.only(left: 3, top: 7),
         child: CustomContainer(
           text: element['label']!,
           selected: searchType == element['key'],

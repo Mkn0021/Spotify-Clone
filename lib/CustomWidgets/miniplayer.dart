@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:spotify/Helpers/dominant_color.dart';
 import 'package:spotify/Screens/Player/audioplayer.dart';
 
 class MiniPlayer extends StatefulWidget {
@@ -24,6 +25,17 @@ class MiniPlayer extends StatefulWidget {
 
 class _MiniPlayerState extends State<MiniPlayer> {
   AudioPlayerHandler audioHandler = GetIt.I<AudioPlayerHandler>();
+
+  Future<List<Color?>?> getArtworkColors(MediaItem mediaItem) async {
+    return mediaItem.artUri.toString().startsWith('file:')
+        ? getColors(
+            imageProvider: FileImage(File(mediaItem.artUri!.toFilePath())),
+          )
+        : getColors(
+            imageProvider:
+                CachedNetworkImageProvider(mediaItem.artUri.toString()),
+          );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,210 +60,224 @@ class _MiniPlayerState extends State<MiniPlayer> {
               }
               final mediaItem = snapshot.data;
               if (mediaItem == null) return const SizedBox();
-              return Dismissible(
-                key: const Key('miniplayer'),
-                direction: DismissDirection.down,
-                onDismissed: (_) {
-                  Feedback.forLongPress(context);
-                  audioHandler.stop();
-                },
-                child: Dismissible(
-                  key: Key(mediaItem.id),
-                  confirmDismiss: (DismissDirection direction) {
-                    if (direction == DismissDirection.startToEnd) {
-                      audioHandler.skipToPrevious();
-                    } else {
-                      audioHandler.skipToNext();
-                    }
-                    return Future.value(false);
-                  },
-                  child: ValueListenableBuilder(
-                    valueListenable: Hive.box('settings').listenable(),
-                    child: StreamBuilder<Duration>(
-                      stream: AudioService.position,
-                      builder: (context, snapshot) {
-                        final position = snapshot.data;
-                        return position == null
-                            ? const SizedBox()
-                            : (position.inSeconds.toDouble() < 0.0 ||
-                                    (position.inSeconds.toDouble() >
-                                        mediaItem.duration!.inSeconds
-                                            .toDouble()))
-                                ? const SizedBox()
-                                : SliderTheme(
-                                    data: SliderTheme.of(context).copyWith(
-                                      activeTrackColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                      inactiveTrackColor: Colors.transparent,
-                                      trackHeight: 0.5,
-                                      thumbColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                      thumbShape: const RoundSliderThumbShape(
-                                        enabledThumbRadius: 1.0,
-                                      ),
-                                      overlayColor: Colors.transparent,
-                                      overlayShape:
-                                          const RoundSliderOverlayShape(
-                                        overlayRadius: 2.0,
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Slider(
-                                        inactiveColor: Colors.transparent,
-                                        // activeColor: Colors.white,
-                                        value: position.inSeconds.toDouble(),
-                                        max: mediaItem.duration!.inSeconds
-                                            .toDouble(),
-                                        onChanged: (newPosition) {
-                                          audioHandler.seek(
-                                            Duration(
-                                              seconds: newPosition.round(),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  );
+              return FutureBuilder<List<Color?>?>(
+                future: getArtworkColors(mediaItem),
+                builder: (context, snapshotColors) {
+                  if (!snapshotColors.hasData) {
+                    // You can return a loading indicator or an empty container while waiting for colors.
+                    return const SizedBox();
+                  }
+                  final List<Color?>? artworkColors = snapshotColors.data;
+                  final List<Color> colors = (artworkColors ??
+                          [const Color(0xFF262626), const Color(0xFF202020)])
+                      .where((color) => color != null)
+                      .cast<Color>()
+                      .toList();
+                  return Dismissible(
+                    key: const Key('miniplayer'),
+                    direction: DismissDirection.down,
+                    onDismissed: (_) {
+                      Feedback.forLongPress(context);
+                      audioHandler.stop();
+                    },
+                    child: Dismissible(
+                      key: Key(mediaItem.id),
+                      confirmDismiss: (DismissDirection direction) {
+                        if (direction == DismissDirection.startToEnd) {
+                          audioHandler.skipToPrevious();
+                        } else {
+                          audioHandler.skipToNext();
+                        }
+                        return Future.value(false);
                       },
-                    ),
-                    builder: (BuildContext context, Box box1, Widget? child) {
-                      final bool useDense = box1.get(
-                            'useDenseMini',
-                            defaultValue: false,
-                          ) as bool ||
-                          rotated;
-                      final List preferredMiniButtons =
-                          Hive.box('settings').get(
-                        'preferredMiniButtons',
-                        defaultValue: ['Like', 'Play/Pause', 'Next'],
-                      )?.toList() as List;
-
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 2.0,
-                          vertical: 1.0,
+                      child: ValueListenableBuilder(
+                        valueListenable: Hive.box('settings').listenable(),
+                        child: StreamBuilder<Duration>(
+                          stream: AudioService.position,
+                          builder: (context, snapshot) {
+                            final position = snapshot.data;
+                            return position == null
+                                ? const SizedBox()
+                                : (position.inSeconds.toDouble() < 0.0 ||
+                                        (position.inSeconds.toDouble() >
+                                            mediaItem.duration!.inSeconds
+                                                .toDouble()))
+                                    ? const SizedBox()
+                                    : SliderTheme(
+                                        data: SliderTheme.of(context).copyWith(
+                                          activeTrackColor: Colors.white,
+                                          inactiveTrackColor:
+                                              const Color(0xFF3E3E3E),
+                                          trackHeight: 0.5,
+                                          thumbColor: Colors.white,
+                                          thumbShape:
+                                              const RoundSliderThumbShape(
+                                            enabledThumbRadius: 1.0,
+                                          ),
+                                          overlayColor: Colors.transparent,
+                                          overlayShape:
+                                              const RoundSliderOverlayShape(
+                                            overlayRadius: 2.0,
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Slider(
+                                            inactiveColor: Colors.transparent,
+                                            // activeColor: Colors.white,
+                                            value:
+                                                position.inSeconds.toDouble(),
+                                            max: mediaItem.duration!.inSeconds
+                                                .toDouble(),
+                                            onChanged: (newPosition) {
+                                              audioHandler.seek(
+                                                Duration(
+                                                  seconds: newPosition.round(),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      );
+                          },
                         ),
-                        elevation: 0,
-                        child: SizedBox(
-                          height: useDense ? 68.0 : 76.0,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Color(0xFF262626),
-                                  Color(0xFF202020),
-                                ],
-                              ),
+                        builder:
+                            (BuildContext context, Box box1, Widget? child) {
+                          final bool useDense = box1.get(
+                                'useDenseMini',
+                                defaultValue: false,
+                              ) as bool ||
+                              rotated;
+                          final List preferredMiniButtons =
+                              Hive.box('settings').get(
+                            'preferredMiniButtons',
+                            defaultValue: ['Like', 'Play/Pause', 'Next'],
+                          )?.toList() as List;
+
+                          return Card(
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 2.0,
+                              vertical: 1.0,
                             ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ListTile(
-                                  dense: useDense,
-                                  onTap: () {
-                                    Navigator.pushNamed(context, '/player');
-                                  },
-                                  title: Text(
-                                    mediaItem.title,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  subtitle: Text(
-                                    mediaItem.artist ?? '',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  leading: Hero(
-                                    tag: 'currentArtwork',
-                                    child: Card(
-                                      elevation: 8,
-                                      margin: EdgeInsets.zero,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(7.0),
-                                      ),
-                                      clipBehavior: Clip.antiAlias,
-                                      child: (mediaItem.artUri
-                                              .toString()
-                                              .startsWith('file:'))
-                                          ? SizedBox.square(
-                                              dimension: useDense ? 40.0 : 50.0,
-                                              child: Image(
-                                                fit: BoxFit.cover,
-                                                image: FileImage(
-                                                  File(
-                                                    mediaItem.artUri!
-                                                        .toFilePath(),
-                                                  ),
-                                                ),
-                                                errorBuilder: (
-                                                  context,
-                                                  error,
-                                                  stackTrace,
-                                                ) {
-                                                  return const Image(
-                                                    fit: BoxFit.cover,
-                                                    image: AssetImage(
-                                                      'assets/cover.jpg',
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            )
-                                          : SizedBox.square(
-                                              dimension: useDense ? 40.0 : 50.0,
-                                              child: CachedNetworkImage(
-                                                fit: BoxFit.cover,
-                                                errorWidget: (
-                                                  BuildContext context,
-                                                  _,
-                                                  __,
-                                                ) =>
-                                                    const Image(
-                                                  fit: BoxFit.cover,
-                                                  image: AssetImage(
-                                                    'assets/cover.jpg',
-                                                  ),
-                                                ),
-                                                placeholder: (
-                                                  BuildContext context,
-                                                  _,
-                                                ) =>
-                                                    const Image(
-                                                  fit: BoxFit.cover,
-                                                  image: AssetImage(
-                                                    'assets/cover.jpg',
-                                                  ),
-                                                ),
-                                                imageUrl:
-                                                    mediaItem.artUri.toString(),
-                                              ),
-                                            ),
-                                    ),
-                                  ),
-                                  trailing: ControlButtons(
-                                    audioHandler,
-                                    miniplayer: true,
-                                    buttons: mediaItem.artUri
-                                            .toString()
-                                            .startsWith('file:')
-                                        ? ['Like', 'Play/Pause', 'Next']
-                                        : preferredMiniButtons,
+                            elevation: 0,
+                            child: SizedBox(
+                              height: useDense ? 68.0 : 76.0,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: colors,
                                   ),
                                 ),
-                                child!,
-                              ],
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ListTile(
+                                      dense: useDense,
+                                      onTap: () {
+                                        Navigator.pushNamed(context, '/player');
+                                      },
+                                      title: Text(
+                                        mediaItem.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      subtitle: Text(
+                                        mediaItem.artist ?? '',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      leading: Hero(
+                                        tag: 'currentArtwork',
+                                        child: Card(
+                                          elevation: 8,
+                                          margin: EdgeInsets.zero,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(7.0),
+                                          ),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: (mediaItem.artUri
+                                                  .toString()
+                                                  .startsWith('file:'))
+                                              ? SizedBox.square(
+                                                  dimension:
+                                                      useDense ? 40.0 : 50.0,
+                                                  child: Image(
+                                                    fit: BoxFit.cover,
+                                                    image: FileImage(
+                                                      File(
+                                                        mediaItem.artUri!
+                                                            .toFilePath(),
+                                                      ),
+                                                    ),
+                                                    errorBuilder: (
+                                                      context,
+                                                      error,
+                                                      stackTrace,
+                                                    ) {
+                                                      return const Image(
+                                                        fit: BoxFit.cover,
+                                                        image: AssetImage(
+                                                          'assets/cover.jpg',
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                )
+                                              : SizedBox.square(
+                                                  dimension:
+                                                      useDense ? 40.0 : 50.0,
+                                                  child: CachedNetworkImage(
+                                                    fit: BoxFit.cover,
+                                                    errorWidget: (
+                                                      BuildContext context,
+                                                      _,
+                                                      __,
+                                                    ) =>
+                                                        const Image(
+                                                      fit: BoxFit.cover,
+                                                      image: AssetImage(
+                                                        'assets/cover.jpg',
+                                                      ),
+                                                    ),
+                                                    placeholder: (
+                                                      BuildContext context,
+                                                      _,
+                                                    ) =>
+                                                        const Image(
+                                                      fit: BoxFit.cover,
+                                                      image: AssetImage(
+                                                        'assets/cover.jpg',
+                                                      ),
+                                                    ),
+                                                    imageUrl: mediaItem.artUri
+                                                        .toString(),
+                                                  ),
+                                                ),
+                                        ),
+                                      ),
+                                      trailing: ControlButtons(
+                                        audioHandler,
+                                        miniplayer: true,
+                                        buttons: mediaItem.artUri
+                                                .toString()
+                                                .startsWith('file:')
+                                            ? ['Like', 'Play/Pause', 'Next']
+                                            : preferredMiniButtons,
+                                      ),
+                                    ),
+                                    child!,
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );

@@ -102,7 +102,7 @@ class _SearchPageScreenState extends State<SearchPageScreen> with AutomaticKeepA
                             unselectedColor: Color(0xff191919),
                           ),
                           Text(
-                            'Artist, Song, or podcast',
+                            'Artist, song, or albums',
                             style: TextStyle(
                               color: Color(0xff535353),
                               fontSize: 17.0,
