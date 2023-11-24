@@ -16,6 +16,7 @@ import 'package:spotify/CustomWidgets/miniplayer.dart';
 import 'package:spotify/CustomWidgets/playlist_popupmenu.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
 import 'package:spotify/CustomWidgets/song_tile_trailing_menu.dart';
+import 'package:spotify/CustomWidgets/svg_button.dart';
 import 'package:spotify/Helpers/image_resolution_modifier.dart';
 import 'package:spotify/Screens/Common/song_list.dart';
 import 'package:spotify/Services/player_service.dart';
@@ -109,8 +110,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                         title: widget.data['title']?.toString() ??
                             AppLocalizations.of(context)!.songs,
                         placeholderImage: 'assets/artist.png',
-                        imageUrl:
-                            getImageUrl(widget.data['image'].toString()),
+                        imageUrl: getImageUrl(widget.data['image'].toString()),
                         sliverList: SliverList(
                           delegate: SliverChildListDelegate(
                             [
@@ -155,8 +155,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                             ],
                                           ),
                                           child: Padding(
-                                            padding:
-                                                const EdgeInsets.symmetric(
+                                            padding: const EdgeInsets.symmetric(
                                               vertical: 10.0,
                                             ),
                                             child: Row(
@@ -180,8 +179,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                   )!
                                                       .play,
                                                   style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold,
+                                                    fontWeight: FontWeight.bold,
                                                     fontSize: 18.0,
                                                     color: Theme.of(context)
                                                                 .colorScheme
@@ -258,8 +256,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                             ),
                                           ),
                                           child: Padding(
-                                            padding:
-                                                const EdgeInsets.symmetric(
+                                            padding: const EdgeInsets.symmetric(
                                               vertical: 10.0,
                                             ),
                                             child: Row(
@@ -282,8 +279,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                   )!
                                                       .radio,
                                                   style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold,
+                                                    fontWeight: FontWeight.bold,
                                                     fontSize: 18.0,
                                                     color: Theme.of(context)
                                                                 .brightness ==
@@ -309,11 +305,10 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                         borderRadius:
                                             BorderRadius.circular(100.0),
                                         border: Border.all(
-                                          color:
-                                              Theme.of(context).brightness ==
-                                                      Brightness.dark
-                                                  ? Colors.white
-                                                  : Colors.black,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
                                         ),
                                       ),
                                       child: Padding(
@@ -321,11 +316,11 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                         child: GestureDetector(
                                           child: Icon(
                                             Icons.shuffle_rounded,
-                                            color: Theme.of(context)
-                                                        .brightness ==
-                                                    Brightness.dark
-                                                ? Colors.white
-                                                : Colors.black,
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
                                             size: 24.0,
                                           ),
                                           onTap: () {
@@ -381,32 +376,11 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: <Widget>[
-                                                  ChoiceChip(
-                                                    label: Text(
-                                                      AppLocalizations.of(
-                                                        context,
-                                                      )!
-                                                          .popularity,
-                                                    ),
-                                                    selectedColor:
-                                                        Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary
-                                                            .withOpacity(0.2),
-                                                    labelStyle: TextStyle(
-                                                      color: category == ''
-                                                          ? Theme.of(context)
-                                                              .colorScheme
-                                                              .secondary
-                                                          : Theme.of(context)
-                                                              .textTheme
-                                                              .bodyLarge!
-                                                              .color,
-                                                      fontWeight: category ==
-                                                              ''
-                                                          ? FontWeight.w600
-                                                          : FontWeight.normal,
-                                                    ),
+                                                  CustomContainer(
+                                                    text: AppLocalizations.of(
+                                                      context,
+                                                    )!
+                                                        .popularity,
                                                     selected: category == '',
                                                     onSelected:
                                                         (bool selected) {
@@ -421,33 +395,11 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                   const SizedBox(
                                                     width: 5,
                                                   ),
-                                                  ChoiceChip(
-                                                    label: Text(
-                                                      AppLocalizations.of(
-                                                        context,
-                                                      )!
-                                                          .date,
-                                                    ),
-                                                    selectedColor:
-                                                        Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary
-                                                            .withOpacity(0.2),
-                                                    labelStyle: TextStyle(
-                                                      color: category ==
-                                                              'latest'
-                                                          ? Theme.of(context)
-                                                              .colorScheme
-                                                              .secondary
-                                                          : Theme.of(context)
-                                                              .textTheme
-                                                              .bodyLarge!
-                                                              .color,
-                                                      fontWeight: category ==
-                                                              'latest'
-                                                          ? FontWeight.w600
-                                                          : FontWeight.normal,
-                                                    ),
+                                                  CustomContainer(
+                                                    text: AppLocalizations.of(
+                                                      context,
+                                                    )!
+                                                        .date,
                                                     selected:
                                                         category == 'latest',
                                                     onSelected:
@@ -463,33 +415,11 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                   const SizedBox(
                                                     width: 5,
                                                   ),
-                                                  ChoiceChip(
-                                                    label: Text(
-                                                      AppLocalizations.of(
-                                                        context,
-                                                      )!
-                                                          .alphabetical,
-                                                    ),
-                                                    selectedColor:
-                                                        Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary
-                                                            .withOpacity(0.2),
-                                                    labelStyle: TextStyle(
-                                                      color: category ==
-                                                              'alphabetical'
-                                                          ? Theme.of(context)
-                                                              .colorScheme
-                                                              .secondary
-                                                          : Theme.of(context)
-                                                              .textTheme
-                                                              .bodyLarge!
-                                                              .color,
-                                                      fontWeight: category ==
-                                                              'alphabetical'
-                                                          ? FontWeight.w600
-                                                          : FontWeight.normal,
-                                                    ),
+                                                  CustomContainer(
+                                                    text: AppLocalizations.of(
+                                                      context,
+                                                    )!
+                                                        .alphabetical,
                                                     selected: category ==
                                                         'alphabetical',
                                                     onSelected:
@@ -547,8 +477,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                       entry.key ==
                                                               'Related Artists'
                                                           ? ArtistSearchPage(
-                                                              data: entry
-                                                                      .value[
+                                                              data: entry.value[
                                                                   idx] as Map,
                                                             )
                                                           : SongsListPage(
@@ -581,8 +510,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                               ),
                                               title: Text(
                                                 '${entry.value[index]["title"]}',
-                                                overflow:
-                                                    TextOverflow.ellipsis,
+                                                overflow: TextOverflow.ellipsis,
                                                 style: const TextStyle(
                                                   fontWeight: FontWeight.w500,
                                                 ),
@@ -596,8 +524,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                               },
                                               subtitle: Text(
                                                 '${entry.value[index]["subtitle"]}',
-                                                overflow:
-                                                    TextOverflow.ellipsis,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                               leading: Card(
                                                 margin: EdgeInsets.zero,
@@ -612,8 +539,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                 child: CachedNetworkImage(
                                                   fit: BoxFit.cover,
                                                   errorWidget:
-                                                      (context, _, __) =>
-                                                          Image(
+                                                      (context, _, __) => Image(
                                                     fit: BoxFit.cover,
                                                     image: AssetImage(
                                                       (entry.key ==
@@ -626,8 +552,8 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                   ),
                                                   imageUrl:
                                                       '${entry.value[index]["image"].replaceAll('http:', 'https:')}',
-                                                  placeholder:
-                                                      (context, url) => Image(
+                                                  placeholder: (context, url) =>
+                                                      Image(
                                                     fit: BoxFit.cover,
                                                     image: AssetImage(
                                                       (entry.key ==
@@ -652,25 +578,27 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                           MainAxisSize.min,
                                                       children: [
                                                         DownloadButton(
-                                                          data: entry.value[
-                                                              index] as Map,
+                                                          data:
+                                                              entry.value[index]
+                                                                  as Map,
                                                           icon: 'download',
                                                         ),
                                                         LikeButton(
-                                                          data: entry.value[
-                                                              index] as Map,
+                                                          data:
+                                                              entry.value[index]
+                                                                  as Map,
                                                           mediaItem: null,
                                                         ),
                                                         SongTileTrailingMenu(
-                                                          data: entry.value[
-                                                              index] as Map,
+                                                          data:
+                                                              entry.value[index]
+                                                                  as Map,
                                                         ),
                                                       ],
                                                     )
                                                   : null,
                                               onTap: () {
-                                                if (entry.key ==
-                                                        'Top Songs' ||
+                                                if (entry.key == 'Top Songs' ||
                                                     entry.key ==
                                                         'Latest Release' ||
                                                     entry.key == 'Singles') {
@@ -683,8 +611,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                 (entry.key == 'Top Songs' ||
                                                         entry.key ==
                                                             'Latest Release' ||
-                                                        entry.key ==
-                                                            'Singles')
+                                                        entry.key == 'Singles')
                                                     ? Navigator.pushNamed(
                                                         context,
                                                         '/player',

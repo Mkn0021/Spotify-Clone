@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:spotify/CustomWidgets/box_switch_tile.dart';
 import 'package:spotify/CustomWidgets/gradient_containers.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
+import 'package:spotify/CustomWidgets/svg_button.dart';
 import 'package:spotify/CustomWidgets/textinput_dialog.dart';
 import 'package:spotify/Helpers/countrycodes.dart';
 import 'package:spotify/Helpers/picker.dart';
@@ -188,30 +189,11 @@ class _OthersPageState extends State<OthersPage> {
                                 children: [
                                   Row(
                                     children: <Widget>[
-                                      ChoiceChip(
-                                        label: Text(
-                                          AppLocalizations.of(
-                                            context,
-                                          )!
-                                              .excluded,
-                                        ),
-                                        selectedColor: Theme.of(context)
-                                            .colorScheme
-                                            .secondary
-                                            .withOpacity(0.2),
-                                        labelStyle: TextStyle(
-                                          color: !value
-                                              ? Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary
-                                              : Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge!
-                                                  .color,
-                                          fontWeight: !value
-                                              ? FontWeight.w600
-                                              : FontWeight.normal,
-                                        ),
+                                      CustomContainer(
+                                        text: AppLocalizations.of(
+                                          context,
+                                        )!
+                                            .excluded,
                                         selected: !value,
                                         onSelected: (bool selected) {
                                           includeOrExclude.value = !selected;
@@ -224,30 +206,11 @@ class _OthersPageState extends State<OthersPage> {
                                       const SizedBox(
                                         width: 5,
                                       ),
-                                      ChoiceChip(
-                                        label: Text(
-                                          AppLocalizations.of(
-                                            context,
-                                          )!
-                                              .included,
-                                        ),
-                                        selectedColor: Theme.of(context)
-                                            .colorScheme
-                                            .secondary
-                                            .withOpacity(0.2),
-                                        labelStyle: TextStyle(
-                                          color: value
-                                              ? Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary
-                                              : Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge!
-                                                  .color,
-                                          fontWeight: value
-                                              ? FontWeight.w600
-                                              : FontWeight.normal,
-                                        ),
+                                      CustomContainer(
+                                        text: AppLocalizations.of(
+                                          context,
+                                        )!
+                                            .included,
                                         selected: value,
                                         onSelected: (bool selected) {
                                           includeOrExclude.value = selected;

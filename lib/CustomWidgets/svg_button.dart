@@ -62,13 +62,15 @@ class _SvgIconButtonState extends State<SvgIconButton> {
 
 class CustomContainer extends StatefulWidget {
   final String text;
-  final Function(bool)? onTap; // Change the onTap signature
+  final Function(bool)? onSelected;
+  final Function? onTap;
   final bool? stateCheck;
   final bool? selected;
 
   const CustomContainer({
     super.key,
     required this.text,
+    this.onSelected,
     this.onTap,
     this.stateCheck,
     this.selected,
@@ -79,8 +81,6 @@ class CustomContainer extends StatefulWidget {
 }
 
 class _CustomContainerState extends State<CustomContainer> {
-  
-
   @override
   Widget build(BuildContext context) {
     bool isClicked = widget.selected ?? false;
@@ -91,7 +91,8 @@ class _CustomContainerState extends State<CustomContainer> {
         });
 
         // Call the onTap callback if provided
-        widget.onTap?.call(isClicked);
+        widget.onTap?.call();
+        widget.onSelected?.call(isClicked);
       },
       child: Container(
         decoration: BoxDecoration(
