@@ -553,7 +553,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   @override
   Future<void> onTaskRemoved() async {
     final bool stopForegroundService = Hive.box('settings')
-        .get('stopForegroundService', defaultValue: true) as bool;
+        .get('stopForegroundService', defaultValue: false) as bool;
     if (stopForegroundService) {
       await stop();
     }

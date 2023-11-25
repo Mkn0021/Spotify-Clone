@@ -25,7 +25,7 @@ class _AppUIPageState extends State<AppUIPage> {
   ) as List;
   List preferredMiniButtons = Hive.box('settings').get(
     'preferredMiniButtons',
-    defaultValue: ['Like', 'Play/Pause', 'Next'],
+    defaultValue: ['Previous', 'Play/Pause', 'Next'],
   )?.toList() as List;
   List<int> preferredCompactNotificationButtons = Hive.box('settings').get(
     'preferredCompactNotificationButtons',
@@ -137,7 +137,7 @@ class _AppUIPageState extends State<AppUIPage> {
                   .useDenseMiniSub,
             ),
             keyName: 'useDenseMini',
-            defaultValue: false,
+            defaultValue: true,
             isThreeLine: false,
           ),
           ListTile(
@@ -674,7 +674,7 @@ class _AppUIPageState extends State<AppUIPage> {
                   .showLastSub,
             ),
             keyName: 'showRecent',
-            defaultValue: true,
+            defaultValue: false,
             onChanged: ({required bool val, required Box box}) {
               widget.callback!();
             },

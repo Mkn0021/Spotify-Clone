@@ -43,6 +43,16 @@ class _MiniPlayerState extends State<MiniPlayer> {
     final double screenHeight = MediaQuery.of(context).size.height;
     final bool rotated = screenHeight < screenWidth;
 
+    Color darkenColor(Color color, double factor ,) {
+      // Calculate the new RGB values
+      final int red = (color.red * (1 - factor)).round();
+      final int green = (color.green * (1 - factor)).round();
+      final int blue = (color.blue * (1 - factor)).round();
+
+      // Return the new color
+      return Color.fromRGBO(red, green, blue, color.opacity);
+    }
+
     Color compareColors(
       Color color1,
       Color color2, {
@@ -53,7 +63,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
 
       if (luminance1 < luminance2 && luminance1 < threshold) {
         // Color1 is darker and almost black, return color2
-        return color2;
+        return darkenColor(color2 , 0.2); //making it 20% darker
       } else if (luminance2 < luminance1 && luminance2 < threshold) {
         // Color2 is darker and almost black, return color1
         return color1;
@@ -161,13 +171,13 @@ class _MiniPlayerState extends State<MiniPlayer> {
                             (BuildContext context, Box box1, Widget? child) {
                           final bool useDense = box1.get(
                                 'useDenseMini',
-                                defaultValue: false,
+                                defaultValue: true,
                               ) as bool ||
                               rotated;
                           final List preferredMiniButtons =
                               Hive.box('settings').get(
                             'preferredMiniButtons',
-                            defaultValue: ['Like', 'Play/Pause', 'Next'],
+                            defaultValue: ['Previous', 'Play/Pause', 'Next'],
                           )?.toList() as List;
 
                           return Card(

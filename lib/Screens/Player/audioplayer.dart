@@ -237,9 +237,6 @@ class _PlayScreenState extends State<PlayScreen> {
                   actions: [
                     IconButton(
                       icon: const Icon(Icons.lyrics_rounded),
-                      //     Image.asset(
-                      //   'assets/lyrics.png',
-                      // ),
                       tooltip: AppLocalizations.of(context)!.lyrics,
                       onPressed: () => cardKey.currentState!.toggleCard(),
                     ),
@@ -2372,14 +2369,7 @@ class NameNControls extends StatelessWidget {
                 height: nowplayingBoxHeight,
                 width: width,
                 decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF202020), // Starting color at the top
-                      Colors.black54, // Ending color at the bottom
-                    ],
-                  ),
+                  color: Color(0xFF202020),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(15),
                     topRight: Radius.circular(15),
@@ -2388,7 +2378,7 @@ class NameNControls extends StatelessWidget {
                 child: Column(
                   children: [
                     const SizedBox(
-                      height: 5,
+                      height: 8,
                     ),
                     Center(
                       child: Container(
