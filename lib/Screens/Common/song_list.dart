@@ -341,9 +341,9 @@ class _SongsListPageState extends State<SongsListPage> {
                 ]),
               ),
             ),
+            bottomSheet: MiniPlayer(),
           ),
         ),
-        MiniPlayer(),
       ],
     );
   }

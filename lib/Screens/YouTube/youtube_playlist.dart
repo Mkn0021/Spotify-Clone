@@ -372,9 +372,9 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                   ),
               ],
             ),
+            bottomSheet: MiniPlayer(),
           ),
         ),
-        MiniPlayer(),
       ],
     );
   }
