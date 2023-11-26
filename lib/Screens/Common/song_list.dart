@@ -196,7 +196,7 @@ class _SongsListPageState extends State<SongsListPage> {
       children: [
         Expanded(
           child: Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            backgroundColor: Colors.black,
             body: BouncyPlaylistHeaderScrollView(
               scrollController: _scrollController,
               actions: [
@@ -206,8 +206,20 @@ class _SongsListPageState extends State<SongsListPage> {
                     playlistName:
                         widget.listItem['title']?.toString() ?? 'Songs',
                   ),
+                if (songList.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16, right: 16),
+                    child: Icon(
+                      Icons.download_rounded,
+                      size: 23,
+                      color: Colors.grey,
+                    ),
+                  ),
                 IconButton(
-                  icon: const Icon(Icons.share_rounded),
+                  icon: const Icon(
+                    Icons.share_rounded,
+                    size: 18,
+                  ),
                   tooltip: AppLocalizations.of(context)!.share,
                   onPressed: () {
                     if (!isSharePopupShown) {
@@ -255,91 +267,77 @@ class _SongsListPageState extends State<SongsListPage> {
                       ),
                     ),
                   if (songList.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 20.0,
-                        top: 5.0,
-                        bottom: 5.0,
-                      ),
-                      child: Text(
-                        AppLocalizations.of(context)!.songs,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 21.0,
-                          color: Color(0xffeeeeee),
-                        ),
-                      ),
-                    ),
-                  ...songList.map((entry) {
-                    return ListTile(
-                      contentPadding: const EdgeInsets.only(left: 15.0),
-                      title: Text(
-                        '${entry["title"]}',
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      onLongPress: () {
-                        copyToClipboard(
-                          context: context,
-                          text: '${entry["title"]}',
-                        );
-                      },
-                      subtitle: Text(
-                        '${entry["subtitle"]}',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      leading: Card(
-                        margin: EdgeInsets.zero,
-                        elevation: 8,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(7.0),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: CachedNetworkImage(
-                          fit: BoxFit.cover,
-                          errorWidget: (context, _, __) => const Image(
-                            fit: BoxFit.cover,
-                            image: AssetImage(
-                              'assets/cover.jpg',
-                            ),
+                    //list start from here
+                    ...songList.map((entry) {
+                      return ListTile(
+                        contentPadding: const EdgeInsets.only(left: 15.0),
+                        title: Text(
+                          '${entry["title"]}',
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
                           ),
-                          imageUrl:
-                              '${entry["image"].replaceAll('http:', 'https:')}',
-                          placeholder: (context, url) => const Image(
+                        ),
+                        onLongPress: () {
+                          copyToClipboard(
+                            context: context,
+                            text: '${entry["title"]}',
+                          );
+                        },
+                        subtitle: Text(
+                          '${entry["subtitle"]}',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        leading: Card(
+                          margin: EdgeInsets.zero,
+                          elevation: 8,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: CachedNetworkImage(
                             fit: BoxFit.cover,
-                            image: AssetImage(
-                              'assets/cover.jpg',
+                            errorWidget: (context, _, __) => const Image(
+                              fit: BoxFit.cover,
+                              image: AssetImage(
+                                'assets/cover.jpg',
+                              ),
+                            ),
+                            imageUrl:
+                                '${entry["image"].replaceAll('http:', 'https:')}',
+                            placeholder: (context, url) => const Image(
+                              fit: BoxFit.cover,
+                              image: AssetImage(
+                                'assets/cover.jpg',
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          DownloadButton(
-                            data: entry as Map,
-                            icon: 'download',
-                          ),
-                          LikeButton(
-                            mediaItem: null,
-                            data: entry,
-                          ),
-                          SongTileTrailingMenu(data: entry),
-                        ],
-                      ),
-                      onTap: () {
-                        PlayerInvoke.init(
-                          songsList: songList,
-                          index: songList.indexWhere(
-                            (element) => element == entry,
-                          ),
-                          isOffline: false,
-                        );
-                      },
-                    );
-                  }),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            DownloadButton(
+                              data: entry as Map,
+                              icon: 'download',
+                            ),
+                            LikeButton(
+                              mediaItem: null,
+                              data: entry,
+                            ),
+                            SongTileTrailingMenu(data: entry),
+                          ],
+                        ),
+                        onTap: () {
+                          PlayerInvoke.init(
+                            songsList: songList,
+                            index: songList.indexWhere(
+                              (element) => element == entry,
+                            ),
+                            isOffline: false,
+                          );
+                        },
+                      );
+                    }),
                 ]),
               ),
             ),

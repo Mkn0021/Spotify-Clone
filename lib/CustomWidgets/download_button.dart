@@ -215,7 +215,7 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
                   Icons.download_done_rounded,
                 ),
                 color: Theme.of(context).colorScheme.secondary,
-                iconSize: 25.0,
+                iconSize: 18.0,
                 tooltip: AppLocalizations.of(context)!.downDone,
                 onPressed: () {},
               )
@@ -225,7 +225,7 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
                       icon: const Icon(
                         Icons.download_rounded,
                       ),
-                      iconSize: 25.0,
+                      iconSize: 23.0,
                       tooltip: AppLocalizations.of(context)!.down,
                       onPressed: () async {
                         for (final items in widget.data) {

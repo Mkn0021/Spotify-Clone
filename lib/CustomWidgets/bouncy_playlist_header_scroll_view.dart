@@ -71,10 +71,8 @@ class BouncyPlaylistHeaderScrollView extends StatelessWidget {
         MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
     final double expandedHeight = rotated
         ? MediaQuery.of(context).size.width * 0.35
-        : MediaQuery.of(context).size.width * 0.6;
-    final double screenWidth = rotated
-        ? MediaQuery.of(context).size.width * 0.3
-        : MediaQuery.of(context).size.width * 0.5;
+        : MediaQuery.of(context).size.width;
+    final double screenWidth = MediaQuery.of(context).size.width;
 
     return CustomScrollView(
       controller: scrollController,
@@ -84,138 +82,100 @@ class BouncyPlaylistHeaderScrollView extends StatelessWidget {
         AnimatedBuilder(
           animation: scrollController,
           child: FlexibleSpaceBar(
-            background: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: screenWidth,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 15.0, right: 5.0),
+            background: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.blueGrey,
+                    Colors.black,
+                  ],
+                  stops: [0.0, 0.8],
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  Stack(
+                    children: [
+                      SizedBox(
+                        width: screenWidth / 1.9,
                         child: Card(
-                          elevation: 5,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              10.0,
-                            ),
-                          ),
+                          elevation: 1,
                           clipBehavior: Clip.antiAlias,
                           child: image,
                         ),
                       ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
                     ),
-                    SizedBox.square(
-                      dimension: screenWidth,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 10.0,
-                          right: 20.0,
-                          top: 30.0,
-                        ),
-                        child: Align(
-                          alignment: Alignment.lerp(
-                            Alignment.topCenter,
-                            Alignment.center,
-                            0.5,
-                          )!,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                title,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              if (subtitle != null && subtitle!.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 3.0,
-                                  ),
-                                  child: Text(
-                                    subtitle!,
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 3,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .color,
-                                    ),
-                                  ),
-                                ),
-                              if (secondarySubtitle != null &&
-                                  secondarySubtitle!.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 3.0,
-                                  ),
-                                  child: Text(
-                                    secondarySubtitle!,
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 3,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .color,
-                                    ),
-                                  ),
-                                ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  if (onShuffleTap != null)
-                                    Transform.translate(
-                                      offset: const Offset(0.0, 6.0,), 
-                                      child: IconButton(
-                                        onPressed: () {
-                                          onShuffleTap!.call();
-                                        },
-                                        icon: const Icon(Icons.shuffle_rounded),
-                                      ),
-                                    ),
-                                  if (onPlayTap != null)
-                                    Transform.scale(
-                                    origin: const Offset(0, -10),
-                                      scale:2,
-                                      child: SvgIconButton(
-                                        selectedSVG: 'assets/play_round.svg',
-                                        unselectedSVG: 'assets/pause_round.svg',
-                                        selectedColor: buttonColor ??
-                                            Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                        unselectedColor: buttonColor ??
-                                            Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                        iconSize: 40,
-                                        onTap: () {
-                                          onPlayTap!.call();
-                                        },
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (secondarySubtitle != null &&
+                      secondarySubtitle!.isNotEmpty)
+                    Text(
+                      secondarySubtitle!,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).textTheme.bodySmall!.color,
                       ),
                     ),
-                  ],
-                ),
-              ],
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      ...actions ?? [], // Use the null-aware spread operator
+                      const Spacer(),
+                      if (onShuffleTap != null)
+                        IconButton(
+                          onPressed: () {
+                            onShuffleTap!.call();
+                          },
+                          icon: const Icon(Icons.shuffle_rounded),
+                        ),
+                      if (onPlayTap != null)
+                        Transform.scale(
+                          scale: 1.5,
+                          child: SvgIconButton(
+                            selectedSVG: 'assets/play_round.svg',
+                            unselectedSVG: 'assets/pause_round.svg',
+                            selectedColor: buttonColor ??
+                                Theme.of(context).colorScheme.secondary,
+                            unselectedColor: buttonColor ??
+                                Theme.of(context).colorScheme.secondary,
+                            iconSize: 40,
+                            onTap: () {
+                              onPlayTap!.call();
+                            },
+                          ),
+                        ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           builder: (context, child) {
@@ -229,11 +189,10 @@ class BouncyPlaylistHeaderScrollView extends StatelessWidget {
               stretch: true,
               pinned: true,
               centerTitle: true,
-              // floating: true,
+              //floating: true,
               backgroundColor: isTransparent.value ? Colors.transparent : null,
               iconTheme: Theme.of(context).iconTheme,
-              expandedHeight: expandedHeight,
-              actions: actions,
+              expandedHeight: expandedHeight - 20,
               flexibleSpace: child,
             );
           },

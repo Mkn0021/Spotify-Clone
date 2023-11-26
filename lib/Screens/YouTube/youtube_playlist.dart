@@ -126,7 +126,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
         Expanded(
           child: Scaffold(
             resizeToAvoidBottomInset: false,
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            backgroundColor: Colors.black,
             body: Stack(
               children: [
                 BouncyPlaylistHeaderScrollView(
@@ -137,6 +137,16 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                   secondarySubtitle: playlistSecondarySubtitle,
                   imageUrl: playlistImage,
                   actions: [
+                    const Row(
+                      children: [
+                        SizedBox(width: 20),
+                        Icon(Icons.download_rounded,
+                            size: 23, color: Colors.grey,),
+                        SizedBox(width: 16),
+                        Icon(Icons.share_rounded,
+                            size: 18, color: Colors.grey,),
+                      ],
+                    ),
                     PlaylistPopupMenu(
                       data: searchedList,
                       title: playlistName,
@@ -204,130 +214,117 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                             ),
                           ),
                         if (searchedList.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 20.0,
-                              top: 5.0,
-                              bottom: 5.0,
-                            ),
-                            child: Text(
-                              AppLocalizations.of(context)!.songs,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 21.0,
-                                color: Color(0xffeeeeee),
-                              ),
-                            ),
-                          ),
-                        ...searchedList.map(
-                          (Map entry) {
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                left: 5.0,
-                              ),
-                              child: ListTile(
-                                leading: widget.type == 'album'
-                                    ? null
-                                    : Card(
-                                        margin: EdgeInsets.zero,
-                                        elevation: 8,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            5.0,
-                                          ),
-                                        ),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: SizedBox.square(
-                                          dimension: 50,
-                                          child: CachedNetworkImage(
-                                            fit: BoxFit.cover,
-                                            errorWidget: (context, _, __) =>
-                                                const Image(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage(
-                                                'assets/cover.jpg',
-                                              ),
-                                            ),
-                                            imageUrl: entry['image'].toString(),
-                                            placeholder: (context, url) =>
-                                                const Image(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage(
-                                                'assets/cover.jpg',
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                title: Text(
-                                  entry['title'].toString(),
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                          //here list start
+                          ...searchedList.map(
+                            (Map entry) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 5.0,
                                 ),
-                                onLongPress: () {
-                                  copyToClipboard(
-                                    context: context,
-                                    text: entry['title'].toString(),
-                                  );
-                                },
-                                subtitle: entry['subtitle'] == ''
-                                    ? null
-                                    : Text(
-                                        entry['subtitle'].toString(),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                onTap: () async {
-                                  setState(() {
-                                    done = false;
-                                  });
-                                  final Map? response = await YouTubeServices
-                                      .instance
-                                      .formatVideoFromId(
-                                    id: entry['id'].toString(),
-                                    data: entry,
-                                  );
-                                  setState(() {
-                                    done = true;
-                                  });
-                                  PlayerInvoke.init(
-                                    songsList: [response],
-                                    index: 0,
-                                    isOffline: false,
-                                  );
-                                  Navigator.pushNamed(context, '/player');
-                                  // for (var i = 0;
-                                  //     i < searchedList.length;
-                                  //     i++) {
-                                  //   YouTubeServices.instance
-                                  //       .formatVideo(
-                                  //     video: searchedList[i],
-                                  //     quality: Hive.box('settings')
-                                  //         .get(
-                                  //           'ytQuality',
-                                  //           defaultValue: 'Low',
-                                  //         )
-                                  //         .toString(),
-                                  //   )
-                                  //       .then((songMap) {
-                                  //     final MediaItem mediaItem =
-                                  //         MediaItemConverter.mapToMediaItem(
-                                  //       songMap!,
-                                  //     );
-                                  //     addToNowPlaying(
-                                  //       context: context,
-                                  //       mediaItem: mediaItem,
-                                  //       showNotification: false,
-                                  //     );
-                                  //   });
-                                  // }
-                                },
-                                trailing: YtSongTileTrailingMenu(data: entry),
-                              ),
-                            );
-                          },
-                        ),
+                                child: ListTile(
+                                  leading: widget.type == 'album'
+                                      ? null
+                                      : Card(
+                                          margin: EdgeInsets.zero,
+                                          elevation: 8,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              5.0,
+                                            ),
+                                          ),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: SizedBox.square(
+                                            dimension: 50,
+                                            child: CachedNetworkImage(
+                                              fit: BoxFit.cover,
+                                              errorWidget: (context, _, __) =>
+                                                  const Image(
+                                                fit: BoxFit.cover,
+                                                image: AssetImage(
+                                                  'assets/cover.jpg',
+                                                ),
+                                              ),
+                                              imageUrl:
+                                                  entry['image'].toString(),
+                                              placeholder: (context, url) =>
+                                                  const Image(
+                                                fit: BoxFit.cover,
+                                                image: AssetImage(
+                                                  'assets/cover.jpg',
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                  title: Text(
+                                    entry['title'].toString(),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  onLongPress: () {
+                                    copyToClipboard(
+                                      context: context,
+                                      text: entry['title'].toString(),
+                                    );
+                                  },
+                                  subtitle: entry['subtitle'] == ''
+                                      ? null
+                                      : Text(
+                                          entry['subtitle'].toString(),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                  onTap: () async {
+                                    setState(() {
+                                      done = false;
+                                    });
+                                    final Map? response = await YouTubeServices
+                                        .instance
+                                        .formatVideoFromId(
+                                      id: entry['id'].toString(),
+                                      data: entry,
+                                    );
+                                    setState(() {
+                                      done = true;
+                                    });
+                                    PlayerInvoke.init(
+                                      songsList: [response],
+                                      index: 0,
+                                      isOffline: false,
+                                    );
+                                    Navigator.pushNamed(context, '/player');
+                                    // for (var i = 0;
+                                    //     i < searchedList.length;
+                                    //     i++) {
+                                    //   YouTubeServices.instance
+                                    //       .formatVideo(
+                                    //     video: searchedList[i],
+                                    //     quality: Hive.box('settings')
+                                    //         .get(
+                                    //           'ytQuality',
+                                    //           defaultValue: 'Low',
+                                    //         )
+                                    //         .toString(),
+                                    //   )
+                                    //       .then((songMap) {
+                                    //     final MediaItem mediaItem =
+                                    //         MediaItemConverter.mapToMediaItem(
+                                    //       songMap!,
+                                    //     );
+                                    //     addToNowPlaying(
+                                    //       context: context,
+                                    //       mediaItem: mediaItem,
+                                    //       showNotification: false,
+                                    //     );
+                                    //   });
+                                    // }
+                                  },
+                                  trailing: YtSongTileTrailingMenu(data: entry),
+                                ),
+                              );
+                            },
+                          ),
                       ],
                     ),
                   ),
