@@ -261,7 +261,7 @@ class _SongsListPageState extends State<SongsListPage> {
                 delegate: SliverChildListDelegate([
                   if (!fetched)
                     const Padding(
-                      padding: EdgeInsets.only(top: 220.0),
+                      padding: EdgeInsets.only(top: 150.0),
                       child: Center(
                         child: CircularProgressIndicator(),
                       ),

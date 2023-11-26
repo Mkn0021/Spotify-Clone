@@ -133,7 +133,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                   scrollController: _scrollController,
                   title: playlistName,
                   subtitle: playlistSubtitle,
-                  buttonColor: Colors.redAccent,
+                  buttonColor: Colors.red[500],
                   secondarySubtitle: playlistSecondarySubtitle,
                   imageUrl: playlistImage,
                   actions: [
@@ -203,7 +203,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                       [
                         if (!fetched)
                           const Padding(
-                            padding: EdgeInsets.only(top: 220.0),
+                            padding: EdgeInsets.only(top: 150.0),
                             child: Center(
                               child: CircularProgressIndicator(
                                 valueColor: AlwaysStoppedAnimation<Color>(
