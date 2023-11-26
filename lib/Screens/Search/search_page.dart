@@ -22,143 +22,145 @@ class _SearchPageScreenState extends State<SearchPageScreen> with AutomaticKeepA
     
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool rotated = MediaQuery.of(context).size.height < screenWidth;
-    return Stack(
-      children: [
-        CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 40, 20, 27),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 14,
-                      backgroundImage: AssetImage('assets/profile_pic.jpg'),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Text(
-                      'Search',
-                      style: TextStyle(
-                        color: Color(0xffffffff),
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Raleway',
-                        fontStyle: FontStyle.normal,
-                        fontSize: 23.0,
+    return SafeArea(
+      child: Stack(
+        children: [
+          CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(16, 40, 20, 27),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 14,
+                        backgroundImage: AssetImage('assets/profile_pic.jpg'),
                       ),
-                    ),
-                    Spacer(),
-                    Icon(
-                      Icons.camera_alt_outlined,
-                      color: Colors.white,
-                      size: 26,
-                    ),
-                  ],
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Text(
+                        'Search',
+                        style: TextStyle(
+                          color: Color(0xffffffff),
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Raleway',
+                          fontStyle: FontStyle.normal,
+                          fontSize: 23.0,
+                        ),
+                      ),
+                      Spacer(),
+                      Icon(
+                        Icons.camera_alt_outlined,
+                        color: Colors.white,
+                        size: 26,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            SliverAppBar(
-              backgroundColor: Colors.transparent,
-              expandedHeight: 56,
-              floating: true,
-              pinned: true,
-              elevation: 0,
-              flexibleSpace: FlexibleSpaceBar(
-                expandedTitleScale: 1,
-                centerTitle: true,
-                titlePadding:
-                    const EdgeInsets.symmetric(vertical: 1, horizontal: 3),
-                title: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SearchPage(
-                          query: '',
-                          fromHome: true,
-                          autofocus: true,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    height: 52,
-                    decoration:  const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
-                    ),
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                    ),
-                    child: const Row(
-                      children: [
-                        SvgIconButton(
-                          selectedSVG: 'assets/search_outline.svg',
-                          iconSize: 26,
-                          selectedColor: Color(0xff191919),
-                          unselectedColor: Color(0xff191919),
-                        ),
-                        Text(
-                          'Artist, song, or albums',
-                          style: TextStyle(
-                            color: Color(0xff535353),
-                            fontSize: 17.0,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: 'Raleway',
-                            fontStyle: FontStyle.normal,
+              SliverAppBar(
+                backgroundColor: Colors.transparent,
+                expandedHeight: 56,
+                floating: true,
+                pinned: true,
+                elevation: 0,
+                flexibleSpace: FlexibleSpaceBar(
+                  expandedTitleScale: 1,
+                  centerTitle: true,
+                  titlePadding:
+                      const EdgeInsets.symmetric(vertical: 1, horizontal: 3),
+                  title: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SearchPage(
+                            query: '',
+                            fromHome: true,
+                            autofocus: true,
                           ),
                         ),
-                      ],
+                      );
+                    },
+                    child: Container(
+                      height: 52,
+                      decoration:  const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                      ),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
+                      child: const Row(
+                        children: [
+                          SvgIconButton(
+                            selectedSVG: 'assets/search_outline.svg',
+                            iconSize: 26,
+                            selectedColor: Color(0xff191919),
+                            unselectedColor: Color(0xff191919),
+                          ),
+                          Text(
+                            'Artist, song, or albums',
+                            style: TextStyle(
+                              color: Color(0xff535353),
+                              fontSize: 17.0,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'Raleway',
+                              fontStyle: FontStyle.normal,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    top: 18, left: 16, right: 16, bottom: 50,),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SectionBuilder(
-                      sectionTitle: 'Browse All',
-                      fontSize: 16,
-                      padding: EdgeInsets.zero,
-                      titlePadding: const EdgeInsets.only(bottom: 18),
-                      sectionBodyBuilder: (context) {
-                        return SearchSectionItemBuilder(
-                          list: kAllSearh,
-                        );
-                      },
-                    ),
-                    SectionBuilder(
-                      sectionTitle: 'Playlist Added',
-                      fontSize: 16,
-                      titlePadding: const EdgeInsets.only(bottom: 10),
-                      padding: const EdgeInsets.only(bottom: 16),
-                      sectionBodyBuilder: (context) {
-                        return SearchSectionItemBuilder(
-                          list: kPlaylistSdded,
-                        );
-                      },
-                    ),
-                  ],
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      top: 18, left: 16, right: 16, bottom: 50,),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SectionBuilder(
+                        sectionTitle: 'Browse All',
+                        fontSize: 16,
+                        padding: EdgeInsets.zero,
+                        titlePadding: const EdgeInsets.only(bottom: 18),
+                        sectionBodyBuilder: (context) {
+                          return SearchSectionItemBuilder(
+                            list: kAllSearh,
+                          );
+                        },
+                      ),
+                      SectionBuilder(
+                        sectionTitle: 'Playlist Added',
+                        fontSize: 16,
+                        titlePadding: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.only(bottom: 16),
+                        sectionBodyBuilder: (context) {
+                          return SearchSectionItemBuilder(
+                            list: kPlaylistSdded,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        Positioned(
-          bottom: rotated ? 0.0 : 70.0,
-          left: rotated ? screenWidth / 2 : 2.0,
-          right: 2.0,
-          child: MiniPlayer(),
-        ),
-      ],
+            ],
+          ),
+          Positioned(
+            bottom: rotated ? 0.0 : 70.0,
+            left: rotated ? screenWidth / 2 : 2.0,
+            right: 2.0,
+            child: MiniPlayer(),
+          ),
+        ],
+      ),
     );
   }
 }

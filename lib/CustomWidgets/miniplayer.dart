@@ -290,7 +290,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                         buttons: mediaItem.artUri
                                                 .toString()
                                                 .startsWith('file:')
-                                            ? ['Like', 'Play/Pause', 'Next']
+                                            ? ['Previous', 'Play/Pause', 'Next']
                                             : preferredMiniButtons,
                                       ),
                                     ),
