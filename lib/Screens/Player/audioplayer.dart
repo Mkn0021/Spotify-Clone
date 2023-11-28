@@ -1378,7 +1378,6 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                       AppLocalizations.of(context)!
                                           .notAvailable,
                                       20.0,
-                                      useWhite: true,
                                     )
                                   : lyrics['type'] == 'text'
                                       ? SelectableText(

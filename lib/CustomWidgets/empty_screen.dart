@@ -11,7 +11,7 @@ Widget emptyScreen(
   double size2,
   String text3,
   double size3, {
-  bool useWhite = false,
+  bool useBnW = true,
 }) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
@@ -26,8 +26,8 @@ Widget emptyScreen(
               textAlign: TextAlign.start,
               style: TextStyle(
                 fontSize: size1,
-                color: useWhite
-                    ? Colors.white
+                color: useBnW
+                    ? const Color(0XFFC7C7C7)
                     : Theme.of(context).colorScheme.secondary,
                 fontWeight: FontWeight.w600,
               ),
@@ -39,8 +39,8 @@ Widget emptyScreen(
                 text2,
                 style: TextStyle(
                   fontSize: size2,
-                  color: useWhite
-                      ? Colors.white
+                  color: useBnW
+                      ? const Color(0XFF979797)
                       : Theme.of(context).colorScheme.secondary,
                   fontWeight: FontWeight.w600,
                 ),
@@ -50,7 +50,7 @@ Widget emptyScreen(
                 style: TextStyle(
                   fontSize: size3,
                   fontWeight: FontWeight.w600,
-                  color: useWhite ? Colors.white : null,
+                  color: useBnW ? Colors.white : null,
                 ),
               ),
             ],

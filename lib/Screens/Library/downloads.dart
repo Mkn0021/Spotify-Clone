@@ -778,163 +778,167 @@ class _DownSongsListState extends State<DownSongsList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return (widget.songs.isEmpty)
-        ? emptyScreen(
-            context,
-            3,
-            AppLocalizations.of(context)!.nothingTo,
-            15.0,
-            AppLocalizations.of(context)!.showHere,
-            50,
-            AppLocalizations.of(context)!.addSomething,
-            23.0,
+    return Column(
+      children: [
+        PlaylistHead(
+          title: 'Downloads',
+          songsList: widget.songs,
+          offline: true,
+          fromDownloads: true,
+        ),
+        if (widget.songs.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 150),
+            child: emptyScreen(
+              context,
+              3,
+              AppLocalizations.of(context)!.nothingTo,
+              15.0,
+              AppLocalizations.of(context)!.showHere,
+              50,
+              AppLocalizations.of(context)!.addSomething,
+              23.0,
+            ),
           )
-        : Column(
-            children: [
-              PlaylistHead(
-                title: 'Downloads',
-                songsList: widget.songs,
-                offline: true,
-                fromDownloads: true,
-              ),
-              Expanded(
-                child: ListView.builder(
-                  controller: widget.scrollController,
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: 10),
-                  shrinkWrap: true,
-                  itemCount: widget.songs.length,
-                  itemExtent: 70.0,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: Card(
-                        elevation: 5,
-                        margin: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(7.0),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: SizedBox.square(
-                          dimension: 50,
-                          child: Image(
-                            fit: BoxFit.cover,
-                            image: FileImage(
-                              File(
-                                widget.songs[index]['image'].toString(),
-                              ),
-                            ),
-                            errorBuilder: (_, __, ___) {
-                              if (widget.songs[index]['image'] != null &&
-                                  widget.songs[index]['image_url'] != null) {
-                                downImage(
-                                  widget.songs[index]['image'].toString(),
-                                  widget.songs[index]['path'].toString(),
-                                  widget.songs[index]['image_url'].toString(),
-                                );
-                              }
-                              return Image.asset(
-                                'assets/cover.jpg',
-                              );
-                            },
+        else
+          Expanded(
+            child: ListView.builder(
+              controller: widget.scrollController,
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.only(bottom: 10),
+              shrinkWrap: true,
+              itemCount: widget.songs.length,
+              itemExtent: 70.0,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: Card(
+                    elevation: 5,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(7.0),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: SizedBox.square(
+                      dimension: 50,
+                      child: Image(
+                        fit: BoxFit.cover,
+                        image: FileImage(
+                          File(
+                            widget.songs[index]['image'].toString(),
                           ),
                         ),
+                        errorBuilder: (_, __, ___) {
+                          if (widget.songs[index]['image'] != null &&
+                              widget.songs[index]['image_url'] != null) {
+                            downImage(
+                              widget.songs[index]['image'].toString(),
+                              widget.songs[index]['path'].toString(),
+                              widget.songs[index]['image_url'].toString(),
+                            );
+                          }
+                          return Image.asset(
+                            'assets/cover.jpg',
+                          );
+                        },
                       ),
-                      onTap: () {
-                        PlayerInvoke.init(
-                          songsList: widget.songs,
-                          index: index,
-                          isOffline: true,
-                          fromDownloads: true,
-                          recommend: false,
-                        );
-                      },
-                      title: Text(
-                        '${widget.songs[index]['title']}',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: Text(
-                        '${widget.songs[index]['artist'] ?? 'Artist name'}',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          PopupMenuButton(
-                            icon: const Icon(
-                              Icons.more_vert_sharp,
-                              color: Color(0XFFA7A7A7),
-                            ),
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(15.0),
-                              ),
-                            ),
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 0,
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.edit_rounded,
-                                    ),
-                                    const SizedBox(
-                                      width: 10.0,
-                                    ),
-                                    Text(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!
-                                          .edit,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: 1,
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.delete_rounded,
-                                    ),
-                                    const SizedBox(
-                                      width: 10.0,
-                                    ),
-                                    Text(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!
-                                          .delete,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                            onSelected: (int? value) async {
-                              if (value == 0) {
-                                widget.songs[index] = await editTags(
-                                  widget.songs[index] as Map,
-                                  context,
-                                );
-                                Hive.box('downloads').put(
-                                  widget.songs[index]['id'],
-                                  widget.songs[index],
-                                );
-                                setState(() {});
-                              }
-                              if (value == 1) {
-                                setState(() {
-                                  widget.onDelete(widget.songs[index] as Map);
-                                });
-                              }
-                            },
-                          ),
-                        ],
-                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    PlayerInvoke.init(
+                      songsList: widget.songs,
+                      index: index,
+                      isOffline: true,
+                      fromDownloads: true,
+                      recommend: false,
                     );
                   },
-                ),
-              ),
-            ],
-          );
+                  title: Text(
+                    '${widget.songs[index]['title']}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(
+                    '${widget.songs[index]['artist'] ?? 'Artist name'}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      PopupMenuButton(
+                        icon: const Icon(
+                          Icons.more_vert_sharp,
+                          color: Color(0XFFA7A7A7),
+                        ),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15.0),
+                          ),
+                        ),
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            value: 0,
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.edit_rounded,
+                                ),
+                                const SizedBox(
+                                  width: 10.0,
+                                ),
+                                Text(
+                                  AppLocalizations.of(
+                                    context,
+                                  )!
+                                      .edit,
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 1,
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.delete_rounded,
+                                ),
+                                const SizedBox(
+                                  width: 10.0,
+                                ),
+                                Text(
+                                  AppLocalizations.of(
+                                    context,
+                                  )!
+                                      .delete,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        onSelected: (int? value) async {
+                          if (value == 0) {
+                            widget.songs[index] = await editTags(
+                              widget.songs[index] as Map,
+                              context,
+                            );
+                            Hive.box('downloads').put(
+                              widget.songs[index]['id'],
+                              widget.songs[index],
+                            );
+                            setState(() {});
+                          }
+                          if (value == 1) {
+                            setState(() {
+                              widget.onDelete(widget.songs[index] as Map);
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+      ],
+    );
   }
 }

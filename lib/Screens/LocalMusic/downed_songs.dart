@@ -435,150 +435,155 @@ class _SongsListState extends State<SongsList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return widget.songs.isEmpty
-        ? emptyScreen(
-            context,
-            3,
-            AppLocalizations.of(context)!.nothingTo,
-            15.0,
-            AppLocalizations.of(context)!.showHere,
-            45,
-            AppLocalizations.of(context)!.downloadSomething,
-            23.0,
-          )
-        : Stack(
-            children: [
-              Column(
-                children: [
-                  PlaylistHead(
-                    title: 'Local Files',
-                    songsList: widget.songs,
-                    offline: true,
-                    fromDownloads: false,
-                  ),
-                  Expanded(
-                    child: Scrollbar(
-                      controller: _scrollController,
-                      thickness: 3,
-                      thumbVisibility: true,
-                      radius: const Radius.circular(10),
-                      interactive: true,
-                      child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.only(bottom: 10),
-                        controller: _scrollController,
-                        shrinkWrap: true,
-                        itemExtent: 70.0,
-                        itemCount: widget.songs.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            leading: OfflineAudioQuery.offlineArtworkWidget(
-                              id: widget.songs[index].id,
-                              type: ArtworkType.AUDIO,
-                              tempPath: widget.tempPath,
-                              fileName: widget.songs[index].displayNameWOExt,
-                            ),
-                            title: Text(
-                              widget.songs[index].title.trim() != ''
-                                  ? widget.songs[index].title
-                                  : widget.songs[index].displayNameWOExt,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            subtitle: Text(
-                              '${widget.songs[index].artist?.replaceAll('<unknown>', 'Unknown') ?? AppLocalizations.of(context)!.unknown} - ${widget.songs[index].album?.replaceAll('<unknown>', 'Unknown') ?? AppLocalizations.of(context)!.unknown}',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: PopupMenuButton(
-                              icon: const Icon(
-                                Icons.more_vert_sharp,
-                                color: Color(0XFFA7A7A7),
-                              ),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15.0)),
-                              ),
-                              onSelected: (int? value) async {
-                                if (value == 0) {
-                                  AddToOffPlaylist().addToOffPlaylist(
-                                    context,
-                                    widget.songs[index].id,
-                                  );
-                                }
-                                if (value == 1) {
-                                  await OfflineAudioQuery().removeFromPlaylist(
-                                    playlistId: widget.playlistId!,
-                                    audioId: widget.songs[index].id,
-                                  );
-                                  ShowSnackBar().showSnackBar(
-                                    context,
-                                    '${AppLocalizations.of(context)!.removedFrom} ${widget.playlistName}',
-                                  );
-                                }
-                                if (value == -1) {
-                                  await widget.deleteSong(widget.songs[index]);
-                                }
-                              },
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  value: 0,
-                                  child: Row(
-                                    children: [
-                                      const Icon(Icons.playlist_add_rounded),
-                                      const SizedBox(width: 10.0),
-                                      Text(
-                                        AppLocalizations.of(context)!
-                                            .addToPlaylist,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                if (widget.playlistId != null)
-                                  PopupMenuItem(
-                                    value: 1,
-                                    child: Row(
-                                      children: [
-                                        const Icon(Icons.delete_rounded),
-                                        const SizedBox(width: 10.0),
-                                        Text(AppLocalizations.of(context)!
-                                            .remove,),
-                                      ],
-                                    ),
-                                  ),
-                                PopupMenuItem(
-                                  value: -1,
-                                  child: Row(
-                                    children: [
-                                      const Icon(Icons.delete_rounded),
-                                      const SizedBox(width: 10.0),
-                                      Text(
-                                          AppLocalizations.of(context)!.delete,),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            onTap: () {
-                              PlayerInvoke.init(
-                                songsList: widget.songs,
-                                index: index,
-                                isOffline: true,
-                                recommend: false,
+    return Stack(
+      children: [
+        Column(
+          children: [
+            PlaylistHead(
+              title: 'Local Files',
+              songsList: widget.songs,
+              offline: true,
+              fromDownloads: false,
+            ),
+            if (widget.songs.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 150),
+                child: emptyScreen(
+                  context,
+                  3,
+                  AppLocalizations.of(context)!.nothingTo,
+                  15.0,
+                  AppLocalizations.of(context)!.showHere,
+                  50,
+                  AppLocalizations.of(context)!.addSomething,
+                  23.0,
+                ),
+              )
+            else
+              Expanded(
+                child: Scrollbar(
+                  controller: _scrollController,
+                  thickness: 3,
+                  thumbVisibility: true,
+                  radius: const Radius.circular(10),
+                  interactive: true,
+                  child: ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.only(bottom: 10),
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemExtent: 70.0,
+                    itemCount: widget.songs.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: OfflineAudioQuery.offlineArtworkWidget(
+                          id: widget.songs[index].id,
+                          type: ArtworkType.AUDIO,
+                          tempPath: widget.tempPath,
+                          fileName: widget.songs[index].displayNameWOExt,
+                        ),
+                        title: Text(
+                          widget.songs[index].title.trim() != ''
+                              ? widget.songs[index].title
+                              : widget.songs[index].displayNameWOExt,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(
+                          '${widget.songs[index].artist?.replaceAll('<unknown>', 'Unknown') ?? AppLocalizations.of(context)!.unknown} - ${widget.songs[index].album?.replaceAll('<unknown>', 'Unknown') ?? AppLocalizations.of(context)!.unknown}',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: PopupMenuButton(
+                          icon: const Icon(
+                            Icons.more_vert_sharp,
+                            color: Color(0XFFA7A7A7),
+                          ),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15.0)),
+                          ),
+                          onSelected: (int? value) async {
+                            if (value == 0) {
+                              AddToOffPlaylist().addToOffPlaylist(
+                                context,
+                                widget.songs[index].id,
                               );
-                            },
+                            }
+                            if (value == 1) {
+                              await OfflineAudioQuery().removeFromPlaylist(
+                                playlistId: widget.playlistId!,
+                                audioId: widget.songs[index].id,
+                              );
+                              ShowSnackBar().showSnackBar(
+                                context,
+                                '${AppLocalizations.of(context)!.removedFrom} ${widget.playlistName}',
+                              );
+                            }
+                            if (value == -1) {
+                              await widget.deleteSong(widget.songs[index]);
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 0,
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.playlist_add_rounded),
+                                  const SizedBox(width: 10.0),
+                                  Text(
+                                    AppLocalizations.of(context)!.addToPlaylist,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (widget.playlistId != null)
+                              PopupMenuItem(
+                                value: 1,
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.delete_rounded),
+                                    const SizedBox(width: 10.0),
+                                    Text(
+                                      AppLocalizations.of(context)!.remove,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            PopupMenuItem(
+                              value: -1,
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.delete_rounded),
+                                  const SizedBox(width: 10.0),
+                                  Text(
+                                    AppLocalizations.of(context)!.delete,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          PlayerInvoke.init(
+                            songsList: widget.songs,
+                            index: index,
+                            isOffline: true,
+                            recommend: false,
                           );
                         },
-                      ),
-                    ),
+                      );
+                    },
                   ),
-                ],
+                ),
               ),
-              Positioned(
-                bottom: 0.0,
-                left: 2.0,
-                right: 2.0,
-                child: MiniPlayer(),
-              ),
-            ],
-          );
+          ],
+        ),
+        Positioned(
+          bottom: 0.0,
+          left: 2.0,
+          right: 2.0,
+          child: MiniPlayer(),
+        ),
+      ],
+    );
   }
 }
