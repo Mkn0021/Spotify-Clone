@@ -54,8 +54,11 @@ class PlaylistHead extends StatelessWidget {
           Row(
             children: [
               const Spacer(),
-              IconButton(
-                onPressed: () {
+              SvgIconButton(
+                selectedSVG: 'assets/shuffle.svg',
+                selectedColor: const Color(0xffe7e7e7),
+                unselectedColor: const Color(0xffe7e7e7),
+                onTap: () {
                   PlayerInvoke.init(
                     songsList: songsList,
                     index: 0,
@@ -65,7 +68,6 @@ class PlaylistHead extends StatelessWidget {
                     shuffle: true,
                   );
                 },
-                icon: const Icon(Icons.shuffle_rounded),
               ),
               Transform.scale(
                 scale: 1.5,

@@ -93,9 +93,10 @@ class _NowPlayingState extends State<NowPlaying> {
                               Row(
                                 children: [
                                   const Spacer(),
-                                  const Icon(
-                                    Icons.shuffle_rounded,
-                                    color: Color(0XFFA7A7A7),
+                                  const SvgIconButton(
+                                    selectedSVG: 'assets/shuffle.svg',
+                                    selectedColor: Color(0XFFA7A7A7),
+                                    unselectedColor: Color(0XFFA7A7A7),
                                   ),
                                   const SizedBox(
                                     width: 10,
@@ -103,7 +104,8 @@ class _NowPlayingState extends State<NowPlaying> {
                                   Transform.scale(
                                     scale: 1.5,
                                     child: SvgIconButton(
-                                      selectedSVG: 'assets/pause_round.svg',
+                                      selectedSVG: 'assets/play_round.svg',
+                                      unselectedSVG: 'assets/pause_round.svg',
                                       selectedColor: Theme.of(context)
                                           .colorScheme
                                           .secondary,

@@ -184,11 +184,14 @@ class BouncyPlaylistHeaderScrollView extends StatelessWidget {
                               [], // Use the null-aware spread operator
                           const Spacer(),
                           if (onShuffleTap != null)
-                            IconButton(
-                              onPressed: () {
+                            SvgIconButton(
+                              selectedSVG: 'assets/shuffle.svg',
+                              selectedColor: const Color(0xffe7e7e7),
+                              unselectedColor: const Color(0xffe7e7e7),
+                              iconSize: 20,
+                              onTap: () {
                                 onShuffleTap!.call();
                               },
-                              icon: const Icon(Icons.shuffle_rounded),
                             ),
                           if (onPlayTap != null)
                             Transform.scale(

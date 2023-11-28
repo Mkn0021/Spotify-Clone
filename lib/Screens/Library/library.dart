@@ -198,12 +198,15 @@ class _LibraryPageState extends State<LibraryPage> {
                       },
                     ),
                   ),
-                  LibraryTile(
-                    title: AppLocalizations.of(context)!.stats,
-                    icon: Icons.auto_graph_rounded,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/stats');
-                    },
+                  Visibility(
+                    visible: !showDownloadedContent && !showPlaylists,
+                    child: LibraryTile(
+                      title: AppLocalizations.of(context)!.stats,
+                      icon: Icons.auto_graph_rounded,
+                      onTap: () {
+                        Navigator.pushNamed(context, '/stats');
+                      },
+                    ),
                   ),
                 ],
               ),
