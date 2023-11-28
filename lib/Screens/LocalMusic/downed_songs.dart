@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -10,14 +8,12 @@ import 'package:logging/logging.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:spotify/CustomWidgets/add_playlist.dart';
-import 'package:spotify/CustomWidgets/custom_physics.dart';
 import 'package:spotify/CustomWidgets/data_search.dart';
 import 'package:spotify/CustomWidgets/empty_screen.dart';
-import 'package:spotify/CustomWidgets/gradient_containers.dart';
+import 'package:spotify/CustomWidgets/miniplayer.dart';
 import 'package:spotify/CustomWidgets/playlist_head.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
 import 'package:spotify/Helpers/audio_query.dart';
-import 'package:spotify/Screens/LocalMusic/localplaylists.dart';
 import 'package:spotify/Services/player_service.dart';
 
 class DownloadedSongs extends StatefulWidget {
@@ -65,8 +61,6 @@ class _DownloadedSongsState extends State<DownloadedSongs>
       Hive.box('settings').get('includeOrExclude', defaultValue: false) as bool;
   List includedExcludedPaths = Hive.box('settings')
       .get('includedExcludedPaths', defaultValue: []) as List;
-  TabController? _tcontroller;
-  int _currentTabIndex = 0;
   OfflineAudioQuery offlineAudioQuery = OfflineAudioQuery();
   List<PlaylistModel> playlistDetails = [];
 
@@ -86,22 +80,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
   @override
   void initState() {
-    _tcontroller =
-        TabController(length: widget.showPlaylists ? 6 : 5, vsync: this);
-    _tcontroller!.addListener(() {
-      if ((_tcontroller!.previousIndex != 0 && _tcontroller!.index == 0) ||
-          (_tcontroller!.previousIndex == 0)) {
-        setState(() => _currentTabIndex = _tcontroller!.index);
-      }
-    });
     getData();
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _tcontroller!.dispose();
   }
 
   bool checkIncludedOrExcluded(SongModel song) {
@@ -276,212 +256,157 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
   @override
   Widget build(BuildContext context) {
-    return GradientContainer(
-      child: DefaultTabController(
-        length: widget.showPlaylists ? 6 : 5,
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            title: Text(
-              widget.title ?? AppLocalizations.of(context)!.myMusic,
-            ),
-            bottom: TabBar(
-              isScrollable: widget.showPlaylists,
-              controller: _tcontroller,
-              indicatorSize: TabBarIndicatorSize.label,
-              tabs: [
-                Tab(
-                  text: AppLocalizations.of(context)!.songs,
-                ),
-                Tab(
-                  text: AppLocalizations.of(context)!.albums,
-                ),
-                Tab(
-                  text: AppLocalizations.of(context)!.artists,
-                ),
-                Tab(
-                  text: AppLocalizations.of(context)!.genres,
-                ),
-                Tab(
-                  text: AppLocalizations.of(context)!.folders,
-                ),
-                if (widget.showPlaylists)
-                  Tab(
-                    text: AppLocalizations.of(context)!.playlists,
-                  ),
-              ],
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(CupertinoIcons.search),
-                tooltip: AppLocalizations.of(context)!.search,
-                onPressed: () {
-                  showSearch(
-                    context: context,
-                    delegate: DataSearch(
-                      data: _songs,
-                      tempPath: tempPath!,
-                    ),
-                  );
-                },
-              ),
-              if (_currentTabIndex == 0)
-                PopupMenuButton(
-                  icon: const Icon(Icons.sort_rounded),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                  ),
-                  onSelected: (int value) async {
-                    if (value < 6) {
-                      sortValue = value;
-                      Hive.box('settings').put('sortValue', value);
-                    } else {
-                      orderValue = value - 6;
-                      Hive.box('settings').put('orderValue', orderValue);
-                    }
-                    await sortSongs(sortValue, orderValue);
-                    setState(() {});
-                  },
-                  itemBuilder: (context) {
-                    final List<String> sortTypes = [
-                      AppLocalizations.of(context)!.displayName,
-                      AppLocalizations.of(context)!.dateAdded,
-                      AppLocalizations.of(context)!.album,
-                      AppLocalizations.of(context)!.artist,
-                      AppLocalizations.of(context)!.duration,
-                      AppLocalizations.of(context)!.size,
-                    ];
-                    final List<String> orderTypes = [
-                      AppLocalizations.of(context)!.inc,
-                      AppLocalizations.of(context)!.dec,
-                    ];
-                    final menuList = <PopupMenuEntry<int>>[];
-                    menuList.addAll(
-                      sortTypes
-                          .map(
-                            (e) => PopupMenuItem(
-                              value: sortTypes.indexOf(e),
-                              child: Row(
-                                children: [
-                                  if (sortValue == sortTypes.indexOf(e))
-                                    Icon(
-                                      Icons.check_rounded,
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.white
-                                          : Colors.grey[700],
-                                    )
-                                  else
-                                    const SizedBox(),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    e,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    );
-                    menuList.add(
-                      const PopupMenuDivider(
-                        height: 10,
-                      ),
-                    );
-                    menuList.addAll(
-                      orderTypes
-                          .map(
-                            (e) => PopupMenuItem(
-                              value: sortTypes.length + orderTypes.indexOf(e),
-                              child: Row(
-                                children: [
-                                  if (orderValue == orderTypes.indexOf(e))
-                                    Icon(
-                                      Icons.check_rounded,
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.white
-                                          : Colors.grey[700],
-                                    )
-                                  else
-                                    const SizedBox(),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    e,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    );
-                    return menuList;
-                  },
-                ),
-            ],
-            centerTitle: true,
-            backgroundColor: Theme.of(context).brightness == Brightness.dark
-                ? Colors.transparent
-                : Theme.of(context).colorScheme.secondary,
-            elevation: 0,
-          ),
-          body: !added
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : TabBarView(
-                  physics: const CustomPhysics(),
-                  controller: _tcontroller,
-                  children: [
-                    SongsTab(
-                      songs: _songs,
-                      playlistId: widget.playlistId,
-                      playlistName: widget.title,
-                      tempPath: tempPath!,
-                      deleteSong: deleteSong,
-                    ),
-                    AlbumsTab(
-                      albums: _albums,
-                      albumsList: _sortedAlbumKeysList,
-                      tempPath: tempPath!,
-                    ),
-                    AlbumsTab(
-                      albums: _artists,
-                      albumsList: _sortedArtistKeysList,
-                      tempPath: tempPath!,
-                    ),
-                    AlbumsTab(
-                      albums: _genres,
-                      albumsList: _sortedGenreKeysList,
-                      tempPath: tempPath!,
-                    ),
-                    AlbumsTab(
-                      albums: _folders,
-                      albumsList: _sortedFolderKeysList,
-                      tempPath: tempPath!,
-                      isFolder: true,
-                    ),
-                    if (widget.showPlaylists)
-                      LocalPlaylists(
-                        playlistDetails: playlistDetails,
-                        offlineAudioQuery: offlineAudioQuery,
-                      ),
-                    // videosTab(),
-                  ],
-                ),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0XFF30554A),
+            Colors.black,
+          ],
+          stops: [0.0, 0.38],
         ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          actions: [
+            IconButton(
+              icon: const Icon(CupertinoIcons.search),
+              tooltip: AppLocalizations.of(context)!.search,
+              onPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: DataSearch(
+                    data: _songs,
+                    tempPath: tempPath!,
+                  ),
+                );
+              },
+            ),
+            PopupMenuButton(
+              icon: const Icon(Icons.sort_rounded),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15.0)),
+              ),
+              onSelected: (int value) async {
+                if (value < 6) {
+                  sortValue = value;
+                  Hive.box('settings').put('sortValue', value);
+                } else {
+                  orderValue = value - 6;
+                  Hive.box('settings').put('orderValue', orderValue);
+                }
+                await sortSongs(sortValue, orderValue);
+                setState(() {});
+              },
+              itemBuilder: (context) {
+                final List<String> sortTypes = [
+                  AppLocalizations.of(context)!.displayName,
+                  AppLocalizations.of(context)!.dateAdded,
+                  AppLocalizations.of(context)!.album,
+                  AppLocalizations.of(context)!.artist,
+                  AppLocalizations.of(context)!.duration,
+                  AppLocalizations.of(context)!.size,
+                ];
+                final List<String> orderTypes = [
+                  AppLocalizations.of(context)!.inc,
+                  AppLocalizations.of(context)!.dec,
+                ];
+                final menuList = <PopupMenuEntry<int>>[];
+                menuList.addAll(
+                  sortTypes
+                      .map(
+                        (e) => PopupMenuItem(
+                          value: sortTypes.indexOf(e),
+                          child: Row(
+                            children: [
+                              if (sortValue == sortTypes.indexOf(e))
+                                Icon(
+                                  Icons.check_rounded,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.grey[700],
+                                )
+                              else
+                                const SizedBox(),
+                              const SizedBox(width: 10),
+                              Text(
+                                e,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
+                );
+                menuList.add(
+                  const PopupMenuDivider(
+                    height: 10,
+                  ),
+                );
+                menuList.addAll(
+                  orderTypes
+                      .map(
+                        (e) => PopupMenuItem(
+                          value: sortTypes.length + orderTypes.indexOf(e),
+                          child: Row(
+                            children: [
+                              if (orderValue == orderTypes.indexOf(e))
+                                Icon(
+                                  Icons.check_rounded,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.grey[700],
+                                )
+                              else
+                                const SizedBox(),
+                              const SizedBox(width: 10),
+                              Text(
+                                e,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
+                );
+                return menuList;
+              },
+            ),
+          ],
+          centerTitle: true,
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.transparent
+              : Theme.of(context).colorScheme.secondary,
+          elevation: 0,
+        ),
+        body: !added
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : SongsList(
+                songs: _songs,
+                playlistId: widget.playlistId,
+                playlistName: widget.title,
+                tempPath: tempPath!,
+                deleteSong: deleteSong,
+              ),
       ),
     );
   }
 }
 
-class SongsTab extends StatefulWidget {
+class SongsList extends StatefulWidget {
   final List<SongModel> songs;
   final int? playlistId;
   final String? playlistName;
   final String tempPath;
   final Function(SongModel) deleteSong;
-  const SongsTab({
+  const SongsList({
     super.key,
     required this.songs,
     required this.tempPath,
@@ -491,10 +416,10 @@ class SongsTab extends StatefulWidget {
   });
 
   @override
-  State<SongsTab> createState() => _SongsTabState();
+  State<SongsList> createState() => _SongsListState();
 }
 
-class _SongsTabState extends State<SongsTab>
+class _SongsListState extends State<SongsList>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
@@ -521,218 +446,139 @@ class _SongsTabState extends State<SongsTab>
             AppLocalizations.of(context)!.downloadSomething,
             23.0,
           )
-        : Column(
+        : Stack(
             children: [
-              PlaylistHead(
-                songsList: widget.songs,
-                offline: true,
-                fromDownloads: false,
-              ),
-              Expanded(
-                child: Scrollbar(
-                  controller: _scrollController,
-                  thickness: 8,
-                  thumbVisibility: true,
-                  radius: const Radius.circular(10),
-                  interactive: true,
-                  child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.only(bottom: 10),
-                    controller: _scrollController,
-                    shrinkWrap: true,
-                    itemExtent: 70.0,
-                    itemCount: widget.songs.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: OfflineAudioQuery.offlineArtworkWidget(
-                          id: widget.songs[index].id,
-                          type: ArtworkType.AUDIO,
-                          tempPath: widget.tempPath,
-                          fileName: widget.songs[index].displayNameWOExt,
-                        ),
-                        title: Text(
-                          widget.songs[index].title.trim() != ''
-                              ? widget.songs[index].title
-                              : widget.songs[index].displayNameWOExt,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Text(
-                          '${widget.songs[index].artist?.replaceAll('<unknown>', 'Unknown') ?? AppLocalizations.of(context)!.unknown} - ${widget.songs[index].album?.replaceAll('<unknown>', 'Unknown') ?? AppLocalizations.of(context)!.unknown}',
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        trailing: PopupMenuButton(
-                          icon: const Icon(Icons.more_vert_rounded),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(15.0)),
-                          ),
-                          onSelected: (int? value) async {
-                            if (value == 0) {
-                              AddToOffPlaylist().addToOffPlaylist(
-                                context,
-                                widget.songs[index].id,
-                              );
-                            }
-                            if (value == 1) {
-                              await OfflineAudioQuery().removeFromPlaylist(
-                                playlistId: widget.playlistId!,
-                                audioId: widget.songs[index].id,
-                              );
-                              ShowSnackBar().showSnackBar(
-                                context,
-                                '${AppLocalizations.of(context)!.removedFrom} ${widget.playlistName}',
-                              );
-                            }
-                            if (value == -1) {
-                              await widget.deleteSong(widget.songs[index]);
-                            }
-                          },
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              value: 0,
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.playlist_add_rounded),
-                                  const SizedBox(width: 10.0),
-                                  Text(
-                                    AppLocalizations.of(context)!.addToPlaylist,
+              Column(
+                children: [
+                  PlaylistHead(
+                    title: 'Local Files',
+                    songsList: widget.songs,
+                    offline: true,
+                    fromDownloads: false,
+                  ),
+                  Expanded(
+                    child: Scrollbar(
+                      controller: _scrollController,
+                      thickness: 3,
+                      thumbVisibility: true,
+                      radius: const Radius.circular(10),
+                      interactive: true,
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.only(bottom: 10),
+                        controller: _scrollController,
+                        shrinkWrap: true,
+                        itemExtent: 70.0,
+                        itemCount: widget.songs.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            leading: OfflineAudioQuery.offlineArtworkWidget(
+                              id: widget.songs[index].id,
+                              type: ArtworkType.AUDIO,
+                              tempPath: widget.tempPath,
+                              fileName: widget.songs[index].displayNameWOExt,
+                            ),
+                            title: Text(
+                              widget.songs[index].title.trim() != ''
+                                  ? widget.songs[index].title
+                                  : widget.songs[index].displayNameWOExt,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: Text(
+                              '${widget.songs[index].artist?.replaceAll('<unknown>', 'Unknown') ?? AppLocalizations.of(context)!.unknown} - ${widget.songs[index].album?.replaceAll('<unknown>', 'Unknown') ?? AppLocalizations.of(context)!.unknown}',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: PopupMenuButton(
+                              icon: const Icon(
+                                Icons.more_vert_sharp,
+                                color: Color(0XFFA7A7A7),
+                              ),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15.0)),
+                              ),
+                              onSelected: (int? value) async {
+                                if (value == 0) {
+                                  AddToOffPlaylist().addToOffPlaylist(
+                                    context,
+                                    widget.songs[index].id,
+                                  );
+                                }
+                                if (value == 1) {
+                                  await OfflineAudioQuery().removeFromPlaylist(
+                                    playlistId: widget.playlistId!,
+                                    audioId: widget.songs[index].id,
+                                  );
+                                  ShowSnackBar().showSnackBar(
+                                    context,
+                                    '${AppLocalizations.of(context)!.removedFrom} ${widget.playlistName}',
+                                  );
+                                }
+                                if (value == -1) {
+                                  await widget.deleteSong(widget.songs[index]);
+                                }
+                              },
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: 0,
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.playlist_add_rounded),
+                                      const SizedBox(width: 10.0),
+                                      Text(
+                                        AppLocalizations.of(context)!
+                                            .addToPlaylist,
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                            if (widget.playlistId != null)
-                              PopupMenuItem(
-                                value: 1,
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.delete_rounded),
-                                    const SizedBox(width: 10.0),
-                                    Text(AppLocalizations.of(context)!.remove),
-                                  ],
                                 ),
-                              ),
-                            PopupMenuItem(
-                              value: -1,
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.delete_rounded),
-                                  const SizedBox(width: 10.0),
-                                  Text(AppLocalizations.of(context)!.delete),
-                                ],
-                              ),
+                                if (widget.playlistId != null)
+                                  PopupMenuItem(
+                                    value: 1,
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.delete_rounded),
+                                        const SizedBox(width: 10.0),
+                                        Text(AppLocalizations.of(context)!
+                                            .remove,),
+                                      ],
+                                    ),
+                                  ),
+                                PopupMenuItem(
+                                  value: -1,
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.delete_rounded),
+                                      const SizedBox(width: 10.0),
+                                      Text(
+                                          AppLocalizations.of(context)!.delete,),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        onTap: () {
-                          PlayerInvoke.init(
-                            songsList: widget.songs,
-                            index: index,
-                            isOffline: true,
-                            recommend: false,
+                            onTap: () {
+                              PlayerInvoke.init(
+                                songsList: widget.songs,
+                                index: index,
+                                isOffline: true,
+                                recommend: false,
+                              );
+                            },
                           );
                         },
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ),
+                ],
+              ),
+              Positioned(
+                bottom: 0.0,
+                left: 2.0,
+                right: 2.0,
+                child: MiniPlayer(),
               ),
             ],
-          );
-  }
-}
-
-class AlbumsTab extends StatefulWidget {
-  final Map<String, List<SongModel>> albums;
-  final List<String> albumsList;
-  final String tempPath;
-  final bool isFolder;
-  const AlbumsTab({
-    super.key,
-    required this.albums,
-    required this.albumsList,
-    required this.tempPath,
-    this.isFolder = false,
-  });
-
-  @override
-  State<AlbumsTab> createState() => _AlbumsTabState();
-}
-
-class _AlbumsTabState extends State<AlbumsTab>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void dispose() {
-    super.dispose();
-    _scrollController.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return widget.albumsList.isEmpty
-        ? emptyScreen(
-            context,
-            3,
-            AppLocalizations.of(context)!.nothingTo,
-            15.0,
-            AppLocalizations.of(context)!.showHere,
-            45,
-            AppLocalizations.of(context)!.downloadSomething,
-            23.0,
-          )
-        : Scrollbar(
-            controller: _scrollController,
-            thickness: 8,
-            thumbVisibility: true,
-            radius: const Radius.circular(10),
-            interactive: true,
-            child: ListView.builder(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.only(top: 20, bottom: 10),
-              controller: _scrollController,
-              shrinkWrap: true,
-              itemExtent: 70.0,
-              itemCount: widget.albumsList.length,
-              itemBuilder: (context, index) {
-                String title = widget.albumsList[index];
-                if (widget.isFolder && title.length > 35) {
-                  final splits = title.split('/');
-                  title = '${splits.first}/.../${splits.last}';
-                }
-                return ListTile(
-                  leading: OfflineAudioQuery.offlineArtworkWidget(
-                    id: widget.albums[widget.albumsList[index]]![0].id,
-                    type: ArtworkType.AUDIO,
-                    tempPath: widget.tempPath,
-                    fileName: widget
-                        .albums[widget.albumsList[index]]![0].displayNameWOExt,
-                  ),
-                  title: Text(
-                    title,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: Text(
-                    '${widget.albums[widget.albumsList[index]]!.length} ${AppLocalizations.of(context)!.songs}',
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DownloadedSongs(
-                          title: widget.albumsList[index],
-                          cachedSongs: widget.albums[widget.albumsList[index]],
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
           );
   }
 }

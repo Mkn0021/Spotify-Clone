@@ -6,7 +6,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:spotify/CustomWidgets/svg_button.dart';
 import 'package:spotify/Helpers/dominant_color.dart';
-//import 'package:spotify/Helpers/dominant_color.dart';
 
 class BouncyPlaylistHeaderScrollView extends StatelessWidget {
   final ScrollController scrollController;

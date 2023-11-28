@@ -665,6 +665,7 @@ class _SongsTabState extends State<SongsTab>
         : Column(
             children: [
               PlaylistHead(
+                title: 'Downloaded',
                 songsList: widget.songs,
                 offline: true,
                 fromDownloads: false,

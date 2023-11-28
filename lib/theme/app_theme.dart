@@ -96,7 +96,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(7.0),
         ),
         titleTextStyle: const TextStyle(
-          color: Color(0xffe7e7e7),
+          color: Colors.white,
           fontSize: 16,
           fontFamily: 'Raleway',
           fontWeight: FontWeight.w400,

@@ -7,20 +7,17 @@ import 'package:audiotagger/models/tag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:logging/logging.dart';
 // import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:spotify/CustomWidgets/custom_physics.dart';
 import 'package:spotify/CustomWidgets/data_search.dart';
 import 'package:spotify/CustomWidgets/empty_screen.dart';
 import 'package:spotify/CustomWidgets/miniplayer.dart';
 import 'package:spotify/CustomWidgets/playlist_head.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
 import 'package:spotify/Helpers/picker.dart';
-import 'package:spotify/Screens/Library/liked.dart';
 import 'package:spotify/Services/player_service.dart';
 
 class Downloads extends StatefulWidget {
@@ -40,7 +37,6 @@ class _DownloadsState extends State<Downloads>
   List _sortedAlbumKeysList = [];
   List _sortedArtistKeysList = [];
   List _sortedGenreKeysList = [];
-  TabController? _tcontroller;
   // int currentIndex = 0;
   // String? tempPath = Hive.box('settings').get('tempDirPath')?.toString();
   int sortValue = Hive.box('settings').get('sortValue', defaultValue: 1) as int;
@@ -49,25 +45,9 @@ class _DownloadsState extends State<Downloads>
   int albumSortValue =
       Hive.box('settings').get('albumSortValue', defaultValue: 2) as int;
   final ScrollController _scrollController = ScrollController();
-  final ValueNotifier<bool> _showShuffle = ValueNotifier<bool>(true);
 
   @override
   void initState() {
-    _tcontroller = TabController(length: 4, vsync: this);
-    _scrollController.addListener(() {
-      if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-        _showShuffle.value = false;
-      } else {
-        _showShuffle.value = true;
-      }
-    });
-    // _tcontroller!.addListener(changeTitle);
-    // if (tempPath == null) {
-    //   getTemporaryDirectory().then((value) {
-    //     Hive.box('settings').put('tempDirPath', value.path);
-    //   });
-    // }
     getDownloads();
     super.initState();
   }
@@ -75,7 +55,6 @@ class _DownloadsState extends State<Downloads>
   @override
   void dispose() {
     super.dispose();
-    _tcontroller!.dispose();
     _scrollController.dispose();
   }
 
@@ -300,38 +279,27 @@ class _DownloadsState extends State<Downloads>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: DefaultTabController(
-            length: 4,
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0XFF192459),
+            Colors.black,
+          ],
+          stops: [0.0, 0.38],
+        ),
+      ),
+      child: Column(
+        children: [
+          Expanded(
             child: Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Colors.transparent,
               appBar: AppBar(
-                title: Text(AppLocalizations.of(context)!.downs),
                 centerTitle: true,
-                backgroundColor: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.transparent
-                    : Theme.of(context).colorScheme.secondary,
+                backgroundColor: Colors.transparent,
                 elevation: 0,
-                bottom: TabBar(
-                  controller: _tcontroller,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  tabs: [
-                    Tab(
-                      text: AppLocalizations.of(context)!.songs,
-                    ),
-                    Tab(
-                      text: AppLocalizations.of(context)!.albums,
-                    ),
-                    Tab(
-                      text: AppLocalizations.of(context)!.artists,
-                    ),
-                    Tab(
-                      text: AppLocalizations.of(context)!.genres,
-                    ),
-                  ],
-                ),
                 actions: [
                   IconButton(
                     icon: const Icon(CupertinoIcons.search),
@@ -458,83 +426,18 @@ class _DownloadsState extends State<Downloads>
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
-                  : TabBarView(
-                      physics: const CustomPhysics(),
-                      controller: _tcontroller,
-                      children: [
-                        DownSongsTab(
-                          onDelete: (Map item) {
-                            deleteSong(item);
-                          },
-                          songs: _songs,
-                          scrollController: _scrollController,
-                        ),
-                        AlbumsTab(
-                          albums: _albums,
-                          offline: true,
-                          type: 'album',
-                          sortedAlbumKeysList: _sortedAlbumKeysList,
-                        ),
-                        AlbumsTab(
-                          albums: _artists,
-                          type: 'artist',
-                          // tempPath: tempPath,
-                          offline: true,
-                          sortedAlbumKeysList: _sortedArtistKeysList,
-                        ),
-                        AlbumsTab(
-                          albums: _genres,
-                          type: 'genre',
-                          offline: true,
-                          sortedAlbumKeysList: _sortedGenreKeysList,
-                        ),
-                      ],
+                  : DownSongsList(
+                      onDelete: (Map item) {
+                        deleteSong(item);
+                      },
+                      songs: _songs,
+                      scrollController: _scrollController,
                     ),
-              floatingActionButton: ValueListenableBuilder(
-                valueListenable: _showShuffle,
-                child: FloatingActionButton(
-                  backgroundColor: Theme.of(context).cardColor,
-                  child: Icon(
-                    Icons.shuffle_rounded,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-                    size: 24.0,
-                  ),
-                  onPressed: () {
-                    if (_songs.isNotEmpty) {
-                      PlayerInvoke.init(
-                        songsList: _songs,
-                        index: 0,
-                        isOffline: true,
-                        fromDownloads: true,
-                        recommend: false,
-                        shuffle: true,
-                      );
-                    }
-                  },
-                ),
-                builder: (
-                  BuildContext context,
-                  bool showShuffle,
-                  Widget? child,
-                ) {
-                  return AnimatedSlide(
-                    duration: const Duration(milliseconds: 300),
-                    offset: showShuffle ? Offset.zero : const Offset(0, 2),
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 300),
-                      opacity: showShuffle ? 1 : 0,
-                      child: child,
-                    ),
-                  );
-                },
-              ),
             ),
           ),
-        ),
-        MiniPlayer(),
-      ],
+          MiniPlayer(),
+        ],
+      ),
     );
   }
 }
@@ -830,11 +733,11 @@ Future<Map> editTags(Map song, BuildContext context) async {
   return song;
 }
 
-class DownSongsTab extends StatefulWidget {
+class DownSongsList extends StatefulWidget {
   final List songs;
   final Function(Map item) onDelete;
   final ScrollController scrollController;
-  const DownSongsTab({
+  const DownSongsList({
     super.key,
     required this.songs,
     required this.onDelete,
@@ -842,10 +745,10 @@ class DownSongsTab extends StatefulWidget {
   });
 
   @override
-  State<DownSongsTab> createState() => _DownSongsTabState();
+  State<DownSongsList> createState() => _DownSongsListState();
 }
 
-class _DownSongsTabState extends State<DownSongsTab>
+class _DownSongsListState extends State<DownSongsList>
     with AutomaticKeepAliveClientMixin {
   Future<void> downImage(
     String imageFilePath,
@@ -889,6 +792,7 @@ class _DownSongsTabState extends State<DownSongsTab>
         : Column(
             children: [
               PlaylistHead(
+                title: 'Downloads',
                 songsList: widget.songs,
                 offline: true,
                 fromDownloads: true,
@@ -957,7 +861,8 @@ class _DownSongsTabState extends State<DownSongsTab>
                         children: [
                           PopupMenuButton(
                             icon: const Icon(
-                              Icons.more_vert_rounded,
+                              Icons.more_vert_sharp,
+                              color: Color(0XFFA7A7A7),
                             ),
                             shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.all(
