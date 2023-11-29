@@ -1,10 +1,11 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole)
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:spotify/APIs/api.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
+import 'package:spotify/CustomWidgets/svg_button.dart';
 import 'package:spotify/Helpers/picker.dart';
 import 'package:spotify/Services/download.dart';
 
@@ -57,16 +58,11 @@ class _DownloadButtonState extends State<DownloadButton> {
                 },
               )
             : down.progress == 0
-                ? IconButton(
-                    icon: Icon(
-                      widget.icon == 'download'
-                          ? Icons.download_rounded
-                          : Icons.save_alt,
-                    ),
+                ? SvgIconButton(
+                    selectedSVG: 'assets/download_button.svg',
                     iconSize: widget.size ?? 24.0,
-                    color: Theme.of(context).iconTheme.color,
-                    tooltip: 'Download',
-                    onPressed: () async {
+                    unselectedColor: Colors.white,
+                    onTap: () async {
                       if (!hasPermission) {
                         //checking that permission Given or Not;
                         final String temp = await Picker.selectFolder(
@@ -221,13 +217,11 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
               )
             : down.progress == 0
                 ? Center(
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.download_rounded,
-                      ),
+                    child: SvgIconButton(
+                      selectedSVG: 'assets/download_button.svg',
+                      unselectedColor: Colors.white,
                       iconSize: 23.0,
-                      tooltip: AppLocalizations.of(context)!.down,
-                      onPressed: () async {
+                      onTap: () async {
                         for (final items in widget.data) {
                           down.prepareDownload(
                             context,
@@ -330,14 +324,11 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
               )
             : down.progress == 0
                 ? Center(
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.download_rounded,
-                      ),
+                    child: SvgIconButton(
+                      selectedSVG: 'assets/download_button.svg',
                       iconSize: 25.0,
-                      color: Theme.of(context).iconTheme.color,
-                      tooltip: AppLocalizations.of(context)!.down,
-                      onPressed: () async {
+                      selectedColor: Colors.white,
+                      onTap: () async {
                         ShowSnackBar().showSnackBar(
                           context,
                           '${AppLocalizations.of(context)!.downingAlbum} "${widget.albumName}"',

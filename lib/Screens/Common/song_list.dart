@@ -16,6 +16,7 @@ import 'package:spotify/CustomWidgets/miniplayer.dart';
 import 'package:spotify/CustomWidgets/playlist_popupmenu.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
 import 'package:spotify/CustomWidgets/song_tile_trailing_menu.dart';
+import 'package:spotify/CustomWidgets/svg_button.dart';
 import 'package:spotify/Helpers/extensions.dart';
 import 'package:spotify/Helpers/image_resolution_modifier.dart';
 import 'package:spotify/Services/player_service.dart';
@@ -208,12 +209,11 @@ class _SongsListPageState extends State<SongsListPage> {
                   ),
                 if (songList.isEmpty)
                   const Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16),
-                    child: Icon(
-                      Icons.download_rounded,
-                      size: 23,
-                      color: Colors.grey,
-                    ),
+                    padding: EdgeInsets.only(left: 3, right: 5),
+                    child: SvgIconButton(
+                    selectedSVG: 'assets/download_button.svg',
+                    iconSize: 23,
+                    selectedColor: Colors.grey,),
                   ),
                 IconButton(
                   icon: const Icon(

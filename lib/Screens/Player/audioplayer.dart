@@ -34,6 +34,7 @@ import 'package:spotify/CustomWidgets/like_button.dart';
 import 'package:spotify/CustomWidgets/popup.dart';
 import 'package:spotify/CustomWidgets/seek_bar.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
+import 'package:spotify/CustomWidgets/svg_button.dart';
 import 'package:spotify/CustomWidgets/textinput_dialog.dart';
 import 'package:spotify/Helpers/config.dart';
 import 'package:spotify/Helpers/dominant_color.dart';
@@ -229,7 +230,9 @@ class _PlayScreenState extends State<PlayScreen> {
                   elevation: 0,
                   backgroundColor: Colors.transparent,
                   centerTitle: true,
-                  leading: IconButtonWidget(icon: const Icon(Icons.arrow_back_ios), rotate: true,
+                  leading: IconButtonWidget(
+                    icon: const Icon(Icons.arrow_back_ios),
+                    rotate: true,
                     onTap: () {
                       Navigator.pop(context);
                     },
@@ -2069,11 +2072,11 @@ class NameNControls extends StatelessWidget {
                       ),
                   ],
                   child: Padding(
-                    padding: EdgeInsets.only(top: titleBoxHeight/1.82 , left: 24),
+                    padding:
+                        EdgeInsets.only(top: titleBoxHeight / 1.82, left: 24),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-
                         /// Title container
                         AnimatedText(
                           text: mediaItem.title
@@ -2086,11 +2089,12 @@ class NameNControls extends StatelessWidget {
                           fadingEdgeStartFraction: 0.1,
                           startAfter: const Duration(seconds: 2),
                           style: const TextStyle(
-                              color: Color(0xffffffff),
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'Raleway',
-                              fontStyle: FontStyle.normal,
-                              fontSize: 22.0,),
+                            color: Color(0xffffffff),
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Raleway',
+                            fontStyle: FontStyle.normal,
+                            fontSize: 22.0,
+                          ),
                           defaultAlignment: TextAlign.left,
                         ),
 
@@ -2100,24 +2104,25 @@ class NameNControls extends StatelessWidget {
 
                         /// Subtitle container
                         AnimatedText(
-                            text: ((mediaItem.album ?? '').isEmpty ||
-                                    ((mediaItem.album ?? '') ==
-                                        (mediaItem.artist ?? '')))
-                                ? '${(mediaItem.artist ?? "").isEmpty ? "Unknown" : mediaItem.artist}'
-                                : '${(mediaItem.artist ?? "").isEmpty ? "Unknown" : mediaItem.artist} • ${mediaItem.album}',
-                            pauseAfterRound: const Duration(seconds: 3),
-                            showFadingOnlyWhenScrolling: false,
-                            fadingEdgeEndFraction: 0.1,
-                            fadingEdgeStartFraction: 0.1,
-                            startAfter: const Duration(seconds: 2),
-                            style: const TextStyle(
-                                color: Color(0xffbfb8b2),
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Raleway',
-                                fontStyle: FontStyle.normal,
-                                fontSize: 16.0,),
-                            defaultAlignment: TextAlign.left,
+                          text: ((mediaItem.album ?? '').isEmpty ||
+                                  ((mediaItem.album ?? '') ==
+                                      (mediaItem.artist ?? '')))
+                              ? '${(mediaItem.artist ?? "").isEmpty ? "Unknown" : mediaItem.artist}'
+                              : '${(mediaItem.artist ?? "").isEmpty ? "Unknown" : mediaItem.artist} • ${mediaItem.album}',
+                          pauseAfterRound: const Duration(seconds: 3),
+                          showFadingOnlyWhenScrolling: false,
+                          fadingEdgeEndFraction: 0.1,
+                          fadingEdgeStartFraction: 0.1,
+                          startAfter: const Duration(seconds: 2),
+                          style: const TextStyle(
+                            color: Color(0xffbfb8b2),
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Raleway',
+                            fontStyle: FontStyle.normal,
+                            fontSize: 16.0,
                           ),
+                          defaultAlignment: TextAlign.left,
+                        ),
                       ],
                     ),
                   ),
@@ -2126,7 +2131,7 @@ class NameNControls extends StatelessWidget {
 
               /// Seekbar starts from here
               SizedBox(
-                height: seekBoxHeight-13,
+                height: seekBoxHeight - 13,
                 width: width * 0.95,
                 child: StreamBuilder<PositionData>(
                   stream: _positionDataStream,
@@ -2179,19 +2184,13 @@ class NameNControls extends StatelessWidget {
                                 builder: (context, snapshot) {
                                   final shuffleModeEnabled =
                                       snapshot.data ?? false;
-                                  return IconButton(
-                                    icon: shuffleModeEnabled
-                                        ? const Icon(
-                                            Icons.shuffle_rounded,
-                                          )
-                                        : Icon(
-                                            Icons.shuffle_rounded,
-                                            color:
-                                                Theme.of(context).disabledColor,
-                                          ),
-                                    tooltip:
-                                        AppLocalizations.of(context)!.shuffle,
-                                    onPressed: () async {
+                                  return SvgIconButton(
+                                    selectedSVG: 'assets/shuffle.svg',
+                                    selectedColor: const Color(0xffe7e7e7),
+                                    unselectedColor:
+                                        Theme.of(context).colorScheme.secondary,
+                                    iconSize: 20,
+                                    onTap: () async {
                                       final enable = !shuffleModeEnabled;
                                       await audioHandler.setShuffleMode(
                                         enable

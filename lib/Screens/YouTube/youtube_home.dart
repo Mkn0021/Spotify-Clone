@@ -20,7 +20,8 @@ class YouTube extends StatefulWidget {
   _YouTubeState createState() => _YouTubeState();
 }
 
-class _YouTubeState extends State<YouTube>{
+class _YouTubeState extends State<YouTube>
+    with AutomaticKeepAliveClientMixin<YouTube> {
   // List ytSearch =
   // Hive.box('settings').get('ytSearch', defaultValue: []) as List;
   // bool showHistory =
@@ -34,6 +35,8 @@ class _YouTubeState extends State<YouTube>{
   //         : 1.0,
   // );
 
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -80,6 +83,7 @@ class _YouTubeState extends State<YouTube>{
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool rotated = MediaQuery.of(context).size.height < screenWidth;
     double boxSize = !rotated

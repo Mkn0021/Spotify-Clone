@@ -10,6 +10,7 @@ import 'package:spotify/CustomWidgets/gradient_containers.dart';
 import 'package:spotify/CustomWidgets/miniplayer.dart';
 import 'package:spotify/CustomWidgets/playlist_popupmenu.dart';
 import 'package:spotify/CustomWidgets/song_tile_trailing_menu.dart';
+import 'package:spotify/CustomWidgets/svg_button.dart';
 import 'package:spotify/Services/player_service.dart';
 import 'package:spotify/Services/youtube_services.dart';
 import 'package:spotify/Services/yt_music.dart';
@@ -140,11 +141,17 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                     const Row(
                       children: [
                         SizedBox(width: 20),
-                        Icon(Icons.download_rounded,
-                            size: 23, color: Colors.grey,),
+                        SvgIconButton(
+                          selectedSVG: 'assets/download_button.svg',
+                          iconSize: 23,
+                          selectedColor: Colors.grey,
+                        ),
                         SizedBox(width: 16),
-                        Icon(Icons.share_rounded,
-                            size: 18, color: Colors.grey,),
+                        Icon(
+                          Icons.share_rounded,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
                       ],
                     ),
                     PlaylistPopupMenu(
