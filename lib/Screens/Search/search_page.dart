@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:spotify/CustomWidgets/const.dart';
-import 'package:spotify/CustomWidgets/miniplayer.dart';
 import 'package:spotify/CustomWidgets/section_builder.dart';
 import 'package:spotify/CustomWidgets/svg_button.dart';
 import 'package:spotify/Screens/Search/search.dart';
@@ -12,20 +11,12 @@ class SearchPageScreen extends StatefulWidget {
   _SearchPageScreenState createState() => _SearchPageScreenState();
 }
 
-class _SearchPageScreenState extends State<SearchPageScreen> with AutomaticKeepAliveClientMixin{
-  @override
-  bool get wantKeepAlive => true;
+class _SearchPageScreenState extends State<SearchPageScreen>{
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final bool rotated = MediaQuery.of(context).size.height < screenWidth;
     return SafeArea(
-      child: Stack(
-        children: [
-          CustomScrollView(
+      child: CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
               const SliverToBoxAdapter(
@@ -153,14 +144,6 @@ class _SearchPageScreenState extends State<SearchPageScreen> with AutomaticKeepA
               ),
             ],
           ),
-          Positioned(
-            bottom: rotated ? 0.0 : 70.0,
-            left: rotated ? screenWidth / 2 : 2.0,
-            right: 2.0,
-            child: MiniPlayer(),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -203,15 +203,14 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                               children: [
                                 Padding(
                                   padding:
-                                      const EdgeInsets.fromLTRB(15, 10, 15, 5),
+                                      const EdgeInsets.fromLTRB(15, 10, 15, 12),
                                   child: Text(
                                     AppLocalizations.of(context)!.yourPlaylists,
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                                    style: const TextStyle(
+                                      color: Color(0xffeeeeee),
+                                      fontSize: 20,
+                                      fontFamily: 'Raleway',
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ),

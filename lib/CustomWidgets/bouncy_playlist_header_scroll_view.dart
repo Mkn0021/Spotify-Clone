@@ -187,7 +187,7 @@ class BouncyPlaylistHeaderScrollView extends StatelessWidget {
                             SvgIconButton(
                               selectedSVG: 'assets/shuffle.svg',
                               selectedColor: const Color(0xffe7e7e7),
-                              unselectedColor: const Color(0xffe7e7e7),
+                              unselectedColor: Theme.of(context).colorScheme.secondary,
                               iconSize: 20,
                               onTap: () {
                                 onShuffleTap!.call();

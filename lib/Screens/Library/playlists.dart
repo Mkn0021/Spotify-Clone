@@ -10,7 +10,6 @@ import 'package:spotify/CustomWidgets/miniplayer.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
 import 'package:spotify/CustomWidgets/textinput_dialog.dart';
 import 'package:spotify/Helpers/import_export_playlist.dart';
-import 'package:spotify/Screens/Library/import.dart';
 import 'package:spotify/Screens/Library/liked.dart';
 
 class PlaylistScreen extends StatefulWidget {
@@ -88,6 +87,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       );
                     },
                   ),
+                  /*
                   ListTile(
                     title: Text(AppLocalizations.of(context)!.importPlaylist),
                     leading: SizedBox.square(
@@ -107,7 +107,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                         ),
                       );
                     },
-                  ),
+                  ),*/
                   ListTile(
                     title: Text(AppLocalizations.of(context)!.mergePlaylists),
                     leading: SizedBox.square(

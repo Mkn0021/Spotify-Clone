@@ -3,7 +3,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:spotify/CustomWidgets/miniplayer.dart';
 import 'package:spotify/CustomWidgets/on_hover.dart';
 import 'package:spotify/CustomWidgets/svg_button.dart';
 import 'package:spotify/Screens/Search/search.dart';
@@ -21,8 +20,7 @@ class YouTube extends StatefulWidget {
   _YouTubeState createState() => _YouTubeState();
 }
 
-class _YouTubeState extends State<YouTube>
-    with AutomaticKeepAliveClientMixin<YouTube> {
+class _YouTubeState extends State<YouTube>{
   // List ytSearch =
   // Hive.box('settings').get('ytSearch', defaultValue: []) as List;
   // bool showHistory =
@@ -36,8 +34,6 @@ class _YouTubeState extends State<YouTube>
   //         : 1.0,
   // );
 
-  @override
-  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -84,7 +80,6 @@ class _YouTubeState extends State<YouTube>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool rotated = MediaQuery.of(context).size.height < screenWidth;
     double boxSize = !rotated
@@ -390,12 +385,6 @@ class _YouTubeState extends State<YouTube>
                 ],
               ),
             ),
-          Positioned(
-            bottom: rotated ? 0.0 : 70.0,
-            left: rotated ? screenWidth / 2 : 2.0,
-            right: 2.0,
-            child: MiniPlayer(),
-          ),
           Container(
             width: MediaQuery.of(context).size.width,
             //color: Colors.black,

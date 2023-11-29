@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:spotify/CustomWidgets/miniplayer.dart';
 import 'package:spotify/CustomWidgets/svg_button.dart';
+import 'package:spotify/Screens/Library/import.dart';
 import 'package:spotify/Screens/Library/liked.dart';
 import 'package:spotify/Screens/LocalMusic/downed_songs.dart';
 import 'package:spotify/Screens/LocalMusic/downed_songs_desktop.dart';
@@ -21,11 +21,7 @@ class _LibraryPageState extends State<LibraryPage> {
   bool showDownloadedContent = false;
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.sizeOf(context).width;
-    final bool rotated = MediaQuery.sizeOf(context).height < screenWidth;
-    return Stack(
-      children: [
-        CustomScrollView(
+    return CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
             SliverAppBar(
@@ -41,17 +37,17 @@ class _LibraryPageState extends State<LibraryPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        CircleAvatar(
+                        const CircleAvatar(
                           backgroundColor: Colors.white,
                           radius: 14,
                           backgroundImage: AssetImage('assets/profile_pic.jpg'),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                         ),
-                        Text(
+                        const Text(
                           'Your Library',
                           style: TextStyle(
                             color: Color(0xffffffff),
@@ -61,8 +57,8 @@ class _LibraryPageState extends State<LibraryPage> {
                             fontSize: 21.0,
                           ),
                         ),
-                        Expanded(child: SizedBox()),
-                        SvgIconButton(
+                        const Expanded(child: SizedBox()),
+                        const SvgIconButton(
                           selectedSVG: 'assets/search_outline.svg',
                           iconSize: 26,
                           unselectedColor: Colors.white,
@@ -70,6 +66,14 @@ class _LibraryPageState extends State<LibraryPage> {
                         SvgIconButton(
                           selectedSVG: 'assets/plus.svg',
                           unselectedColor: Colors.white,
+                          onTap: () async {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ImportPlaylist(),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -212,15 +216,7 @@ class _LibraryPageState extends State<LibraryPage> {
               ),
             ),
           ],
-        ),
-        Positioned(
-          bottom: rotated ? 0.0 : 70.0,
-          left: rotated ? screenWidth / 2 : 2.0,
-          right: 2.0,
-          child: MiniPlayer(),
-        ),
-      ],
-    );
+        );
   }
 }
 

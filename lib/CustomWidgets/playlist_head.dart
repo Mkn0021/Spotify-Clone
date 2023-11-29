@@ -57,7 +57,7 @@ class PlaylistHead extends StatelessWidget {
               SvgIconButton(
                 selectedSVG: 'assets/shuffle.svg',
                 selectedColor: const Color(0xffe7e7e7),
-                unselectedColor: const Color(0xffe7e7e7),
+                unselectedColor: Theme.of(context).colorScheme.secondary,
                 onTap: () {
                   PlayerInvoke.init(
                     songsList: songsList,
