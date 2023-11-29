@@ -149,6 +149,7 @@ class _LibraryPageState extends State<LibraryPage> {
                 child: LibraryTile(
                   title: AppLocalizations.of(context)!.nowPlaying,
                   icon: Icons.queue_music_rounded,
+                  boxColor: const Color(0XFF79415D),
                   onTap: () {
                     Navigator.pushNamed(context, '/nowplaying');
                   },
@@ -177,6 +178,7 @@ class _LibraryPageState extends State<LibraryPage> {
                 child: LibraryTile(
                   title: 'Local Files',
                   icon: MdiIcons.folderMusic,
+                  boxColor: const Color(0XFF30554A),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -198,6 +200,7 @@ class _LibraryPageState extends State<LibraryPage> {
                 child: LibraryTile(
                   title: AppLocalizations.of(context)!.downs,
                   icon: Icons.download_done_rounded,
+                  boxColor: const Color(0XFF192459),
                   onTap: () {
                     Navigator.pushNamed(context, '/downloads');
                   },
@@ -217,7 +220,9 @@ class _LibraryPageState extends State<LibraryPage> {
                 visible: !showDownloadedContent && !showPlaylists,
                 child: LibraryTile(
                   title: AppLocalizations.of(context)!.stats,
+                  subtitle: 'Music',
                   icon: Icons.auto_graph_rounded,
+                  boxColor: const Color(0xFF59503C),
                   onTap: () {
                     Navigator.pushNamed(context, '/stats');
                   },
@@ -263,7 +268,7 @@ class _LibraryPageState extends State<LibraryPage> {
                                   child: SizedBox(
                                     height: 50,
                                     width: 50,
-                                    child: name == 'Favorite Songs'
+                                    child: name == 'Liked Songs'
                                         ? const Image(
                                             image: AssetImage(
                                               'assets/cover.jpg',
@@ -552,6 +557,7 @@ class LibraryTile extends StatelessWidget {
     super.key,
     required this.icon,
     required this.title,
+    this.boxColor,
     required this.onTap,
     this.subtitle,
   });
@@ -559,6 +565,7 @@ class LibraryTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final IconData icon;
+  final Color? boxColor;
   final Function() onTap;
 
   @override
@@ -568,19 +575,35 @@ class LibraryTile extends StatelessWidget {
         title,
         style: TextStyle(
           color: Theme.of(context).iconTheme.color,
+          fontSize: 17,
         ),
       ),
       subtitle: subtitle != null
           ? Text(
               subtitle!,
-              style: TextStyle(
-                color: Theme.of(context).iconTheme.color,
+              style: const TextStyle(
+                color: Color(0xFFA7A7A7),
               ),
             )
-          : null,
-      leading: Icon(
-        icon,
-        color: Theme.of(context).iconTheme.color,
+          : const Text(
+              'Playlist',
+              style: TextStyle(
+                color: Color(0xFFA7A7A7),
+              ),
+            ),
+      leading: Container(
+        width: 50.0,
+        height: 50.0,
+        decoration: BoxDecoration(
+          color: boxColor?? const Color(0xFF2A2A2A),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Center(
+          child: Icon(
+            icon,
+            color: Theme.of(context).iconTheme.color,
+          ),
+        ),
       ),
       onTap: onTap,
     );

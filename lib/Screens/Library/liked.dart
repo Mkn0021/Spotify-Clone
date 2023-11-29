@@ -298,7 +298,7 @@ class _LikedSongsState extends State<LikedSongs>
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0XFF5A2EEC),
+            Color(0XFF7E6B47),
             Colors.black,
           ],
           stops: [0.0, 0.38],
@@ -530,7 +530,8 @@ class _SongsListState extends State<SongsList>
     return Column(
       children: [
         PlaylistHead(
-          title: 'Liked Songs',
+          title: widget.playlistName[0].toUpperCase() +
+              widget.playlistName.substring(1),
           songsList: widget.songs,
           offline: false,
           fromDownloads: false,
