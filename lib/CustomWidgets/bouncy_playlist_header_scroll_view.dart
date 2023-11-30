@@ -83,12 +83,12 @@ class BouncyPlaylistHeaderScrollView extends StatelessWidget {
       }
     }
 
-    final bool rotated =
-        MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final bool rotated = screenWidth > screenHeight;
     final double expandedHeight = rotated
         ? MediaQuery.of(context).size.width * 0.35
         : MediaQuery.of(context).size.width;
-    final double screenWidth = MediaQuery.of(context).size.width;
 
     return FutureBuilder<void>(
       future: processImage(),
@@ -116,23 +116,20 @@ class BouncyPlaylistHeaderScrollView extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      Stack(
-                        children: [
-                          SizedBox(
-                            width: screenWidth / 1.9,
-                            child: Card(
-                              elevation: 1,
-                              clipBehavior: Clip.antiAlias,
-                              child: image,
-                            ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 40,
+                          bottom: 5,
+                        ),
+                        child: SizedBox(
+                          width:
+                              rotated ? screenHeight / 2.7 : screenWidth / 1.9,
+                          child: Card(
+                            elevation: 1,
+                            clipBehavior: Clip.antiAlias,
+                            child: image,
                           ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 5,
+                        ),
                       ),
                       Text(
                         title,
@@ -177,8 +174,8 @@ class BouncyPlaylistHeaderScrollView extends StatelessWidget {
                       ),
                       Row(
                         children: [
-                          const SizedBox(
-                            width: 5,
+                          SizedBox(
+                            width: rotated ? screenWidth / 4 : 5,
                           ),
                           ...actions ??
                               [], // Use the null-aware spread operator
@@ -187,7 +184,8 @@ class BouncyPlaylistHeaderScrollView extends StatelessWidget {
                             SvgIconButton(
                               selectedSVG: 'assets/shuffle.svg',
                               selectedColor: const Color(0xffe7e7e7),
-                              unselectedColor: Theme.of(context).colorScheme.secondary,
+                              unselectedColor:
+                                  Theme.of(context).colorScheme.secondary,
                               iconSize: 20,
                               onTap: () {
                                 onShuffleTap!.call();
@@ -209,8 +207,8 @@ class BouncyPlaylistHeaderScrollView extends StatelessWidget {
                                 },
                               ),
                             ),
-                          const SizedBox(
-                            width: 20,
+                          SizedBox(
+                            width: rotated ? screenWidth / 4 : 20,
                           ),
                         ],
                       ),
