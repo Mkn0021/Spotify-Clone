@@ -4,15 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:spotify/CustomWidgets/bottom_nav_bar.dart';
 import 'package:spotify/CustomWidgets/custom_physics.dart';
-import 'package:spotify/CustomWidgets/greetings.dart';
-import 'package:spotify/CustomWidgets/icon_button_widget.dart';
 import 'package:spotify/CustomWidgets/miniplayer.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
-import 'package:spotify/CustomWidgets/svg_button.dart';
 import 'package:spotify/Screens/Home/saavn.dart';
 import 'package:spotify/Screens/Library/library.dart';
 import 'package:spotify/Screens/Search/search_page.dart';
-import 'package:spotify/Screens/Settings/settings_page.dart';
 import 'package:spotify/Screens/YouTube/youtube_home.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,9 +19,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
   DateTime? backButtonPressTime;
-  //visibility
-  bool showMusicContainer = false;
-  bool showPodcastsContainer = false;
 
   void callback() {
     setState(() {});
@@ -57,7 +50,6 @@ class _HomePageState extends State<HomePage> {
     return true;
   }
 
-  final ScrollController _scrollController = ScrollController();
   final PageController _pageController = PageController();
 
   @override
@@ -68,7 +60,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _pageController.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -169,154 +160,7 @@ class _HomePageState extends State<HomePage> {
                               },
                               controller: _pageController,
                               children: [
-                                NestedScrollView(
-                                  physics: const BouncingScrollPhysics(),
-                                  controller: _scrollController,
-                                  headerSliverBuilder: (
-                                    BuildContext context,
-                                    bool innerBoxScrolled,
-                                  ) {
-                                    return <Widget>[
-                                      SliverToBoxAdapter(
-                                        child: Container(
-                                          decoration: const BoxDecoration(
-                                            gradient: LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                              colors: [
-                                                Colors.black,
-                                                Colors.transparent,
-                                              ],
-                                              stops: [
-                                                0.0,
-                                                0.30,
-                                              ],
-                                            ),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                              top: 30,
-                                              left: 22,
-                                              right: 16,
-                                              bottom: 30,
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                GreetingsManager
-                                                    .getGreetingsText(),
-                                                const Expanded(
-                                                  child: SizedBox(),
-                                                ),
-                                                const SvgIconButton(
-                                                  selectedSVG:
-                                                      'assets/notification_on.svg',
-                                                  unselectedSVG:
-                                                      'assets/notification_off.svg',
-                                                  iconSize: 20.0,
-                                                ),
-                                                IconButtonWidget(
-                                                  icon: const Icon(
-                                                    Icons.history,
-                                                  ),
-                                                  onTap: () {
-                                                    // Open the RecentlyPlayed here
-                                                    Navigator.pushNamed(
-                                                        context, '/recent',);
-                                                  },
-                                                ),
-                                                SvgIconButton(
-                                                  selectedSVG:
-                                                      'assets/settings.svg',
-                                                  unselectedColor: Colors.white,
-                                                  onTap: () {
-                                                    // Open the NewSettingsPage here
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            NewSettingsPage(
-                                                          callback: callback,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SliverAppBar(
-                                        backgroundColor: Colors.black,
-                                        expandedHeight: 30,
-                                        floating: true,
-                                        pinned: true,
-                                        elevation: 0,
-                                        flexibleSpace: FlexibleSpaceBar(
-                                          titlePadding: const EdgeInsets.only(
-                                            left: 16,
-                                          ),
-                                          title: Row(
-                                            children: [
-                                              Visibility(
-                                                visible:
-                                                    showPodcastsContainer ||
-                                                        showMusicContainer,
-                                                child: Transform.translate(
-                                                  offset: const Offset(0, -6.2),
-                                                  child: SvgIconButton(
-                                                    selectedSVG:
-                                                        'assets/plus.svg',
-                                                    unselectedColor:
-                                                        Colors.white,
-                                                    angle: 45,
-                                                    onTap: () {
-                                                      setState(() {
-                                                        showPodcastsContainer =
-                                                            false;
-                                                        showMusicContainer =
-                                                            false;
-                                                      });
-                                                    },
-                                                  ),
-                                                ),
-                                              ),
-                                              Visibility(
-                                                visible: !showPodcastsContainer,
-                                                child: CustomContainer(
-                                                  text: 'Music',
-                                                  stateCheck:
-                                                      showMusicContainer,
-                                                  onTap: () {
-                                                    setState(() {
-                                                      showMusicContainer =
-                                                          !showMusicContainer;
-                                                    });
-                                                  },
-                                                ),
-                                              ),
-                                              Visibility(
-                                                visible: !showMusicContainer,
-                                                child: CustomContainer(
-                                                  text: 'Podcasts & Shows',
-                                                  stateCheck:
-                                                      showPodcastsContainer,
-                                                  onTap: () {
-                                                    setState(() {
-                                                      showPodcastsContainer =
-                                                          !showPodcastsContainer;
-                                                    });
-                                                  },
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ];
-                                  },
-                                  body: SaavnHomePage(),
-                                ),
+                                SaavnHomePage(),
                                 const SearchPageScreen(),
                                 const LibraryPage(),
                                 const YouTube(),

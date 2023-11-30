@@ -31,7 +31,7 @@ class Collage extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.zero,
       child: SizedBox.square(
-        dimension: 50,
+        dimension: 48,
         child: showGrid
             ? GridView.count(
                 shrinkWrap: true,

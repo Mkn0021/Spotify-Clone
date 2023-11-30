@@ -6,12 +6,8 @@ import 'package:hive/hive.dart';
 import 'package:spotify/APIs/api.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
 import 'package:spotify/CustomWidgets/svg_button.dart';
-import 'package:spotify/Helpers/picker.dart';
 import 'package:spotify/Services/download.dart';
 
-String downloadPath = Hive.box('settings')
-    .get('downloadPath', defaultValue: '/storage/emulated/0/Music') as String;
-bool hasPermission = false;
 
 class DownloadButton extends StatefulWidget {
   final Map data;
@@ -60,35 +56,9 @@ class _DownloadButtonState extends State<DownloadButton> {
             : down.progress == 0
                 ? SvgIconButton(
                     selectedSVG: 'assets/download_button.svg',
-                    iconSize: widget.size ?? 24.0,
+                    iconSize: widget.size ?? 23.0,
                     unselectedColor: Colors.white,
-                    onTap: () async {
-                      if (!hasPermission) {
-                        //checking that permission Given or Not;
-                        final String temp = await Picker.selectFolder(
-                          context: context,
-                          message: AppLocalizations.of(
-                            context,
-                          )!
-                              .selectDownLocation,
-                        );
-                        if (temp.trim() != '') {
-                          downloadPath = temp;
-                          Hive.box('settings').put('downloadPath', temp);
-                          setState(
-                            () {},
-                          );
-                          hasPermission = true;
-                        } else {
-                          ShowSnackBar().showSnackBar(
-                            context,
-                            AppLocalizations.of(
-                              context,
-                            )!
-                                .noFolderSelected,
-                          );
-                        }
-                      }
+                    onTap: () {
                       down.prepareDownload(context, widget.data);
                     },
                   )
@@ -211,7 +181,7 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
                   Icons.download_done_rounded,
                 ),
                 color: Theme.of(context).colorScheme.secondary,
-                iconSize: 18.0,
+                iconSize: 25.0,
                 tooltip: AppLocalizations.of(context)!.downDone,
                 onPressed: () {},
               )
@@ -324,11 +294,14 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
               )
             : down.progress == 0
                 ? Center(
-                    child: SvgIconButton(
-                      selectedSVG: 'assets/download_button.svg',
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.download_rounded,
+                      ),
                       iconSize: 25.0,
-                      selectedColor: Colors.white,
-                      onTap: () async {
+                      color: Theme.of(context).iconTheme.color,
+                      tooltip: AppLocalizations.of(context)!.down,
+                      onPressed: () async {
                         ShowSnackBar().showSnackBar(
                           context,
                           '${AppLocalizations.of(context)!.downingAlbum} "${widget.albumName}"',
