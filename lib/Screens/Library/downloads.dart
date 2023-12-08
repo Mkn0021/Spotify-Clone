@@ -14,9 +14,9 @@ import 'package:logging/logging.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:spotify/CustomWidgets/data_search.dart';
 import 'package:spotify/CustomWidgets/empty_screen.dart';
-import 'package:spotify/CustomWidgets/miniplayer.dart';
 import 'package:spotify/CustomWidgets/playlist_head.dart';
 import 'package:spotify/CustomWidgets/snackbar.dart';
+import 'package:spotify/CustomWidgets/with_bottomNavBar.dart';
 import 'package:spotify/Helpers/picker.dart';
 import 'package:spotify/Services/player_service.dart';
 
@@ -279,164 +279,168 @@ class _DownloadsState extends State<Downloads>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0XFF192459),
-            Colors.black,
-          ],
-          stops: [0.0, 0.38],
+    return withBottomNavBar(
+      selectedIndex: 2,
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0XFF192459),
+              Colors.black,
+            ],
+            stops: [0.0, 0.38],
+          ),
         ),
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
-              appBar: AppBar(
-                centerTitle: true,
+        child: Column(
+          children: [
+            Expanded(
+              child: Scaffold(
                 backgroundColor: Colors.transparent,
-                elevation: 0,
-                actions: [
-                  IconButton(
-                    icon: const Icon(CupertinoIcons.search),
-                    tooltip: AppLocalizations.of(context)!.search,
-                    onPressed: () {
-                      showSearch(
-                        context: context,
-                        delegate: DownloadsSearch(
-                          data: _songs,
-                          isDowns: true,
-                        ),
-                      );
-                    },
-                  ),
-                  if (_songs.isNotEmpty)
-                    PopupMenuButton(
-                      icon: const Icon(Icons.sort_rounded),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      onSelected:
-                          // (currentIndex == 0)
-                          // ?
-                          (int value) {
-                        if (value < 5) {
-                          sortValue = value;
-                          Hive.box('settings').put('sortValue', value);
-                        } else {
-                          orderValue = value - 5;
-                          Hive.box('settings').put('orderValue', orderValue);
-                        }
-                        sortSongs(sortVal: sortValue, order: orderValue);
-                        setState(() {});
-                        //   }
-                        // : (int value) {
-                        //     albumSortValue = value;
-                        //     Hive.box('settings')
-                        //         .put('albumSortValue', value);
-                        //     sortAlbums();
-                        //     setState(() {});
-                      },
-                      itemBuilder:
-                          // (currentIndex == 0)
-                          // ?
-                          (context) {
-                        final List<String> sortTypes = [
-                          AppLocalizations.of(context)!.displayName,
-                          AppLocalizations.of(context)!.dateAdded,
-                          AppLocalizations.of(context)!.album,
-                          AppLocalizations.of(context)!.artist,
-                          AppLocalizations.of(context)!.duration,
-                        ];
-                        final List<String> orderTypes = [
-                          AppLocalizations.of(context)!.inc,
-                          AppLocalizations.of(context)!.dec,
-                        ];
-                        final menuList = <PopupMenuEntry<int>>[];
-                        menuList.addAll(
-                          sortTypes
-                              .map(
-                                (e) => PopupMenuItem(
-                                  value: sortTypes.indexOf(e),
-                                  child: Row(
-                                    children: [
-                                      if (sortValue == sortTypes.indexOf(e))
-                                        Icon(
-                                          Icons.check_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      else
-                                        const SizedBox(),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        e,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        );
-                        menuList.add(
-                          const PopupMenuDivider(
-                            height: 10,
+                appBar: AppBar(
+                  centerTitle: true,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  actions: [
+                    IconButton(
+                      icon: const Icon(CupertinoIcons.search),
+                      tooltip: AppLocalizations.of(context)!.search,
+                      onPressed: () {
+                        showSearch(
+                          context: context,
+                          delegate: DownloadsSearch(
+                            data: _songs,
+                            isDowns: true,
                           ),
                         );
-                        menuList.addAll(
-                          orderTypes
-                              .map(
-                                (e) => PopupMenuItem(
-                                  value:
-                                      sortTypes.length + orderTypes.indexOf(e),
-                                  child: Row(
-                                    children: [
-                                      if (orderValue == orderTypes.indexOf(e))
-                                        Icon(
-                                          Icons.check_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      else
-                                        const SizedBox(),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        e,
-                                      ),
-                                    ],
+                      },
+                    ),
+                    if (_songs.isNotEmpty)
+                      PopupMenuButton(
+                        icon: const Icon(Icons.sort_rounded),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                        ),
+                        onSelected:
+                            // (currentIndex == 0)
+                            // ?
+                            (int value) {
+                          if (value < 5) {
+                            sortValue = value;
+                            Hive.box('settings').put('sortValue', value);
+                          } else {
+                            orderValue = value - 5;
+                            Hive.box('settings').put('orderValue', orderValue);
+                          }
+                          sortSongs(sortVal: sortValue, order: orderValue);
+                          setState(() {});
+                          //   }
+                          // : (int value) {
+                          //     albumSortValue = value;
+                          //     Hive.box('settings')
+                          //         .put('albumSortValue', value);
+                          //     sortAlbums();
+                          //     setState(() {});
+                        },
+                        itemBuilder:
+                            // (currentIndex == 0)
+                            // ?
+                            (context) {
+                          final List<String> sortTypes = [
+                            AppLocalizations.of(context)!.displayName,
+                            AppLocalizations.of(context)!.dateAdded,
+                            AppLocalizations.of(context)!.album,
+                            AppLocalizations.of(context)!.artist,
+                            AppLocalizations.of(context)!.duration,
+                          ];
+                          final List<String> orderTypes = [
+                            AppLocalizations.of(context)!.inc,
+                            AppLocalizations.of(context)!.dec,
+                          ];
+                          final menuList = <PopupMenuEntry<int>>[];
+                          menuList.addAll(
+                            sortTypes
+                                .map(
+                                  (e) => PopupMenuItem(
+                                    value: sortTypes.indexOf(e),
+                                    child: Row(
+                                      children: [
+                                        if (sortValue == sortTypes.indexOf(e))
+                                          Icon(
+                                            Icons.check_rounded,
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.grey[700],
+                                          )
+                                        else
+                                          const SizedBox(),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          e,
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              )
-                              .toList(),
-                        );
-                        return menuList;
-                      },
-                    ),
-                ],
+                                )
+                                .toList(),
+                          );
+                          menuList.add(
+                            const PopupMenuDivider(
+                              height: 10,
+                            ),
+                          );
+                          menuList.addAll(
+                            orderTypes
+                                .map(
+                                  (e) => PopupMenuItem(
+                                    value: sortTypes.length +
+                                        orderTypes.indexOf(e),
+                                    child: Row(
+                                      children: [
+                                        if (orderValue == orderTypes.indexOf(e))
+                                          Icon(
+                                            Icons.check_rounded,
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.grey[700],
+                                          )
+                                        else
+                                          const SizedBox(),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          e,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          );
+                          return menuList;
+                        },
+                      ),
+                  ],
+                ),
+                body: !added
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : DownSongsList(
+                        onDelete: (Map item) {
+                          deleteSong(item);
+                        },
+                        songs: _songs,
+                        scrollController: _scrollController,
+                      ),
               ),
-              body: !added
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : DownSongsList(
-                      onDelete: (Map item) {
-                        deleteSong(item);
-                      },
-                      songs: _songs,
-                      scrollController: _scrollController,
-                    ),
             ),
-          ),
-          MiniPlayer(),
-        ],
+          ],
+        ),
       ),
     );
   }
