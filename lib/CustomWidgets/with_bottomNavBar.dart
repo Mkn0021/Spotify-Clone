@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:spotify/CustomWidgets/bottom_nav_bar.dart';
 import 'package:spotify/CustomWidgets/miniplayer.dart';
 
-class withBottomNavBar extends StatelessWidget {
+class WithBottomNavBar extends StatelessWidget {
   final Widget child;
   final int selectedIndex;
 
-  const withBottomNavBar({
+  const WithBottomNavBar({
     required this.child,
     required this.selectedIndex,
   });

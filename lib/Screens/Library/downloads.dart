@@ -279,7 +279,7 @@ class _DownloadsState extends State<Downloads>
 
   @override
   Widget build(BuildContext context) {
-    return withBottomNavBar(
+    return WithBottomNavBar(
       selectedIndex: 2,
       child: Container(
         decoration: const BoxDecoration(

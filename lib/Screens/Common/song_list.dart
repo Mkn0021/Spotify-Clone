@@ -193,7 +193,7 @@ class _SongsListPageState extends State<SongsListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return withBottomNavBar(
+    return WithBottomNavBar(
       selectedIndex: 0,
       child: Column(
         children: [

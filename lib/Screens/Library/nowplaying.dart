@@ -26,7 +26,7 @@ class _NowPlayingState extends State<NowPlaying> {
 
   @override
   Widget build(BuildContext context) {
-    return withBottomNavBar(
+    return WithBottomNavBar(
       selectedIndex: 2,
       child: Container(
         decoration: const BoxDecoration(

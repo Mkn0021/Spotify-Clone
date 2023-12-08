@@ -122,7 +122,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
 
   @override
   Widget build(BuildContext cntxt) {
-    return withBottomNavBar(
+    return WithBottomNavBar(
       selectedIndex: 3,
       child: Column(
         children: [

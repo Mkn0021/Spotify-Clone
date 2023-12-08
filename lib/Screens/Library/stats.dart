@@ -14,7 +14,7 @@ class Stats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return withBottomNavBar(
+    return WithBottomNavBar(
       selectedIndex: 2,
       child: Scaffold(
         appBar: AppBar(

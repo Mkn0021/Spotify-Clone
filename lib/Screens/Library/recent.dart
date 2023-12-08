@@ -28,7 +28,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
       getSongs();
     }
 
-    return withBottomNavBar(
+    return WithBottomNavBar(
       selectedIndex: 0,
       child: Column(
         children: [

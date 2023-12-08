@@ -22,7 +22,7 @@ class ImportPlaylist extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return withBottomNavBar(
+    return WithBottomNavBar(
       selectedIndex: 3,
       child: Column(
         children: [
