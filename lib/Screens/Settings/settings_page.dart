@@ -10,16 +10,16 @@ import 'package:spotify/Screens/Settings/music_playback.dart';
 import 'package:spotify/Screens/Settings/others.dart';
 import 'package:spotify/Screens/Settings/theme.dart';
 
-class NewSettingsPage extends StatefulWidget {
+class SettingsPage extends StatefulWidget {
   final Function? callback;
 
-  const NewSettingsPage({this.callback});
+  const SettingsPage({this.callback});
 
   @override
-  State<NewSettingsPage> createState() => _NewSettingsPageState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _NewSettingsPageState extends State<NewSettingsPage> {
+class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController controller = TextEditingController();
   final ValueNotifier<String> searchQuery = ValueNotifier<String>('');
 

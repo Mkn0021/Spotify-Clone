@@ -8,6 +8,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:logging/logging.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:spotify/APIs/api.dart';
+import 'package:spotify/CustomWidgets/bottom_nav_bar.dart';
 import 'package:spotify/CustomWidgets/bouncy_playlist_header_scroll_view.dart';
 import 'package:spotify/CustomWidgets/copy_clipboard.dart';
 import 'package:spotify/CustomWidgets/download_button.dart';
@@ -61,6 +62,15 @@ class _SongsListPageState extends State<SongsListPage> {
   void dispose() {
     super.dispose();
     _scrollController.dispose();
+  }
+
+  final PageController _pageController = PageController();
+  int indexValue = 0;
+  void _onItemTapped(int index) {
+    indexValue = index;
+    _pageController.jumpToPage(
+      index,
+    );
   }
 
   void _fetchSongs() {
@@ -193,156 +203,238 @@ class _SongsListPageState extends State<SongsListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final bool rotated = MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
+    return Stack(
       children: [
-        Expanded(
-          child: Scaffold(
-            backgroundColor: Colors.black,
-            body: BouncyPlaylistHeaderScrollView(
-              scrollController: _scrollController,
-              actions: [
-                if (songList.isNotEmpty)
-                  MultiDownloadButton(
-                    data: songList,
-                    playlistName:
-                        widget.listItem['title']?.toString() ?? 'Songs',
-                  ),
-                if (songList.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.only(left: 3, right: 5),
-                    child: SvgIconButton(
-                    selectedSVG: 'assets/download_button.svg',
-                    iconSize: 23,
-                    selectedColor: Colors.grey,),
-                  ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.share_rounded,
-                    size: 18,
-                  ),
-                  tooltip: AppLocalizations.of(context)!.share,
-                  onPressed: () {
-                    if (!isSharePopupShown) {
-                      isSharePopupShown = true;
-
-                      Share.share(
-                        widget.listItem['perma_url'].toString(),
-                      ).whenComplete(() {
-                        Timer(const Duration(milliseconds: 500), () {
-                          isSharePopupShown = false;
-                        });
-                      });
-                    }
-                  },
-                ),
-                PlaylistPopupMenu(
-                  data: songList,
-                  title: widget.listItem['title']?.toString() ?? 'Songs',
-                ),
-              ],
-              title: widget.listItem['title']?.toString().unescape() ?? 'Songs',
-              subtitle: '${songList.length} Songs',
-              secondarySubtitle: widget.listItem['subTitle']?.toString() ??
-                  widget.listItem['subtitle']?.toString(),
-              onPlayTap: () => PlayerInvoke.init(
-                songsList: songList,
-                index: 0,
-                isOffline: false,
-              ),
-              onShuffleTap: () => PlayerInvoke.init(
-                songsList: songList,
-                index: 0,
-                isOffline: false,
-                shuffle: true,
-              ),
-              placeholderImage: 'assets/album.png',
-              imageUrl: getImageUrl(widget.listItem['image']?.toString()),
-              sliverList: SliverList(
-                delegate: SliverChildListDelegate([
-                  if (!fetched)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 150.0),
-                      child: Center(
-                        child: CircularProgressIndicator(),
+        Column(
+          children: [
+            Expanded(
+              child: Scaffold(
+                backgroundColor: Colors.black,
+                body: BouncyPlaylistHeaderScrollView(
+                  scrollController: _scrollController,
+                  actions: [
+                    if (songList.isNotEmpty)
+                      MultiDownloadButton(
+                        data: songList,
+                        playlistName:
+                            widget.listItem['title']?.toString() ?? 'Songs',
                       ),
+                    if (songList.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.only(left: 3, right: 5),
+                        child: SvgIconButton(
+                          selectedSVG: 'assets/download_button.svg',
+                          iconSize: 23,
+                          selectedColor: Colors.grey,
+                        ),
+                      ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.share_rounded,
+                        size: 18,
+                      ),
+                      tooltip: AppLocalizations.of(context)!.share,
+                      onPressed: () {
+                        if (!isSharePopupShown) {
+                          isSharePopupShown = true;
+
+                          Share.share(
+                            widget.listItem['perma_url'].toString(),
+                          ).whenComplete(() {
+                            Timer(const Duration(milliseconds: 500), () {
+                              isSharePopupShown = false;
+                            });
+                          });
+                        }
+                      },
                     ),
-                  if (songList.isNotEmpty)
-                    //list start from here
-                    ...songList.map((entry) {
-                      return ListTile(
-                        contentPadding: const EdgeInsets.only(left: 15.0),
-                        title: Text(
-                          '${entry["title"]}',
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
+                    PlaylistPopupMenu(
+                      data: songList,
+                      title: widget.listItem['title']?.toString() ?? 'Songs',
+                    ),
+                  ],
+                  title: widget.listItem['title']?.toString().unescape() ??
+                      'Songs',
+                  subtitle: '${songList.length} Songs',
+                  secondarySubtitle: widget.listItem['subTitle']?.toString() ??
+                      widget.listItem['subtitle']?.toString(),
+                  onPlayTap: () => PlayerInvoke.init(
+                    songsList: songList,
+                    index: 0,
+                    isOffline: false,
+                  ),
+                  onShuffleTap: () => PlayerInvoke.init(
+                    songsList: songList,
+                    index: 0,
+                    isOffline: false,
+                    shuffle: true,
+                  ),
+                  placeholderImage: 'assets/album.png',
+                  imageUrl: getImageUrl(widget.listItem['image']?.toString()),
+                  sliverList: SliverList(
+                    delegate: SliverChildListDelegate([
+                      if (!fetched)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 150.0),
+                          child: Center(
+                            child: CircularProgressIndicator(),
                           ),
                         ),
-                        onLongPress: () {
-                          copyToClipboard(
-                            context: context,
-                            text: '${entry["title"]}',
-                          );
-                        },
-                        subtitle: Text(
-                          '${entry["subtitle"]}',
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        leading: Card(
-                          margin: EdgeInsets.zero,
-                          elevation: 8,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(7.0),
-                          ),
-                          clipBehavior: Clip.antiAlias,
-                          child: CachedNetworkImage(
-                            fit: BoxFit.cover,
-                            errorWidget: (context, _, __) => const Image(
-                              fit: BoxFit.cover,
-                              image: AssetImage(
-                                'assets/cover.jpg',
+                      if (songList.isNotEmpty)
+                        //list start from here
+                        ...songList.map((entry) {
+                          return ListTile(
+                            contentPadding: const EdgeInsets.only(left: 15.0),
+                            title: Text(
+                              '${entry["title"]}',
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                            imageUrl:
-                                '${entry["image"].replaceAll('http:', 'https:')}',
-                            placeholder: (context, url) => const Image(
-                              fit: BoxFit.cover,
-                              image: AssetImage(
-                                'assets/cover.jpg',
+                            onLongPress: () {
+                              copyToClipboard(
+                                context: context,
+                                text: '${entry["title"]}',
+                              );
+                            },
+                            subtitle: Text(
+                              '${entry["subtitle"]}',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            leading: Card(
+                              margin: EdgeInsets.zero,
+                              elevation: 8,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(7.0),
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              child: CachedNetworkImage(
+                                fit: BoxFit.cover,
+                                errorWidget: (context, _, __) => const Image(
+                                  fit: BoxFit.cover,
+                                  image: AssetImage(
+                                    'assets/cover.jpg',
+                                  ),
+                                ),
+                                imageUrl:
+                                    '${entry["image"].replaceAll('http:', 'https:')}',
+                                placeholder: (context, url) => const Image(
+                                  fit: BoxFit.cover,
+                                  image: AssetImage(
+                                    'assets/cover.jpg',
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            DownloadButton(
-                              data: entry as Map,
-                              icon: 'download',
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                DownloadButton(
+                                  data: entry as Map,
+                                  icon: 'download',
+                                ),
+                                LikeButton(
+                                  mediaItem: null,
+                                  data: entry,
+                                ),
+                                SongTileTrailingMenu(data: entry),
+                              ],
                             ),
-                            LikeButton(
-                              mediaItem: null,
-                              data: entry,
-                            ),
-                            SongTileTrailingMenu(data: entry),
-                          ],
-                        ),
-                        onTap: () {
-                          PlayerInvoke.init(
-                            songsList: songList,
-                            index: songList.indexWhere(
-                              (element) => element == entry,
-                            ),
-                            isOffline: false,
+                            onTap: () {
+                              PlayerInvoke.init(
+                                songsList: songList,
+                                index: songList.indexWhere(
+                                  (element) => element == entry,
+                                ),
+                                isOffline: false,
+                              );
+                            },
                           );
-                        },
-                      );
-                    }),
-                ]),
+                        }),
+                    ]),
+                  ),
+                ),
               ),
             ),
-            bottomSheet: MiniPlayer(),
+          ],
+        ),
+        if (!rotated)
+          Positioned(
+            bottom: 0,
+            child: Container(
+              height: 80,
+              width: MediaQuery.of(context).size.width,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromARGB(255, 0, 0, 0),
+                    Color.fromARGB(200, 0, 0, 0),
+                    Color.fromARGB(145, 0, 0, 0),
+                    Color.fromARGB(90, 0, 0, 0),
+                    Colors.transparent,
+                  ],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  stops: [0.0, 0.3, 0.6, 0.75, 1.0],
+                ),
+              ),
+              padding: const EdgeInsets.only(
+                left: 15,
+                top: 5,
+              ),
+              child: BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                items: <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                    icon: BottomNavBarIcon(
+                      selectedIcon: 'assets/home_fill.svg',
+                      unselectedIcon: 'assets/home_outline.svg',
+                      indexChecker: indexValue == 0,
+                    ),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: BottomNavBarIcon(
+                      selectedIcon: 'assets/search_fill.svg',
+                      unselectedIcon: 'assets/search_outline.svg',
+                      indexChecker: indexValue == 1,
+                    ),
+                    label: 'Search',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: BottomNavBarIcon(
+                      selectedIcon: 'assets/library_fill.svg',
+                      unselectedIcon: 'assets/library_outline.svg',
+                      indexChecker: indexValue == 2,
+                    ),
+                    label: 'Your Library',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: BottomNavBarIcon(
+                      selectedIcon: 'assets/yt_music_fill.svg',
+                      unselectedIcon: 'assets/yt_music_outline.svg',
+                      indexChecker: indexValue == 3,
+                    ),
+                    label: 'YT Music',
+                  ),
+                ],
+                currentIndex: indexValue,
+                selectedItemColor: Colors.white,
+                unselectedItemColor: const Color(0xFFB3B3B3),
+                selectedFontSize: 10,
+                unselectedFontSize: 10,
+                backgroundColor: Colors.transparent,
+                onTap: _onItemTapped,
+              ),
+            ),
           ),
+        Positioned(
+          bottom: rotated ? 0.0 : 70.0,
+          left: 2.0,
+          right: 2.0,
+          child: MiniPlayer(),
         ),
       ],
     );

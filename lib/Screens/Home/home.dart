@@ -196,7 +196,7 @@ class _HomePageState extends State<HomePage> {
                           stops: [0.0, 0.3, 0.6, 0.75, 1.0],
                         ),
                       ),
-                      padding: const EdgeInsets.only(left: 15 , top: 2,),
+                      padding: const EdgeInsets.only(left: 15 , top: 5,),
                       child: BottomNavigationBar(
                         type: BottomNavigationBarType.fixed,
                         items: <BottomNavigationBarItem>[

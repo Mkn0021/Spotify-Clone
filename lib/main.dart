@@ -1,4 +1,3 @@
-
 // This File is Part of a Music Player Apps named Spotify Basen  on Blackhole (https://github.com/Sangwan5688/BlackHole)
 
 import 'dart:async';
@@ -25,6 +24,7 @@ import 'package:spotify/Helpers/route_handler.dart';
 import 'package:spotify/Screens/About/about.dart';
 import 'package:spotify/Screens/Home/home.dart';
 import 'package:spotify/Screens/Library/downloads.dart';
+import 'package:spotify/Screens/Library/library.dart';
 import 'package:spotify/Screens/Library/nowplaying.dart';
 import 'package:spotify/Screens/Library/playlists.dart';
 import 'package:spotify/Screens/Library/recent.dart';
@@ -34,6 +34,7 @@ import 'package:spotify/Screens/Login/pref.dart';
 import 'package:spotify/Screens/Player/audioplayer.dart';
 import 'package:spotify/Screens/Search/search_page.dart';
 import 'package:spotify/Screens/Settings/settings_page.dart';
+import 'package:spotify/Screens/YouTube/youtube_home.dart';
 import 'package:spotify/Services/audio_service.dart';
 import 'package:spotify/theme/app_theme.dart';
 
@@ -284,7 +285,7 @@ class _MyAppState extends State<MyApp> {
         routes: {
           '/': (context) => initialFuntion(),
           '/pref': (context) => const PrefScreen(),
-          '/setting': (context) => const NewSettingsPage(),
+          '/setting': (context) => const SettingsPage(),
           '/about': (context) => AboutScreen(),
           '/playlists': (context) => PlaylistScreen(),
           '/nowplaying': (context) => NowPlaying(),
@@ -292,6 +293,10 @@ class _MyAppState extends State<MyApp> {
           '/downloads': (context) => const Downloads(),
           '/stats': (context) => const Stats(),
           '/search_page': (context) => const SearchPageScreen(),
+          '/home_page' :(context) => HomePage(),
+          '/library': (context) => const LibraryPage(),
+          '/youtube_home': (context) => const YouTube(),
+
         },
         navigatorKey: navigatorKey,
         onGenerateRoute: (RouteSettings settings) {

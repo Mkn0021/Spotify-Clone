@@ -194,7 +194,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                       selectedSVG: 'assets/settings.svg',
                       unselectedColor: Colors.white,
                       onTap: () {
-                        // Open the NewSettingsPage here
+                        // Open the SettingsPage here
                         Navigator.pushNamed(
                           context,
                           '/setting',
