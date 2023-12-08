@@ -74,9 +74,7 @@ class _HomePageState extends State<HomePage> {
         height: MediaQuery.of(context).size.height,
         child: Stack(
           children: [
-            WillPopScope(
-              onWillPop: () => handleWillPop(context),
-              child: SafeArea(
+            SafeArea(
                 child: Row(
                   children: [
                     if (rotated)
@@ -173,7 +171,6 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-            ),
             //bottom Navigationbar
             if (!rotated)
               Positioned(
@@ -183,7 +180,7 @@ class _HomePageState extends State<HomePage> {
                   builder:
                       (BuildContext context, int indexValue, Widget? child) {
                     return Container(
-                      height: 70,
+                      height: 80 ,
                       width: MediaQuery.of(context).size.width,
                       decoration: const BoxDecoration(
                         gradient: LinearGradient(
@@ -199,7 +196,7 @@ class _HomePageState extends State<HomePage> {
                           stops: [0.0, 0.3, 0.6, 0.75, 1.0],
                         ),
                       ),
-                      padding: const EdgeInsets.only(left: 15, top: 10),
+                      padding: const EdgeInsets.only(left: 15 , top: 2,),
                       child: BottomNavigationBar(
                         type: BottomNavigationBarType.fixed,
                         items: <BottomNavigationBarItem>[
