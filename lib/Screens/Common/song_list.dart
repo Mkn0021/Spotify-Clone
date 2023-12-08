@@ -64,14 +64,6 @@ class _SongsListPageState extends State<SongsListPage> {
     _scrollController.dispose();
   }
 
-  final PageController _pageController = PageController();
-  int indexValue = 0;
-  void _onItemTapped(int index) {
-    indexValue = index;
-    _pageController.jumpToPage(
-      index,
-    );
-  }
 
   void _fetchSongs() {
     loading = true;
@@ -386,12 +378,12 @@ class _SongsListPageState extends State<SongsListPage> {
               ),
               child: BottomNavigationBar(
                 type: BottomNavigationBarType.fixed,
-                items: <BottomNavigationBarItem>[
+                items: const <BottomNavigationBarItem>[
                   BottomNavigationBarItem(
                     icon: BottomNavBarIcon(
                       selectedIcon: 'assets/home_fill.svg',
                       unselectedIcon: 'assets/home_outline.svg',
-                      indexChecker: indexValue == 0,
+                      indexChecker: true,
                     ),
                     label: 'Home',
                   ),
@@ -399,7 +391,7 @@ class _SongsListPageState extends State<SongsListPage> {
                     icon: BottomNavBarIcon(
                       selectedIcon: 'assets/search_fill.svg',
                       unselectedIcon: 'assets/search_outline.svg',
-                      indexChecker: indexValue == 1,
+                      indexChecker: false,
                     ),
                     label: 'Search',
                   ),
@@ -407,7 +399,7 @@ class _SongsListPageState extends State<SongsListPage> {
                     icon: BottomNavBarIcon(
                       selectedIcon: 'assets/library_fill.svg',
                       unselectedIcon: 'assets/library_outline.svg',
-                      indexChecker: indexValue == 2,
+                      indexChecker: false,
                     ),
                     label: 'Your Library',
                   ),
@@ -415,18 +407,16 @@ class _SongsListPageState extends State<SongsListPage> {
                     icon: BottomNavBarIcon(
                       selectedIcon: 'assets/yt_music_fill.svg',
                       unselectedIcon: 'assets/yt_music_outline.svg',
-                      indexChecker: indexValue == 3,
+                      indexChecker: false,
                     ),
                     label: 'YT Music',
                   ),
                 ],
-                currentIndex: indexValue,
                 selectedItemColor: Colors.white,
                 unselectedItemColor: const Color(0xFFB3B3B3),
                 selectedFontSize: 10,
                 unselectedFontSize: 10,
                 backgroundColor: Colors.transparent,
-                onTap: _onItemTapped,
               ),
             ),
           ),
