@@ -50,10 +50,19 @@ class _LibraryPageState extends State<LibraryPage> {
               children: [
                 Row(
                   children: [
-                    const CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 14,
-                      backgroundImage: AssetImage('assets/profile_pic.jpg'),
+                    GestureDetector(
+                      onTap: () {
+                        // Open the SettingsPage here
+                        Navigator.pushNamed(
+                          context,
+                          '/setting',
+                        );
+                      },
+                      child: const CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 14,
+                        backgroundImage: AssetImage('assets/profile_pic.jpg'),
+                      ),
                     ),
                     const SizedBox(
                       width: 20,

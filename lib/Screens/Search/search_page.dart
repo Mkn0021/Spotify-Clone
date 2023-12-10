@@ -19,20 +19,29 @@ class _SearchPageScreenState extends State<SearchPageScreen>{
       child: CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              const SliverToBoxAdapter(
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(16, 40, 20, 27),
+                  padding: const EdgeInsets.fromLTRB(16, 40, 20, 27),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 14,
-                        backgroundImage: AssetImage('assets/profile_pic.jpg'),
-                      ),
-                      SizedBox(
+                      GestureDetector(
+                    onTap: () {
+                      // Open the SettingsPage here
+                      Navigator.pushNamed(
+                        context,
+                        '/setting',
+                      );
+                    },
+                    child: const CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 14,
+                      backgroundImage: AssetImage('assets/profile_pic.jpg'),
+                    ),
+                  ),
+                      const SizedBox(
                         width: 20,
                       ),
-                      Text(
+                      const Text(
                         'Search',
                         style: TextStyle(
                           color: Color(0xffffffff),
@@ -42,8 +51,8 @@ class _SearchPageScreenState extends State<SearchPageScreen>{
                           fontSize: 23.0,
                         ),
                       ),
-                      Spacer(),
-                      Icon(
+                      const Spacer(),
+                      const Icon(
                         Icons.camera_alt_outlined,
                         color: Colors.white,
                         size: 26,

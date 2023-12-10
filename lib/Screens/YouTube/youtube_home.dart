@@ -99,7 +99,7 @@ class _YouTubeState extends State<YouTube>
             const Center(
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  Colors.redAccent,
+                  Colors.red,
                 ),
                 strokeWidth: 5,
               ),
@@ -191,16 +191,6 @@ class _YouTubeState extends State<YouTube>
                                                   YouTubePlaylist(
                                                 playlistId: item['playlistId']
                                                     .toString(),
-                                                // playlistImage:
-                                                //     item['imageStandard']
-                                                //         .toString(),
-                                                // playlistName:
-                                                //     item['title'].toString(),
-                                                // playlistSubtitle:
-                                                //     '${item['count']} Songs',
-                                                // playlistSecondarySubtitle:
-                                                //     item['description']
-                                                //         ?.toString(),
                                               ),
                                             ),
                                           );
@@ -459,10 +449,19 @@ class _YouTubeState extends State<YouTube>
                     const SizedBox(
                       width: 15,
                     ),
-                    const CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 14,
-                      backgroundImage: AssetImage('assets/profile_pic.jpg'),
+                    GestureDetector(
+                      onTap: () {
+                        // Open the SettingsPage here
+                        Navigator.pushNamed(
+                          context,
+                          '/setting',
+                        );
+                      },
+                      child: const CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 14,
+                        backgroundImage: AssetImage('assets/profile_pic.jpg'),
+                      ),
                     ),
                     const SizedBox(
                       width: 24,

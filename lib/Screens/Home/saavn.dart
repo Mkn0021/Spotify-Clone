@@ -145,21 +145,8 @@ class _SaavnHomePageState extends State<SaavnHomePage>
       ) {
         return <Widget>[
           SliverToBoxAdapter(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.black,
-                    Colors.transparent,
-                  ],
-                  stops: [
-                    0.0,
-                    0.30,
-                  ],
-                ),
-              ),
+            child: ColoredBox(
+              color: Colors.black,
               child: Padding(
                 padding: const EdgeInsets.only(
                   top: 30,

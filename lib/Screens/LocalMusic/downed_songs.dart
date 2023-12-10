@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:logging/logging.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:spotify/CustomWidgets/add_playlist.dart';
 import 'package:spotify/CustomWidgets/data_search.dart';
 import 'package:spotify/CustomWidgets/empty_screen.dart';
@@ -94,7 +95,20 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   Future<void> getData() async {
     try {
       Logger.root.info('Requesting permission to access local songs');
-      await offlineAudioQuery.requestPermission();
+      PermissionStatus status = await Permission.storage.status;
+      if (status.isDenied) {
+        Logger.root.info('Request denied');
+        await [
+          Permission.storage,
+          Permission.accessMediaLocation,
+          Permission.mediaLibrary,
+        ].request();
+      }
+      status = await Permission.storage.status;
+      if (status.isPermanentlyDenied) {
+        Logger.root.info('Request permanently denied');
+        await openAppSettings();
+      }
       tempPath ??= (await getTemporaryDirectory()).path;
       if (Platform.isAndroid) {
         Logger.root.info('Getting local playlists');
