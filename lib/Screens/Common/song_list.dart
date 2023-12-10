@@ -4,7 +4,6 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:logging/logging.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:spotify/APIs/api.dart';
@@ -218,13 +217,12 @@ class _SongsListPageState extends State<SongsListPage> {
                         selectedColor: Colors.grey,
                       ),
                     ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.share_rounded,
-                      size: 18,
-                    ),
-                    tooltip: AppLocalizations.of(context)!.share,
-                    onPressed: () {
+                  SvgIconButton(
+                    selectedSVG: 'assets/share.svg',
+                    iconSize: 23,
+                    unselectedColor: Colors.white,
+                    //tooltip: AppLocalizations.of(context)!.share,
+                    onTap: () {
                       if (!isSharePopupShown) {
                         isSharePopupShown = true;
 

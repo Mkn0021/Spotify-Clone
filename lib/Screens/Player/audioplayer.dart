@@ -230,12 +230,15 @@ class _PlayScreenState extends State<PlayScreen> {
                   elevation: 0,
                   backgroundColor: Colors.transparent,
                   centerTitle: true,
-                  leading: IconButtonWidget(
-                    icon: const Icon(Icons.arrow_back_ios),
-                    rotate: true,
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                  leading: Transform.translate(
+                    offset: const Offset( 6 , -4),
+                    child: IconButtonWidget(
+                      icon: const Icon(Icons.arrow_back_ios),
+                      rotate: true,
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
                   ),
                   actions: [
                     IconButton(

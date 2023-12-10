@@ -149,10 +149,10 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                             selectedColor: Colors.grey,
                           ),
                           SizedBox(width: 16),
-                          Icon(
-                            Icons.share_rounded,
-                            size: 18,
-                            color: Colors.grey,
+                          SvgIconButton(
+                            selectedSVG: 'assets/share.svg',
+                            iconSize: 23,
+                            selectedColor : Colors.grey,
                           ),
                         ],
                       ),
