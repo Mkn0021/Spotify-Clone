@@ -206,7 +206,7 @@ class _SearchPageState extends State<SearchPage> {
             controller: _controller,
             liveSearch: liveSearch,
             autofocus: widget.autofocus,
-            hintText: AppLocalizations.of(context)!.searchText,
+            hintText: 'What do you want to listen to?',
             leading: IconButton(
               icon: const Icon(
                 Icons.arrow_back_rounded,

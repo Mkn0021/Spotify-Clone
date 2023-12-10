@@ -88,7 +88,7 @@ class AppTheme {
       inputDecorationTheme: const InputDecorationTheme(
         focusedBorder: UnderlineInputBorder(
           borderSide:
-              BorderSide(width: 1.5, color: Colors.transparent),
+              BorderSide(width: 1.5, color: Colors.white12),
         ),
       ),
       listTileTheme: ListTileThemeData(

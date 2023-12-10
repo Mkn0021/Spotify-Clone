@@ -258,9 +258,6 @@ class _DownloadPageState extends State<DownloadPage> {
                 context: context,
                 builder: (BuildContext context) {
                   return BottomGradientContainer(
-                    borderRadius: BorderRadius.circular(
-                      20.0,
-                    ),
                     child: ListView(
                       physics: const BouncingScrollPhysics(),
                       shrinkWrap: true,

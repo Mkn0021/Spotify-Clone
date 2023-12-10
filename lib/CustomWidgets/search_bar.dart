@@ -98,7 +98,7 @@ class _SearchBarState extends State<SearchBar> {
                           color: Colors.transparent,
                         ),
                       ),
-                      fillColor: Theme.of(context).colorScheme.secondary,
+                      fillColor: const Color(0xFF282828),
                       prefixIcon: widget.leading,
                       suffixIcon: widget.showClose
                           ? ValueListenableBuilder(

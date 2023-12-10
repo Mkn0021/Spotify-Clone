@@ -161,18 +161,10 @@ class _OthersPageState extends State<OthersPage> {
                 context: context,
                 builder: (BuildContext context) {
                   return BottomGradientContainer(
-                    borderRadius: BorderRadius.circular(
-                      20.0,
-                    ),
                     child: AnimatedList(
                       physics: const BouncingScrollPhysics(),
                       shrinkWrap: true,
-                      padding: const EdgeInsets.fromLTRB(
-                        0,
-                        10,
-                        0,
-                        10,
-                      ),
+                      padding: const EdgeInsets.all(10),
                       key: listKey,
                       initialItemCount: includedExcludedPaths.length + 2,
                       itemBuilder: (cntxt, idx, animation) {

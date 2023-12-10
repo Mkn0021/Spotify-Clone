@@ -544,18 +544,10 @@ class _AppUIPageState extends State<AppUIPage> {
                 context: context,
                 builder: (BuildContext context) {
                   return BottomGradientContainer(
-                    borderRadius: BorderRadius.circular(
-                      20.0,
-                    ),
                     child: AnimatedList(
                       physics: const BouncingScrollPhysics(),
                       shrinkWrap: true,
-                      padding: const EdgeInsets.fromLTRB(
-                        0,
-                        10,
-                        0,
-                        10,
-                      ),
+                      padding: const EdgeInsets.all(10),
                       key: listKey,
                       initialItemCount: blacklistedHomeSections.length + 1,
                       itemBuilder: (cntxt, idx, animation) {

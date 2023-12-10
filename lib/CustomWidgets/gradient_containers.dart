@@ -1,4 +1,4 @@
-//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole) 
+//This Project is inspired from  (https://github.com/Sangwan5688/BlackHole)
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -58,21 +58,15 @@ class _BottomGradientContainerState extends State<BottomGradientContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: widget.margin ?? const EdgeInsets.fromLTRB(25, 0, 25, 25),
+      margin: widget.margin ?? const EdgeInsets.symmetric(horizontal: 20),
       padding: widget.padding ?? const EdgeInsets.fromLTRB(10, 15, 10, 15),
       decoration: BoxDecoration(
         borderRadius: widget.borderRadius ??
-            const BorderRadius.all(Radius.circular(15.0)),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: Theme.of(context).brightness == Brightness.dark
-              ? currentTheme.getBottomGradient()
-              : [
-                  Colors.white,
-                  Theme.of(context).canvasColor,
-                ],
-        ),
+            const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+        color: const Color(0xFF202020),
       ),
       child: widget.child,
     );

@@ -103,7 +103,7 @@ class _SearchPageScreenState extends State<SearchPageScreen>{
                             unselectedColor: Color(0xff191919),
                           ),
                           Text(
-                            'Artist, song, or albums',
+                            'What do you want to listen to?',
                             style: TextStyle(
                               color: Color(0xff535353),
                               fontSize: 17.0,
